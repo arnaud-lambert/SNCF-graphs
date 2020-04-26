@@ -32,6 +32,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Arete.cpp" />
+		<Unit filename="Arete.h" />
+		<Unit filename="Graphe.cpp" />
+		<Unit filename="Graphe.h" />
+		<Unit filename="Sommet.cpp" />
+		<Unit filename="Sommet.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
