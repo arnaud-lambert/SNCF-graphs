@@ -110,20 +110,25 @@ void Graphe::dessiner ()
         m_aretes[j]->dessiner(svgout);
 }
 
-//void Graphe::centraliteDegre ()
-//{
-//    for(auto i: m_sommets)
-//    {
-//        i->setDegre(i->getAdjacents().size());
-//        i->setDegreNorm((double)(i->getAdjacents().size())/(double)(m_sommets.size()-1));
-//    }
-//}
 
-void Graphe::centraliteDegre ()
+std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
 {
-    for(auto i: m_sommets)
-    {
-        i->setDegre((double)i->getAdjacents().size(), m_ordre);
-    }
+   std::vector<std::pair<int, float>> centralite_degres;
+   std::pair<int, float> degres;//first est degre non normalisé et second est degré normalisé
+
+   for(auto i: m_sommets)
+   {
+       degres.first = i->getAdjacents().size();
+       degres.second = ((float)i->getAdjacents().size())/((float)m_ordre-1);
+       centralite_degres.push_back(degres);
+   }
+
+//   std::cout<<std::endl<<"Indices de centralite de degre: "<<std::endl;
+//   for(auto j: centralite_degres)
+//   {
+//       std::cout<<"Non normalise: "<<j.first<<"  Normalise: "<<j.second<<std::endl;
+//   }
+
+   return centralite_degres;
 }
 

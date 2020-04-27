@@ -19,7 +19,7 @@ void Sommet::affichage()const
 void Sommet::dessiner(Svgfile&svgout)
 {
     std::string couleur;
-    switch((int)m_degre)
+    switch((int)m_adjacents.size())
     {
         case 1 : couleur="cyan";
                  break;
@@ -34,10 +34,4 @@ void Sommet::dessiner(Svgfile&svgout)
     }
     svgout.addDisk( m_x*100 , m_y*100 , 5, couleur);
     svgout.addText( m_x*100 - 5 , m_y*100 - 10, m_nom, "black" );
-}
-
-void Sommet::setDegre (double degre, int ordre)
-{
-    m_degre = degre;
-    m_degre_norm = degre/(double)ordre;
 }
