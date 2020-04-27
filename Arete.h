@@ -5,13 +5,14 @@
 class Arete
 {
     public:
-        Arete(int indice, Sommet* s1, Sommet* s2);
+        Arete(int id, Sommet* s1, Sommet* s2);
         virtual ~Arete();
         void affichage()const;
+        std::pair<Sommet*, Sommet*> getExtremites() { return m_extremites; }
 
     private:
-        int m_indice;
-        std::pair<Sommet*, Sommet*> m_som;
+        int m_id;
+        std::pair<Sommet*, Sommet*> m_extremites;
 };
 
 #endif // ARETE_H

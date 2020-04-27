@@ -11,9 +11,10 @@ class Graphe
         void affichage()const;
 
     private:
-        std::vector<Sommet*> m_som;
-        std::vector<Arete*> m_arr;
+        std::vector<Sommet*> m_sommets;
+        std::vector<Arete*> m_aretes;
         bool m_orientation;
+        bool m_ponderation;
         int m_ordre;
         int m_taille;
 };

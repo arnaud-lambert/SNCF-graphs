@@ -1,7 +1,7 @@
 #include "Arete.h"
 
-Arete::Arete(int indice, Sommet* s1, Sommet* s2)
-        :m_indice{indice}, m_som{s1, s2}
+Arete::Arete(int id, Sommet* s1, Sommet* s2)
+        :m_id{id}, m_extremites{s1, s2}
 {
 
 }
@@ -13,5 +13,5 @@ Arete::~Arete()
 
 void Arete::affichage()const
 {
-    std::cout<<std::endl<<m_indice<<" "<<m_som.first->getId()<<" "<<m_som.second->getId();
+    std::cout<<m_id<<" "<<m_extremites.first->getId()<<" "<<m_extremites.second->getId()<<std::endl;
 }

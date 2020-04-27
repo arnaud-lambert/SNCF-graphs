@@ -8,15 +8,19 @@
 class Sommet
 {
     public:
-        Sommet(int indice, char nom, int x, int y);
+        Sommet(int id, std::string nom, double x, double y);
         virtual ~Sommet();
         void affichage()const;
-        int getId();
+        int getId() { return m_id; }
+        std::vector<Sommet*> getAdjacents() { return m_adjacents; }
+        void ajouterAdjacent(Sommet* adjacent) { m_adjacents.push_back(adjacent); }
 
     private:
-        int m_indice;
-        char m_nom;
-        std::pair<int, int> m_coordonnees;
+        int m_id;
+        std::string m_nom;
+        double m_x;
+        double m_y;
+        std::vector<Sommet*> m_adjacents;
 
 };
 
