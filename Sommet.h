@@ -27,6 +27,7 @@ class Sommet
         double m_x;
         double m_y;
         std::vector<Sommet*> m_adjacents;
+
 };
 
 #endif // SOMMET_H

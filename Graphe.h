@@ -15,6 +15,7 @@ class Graphe
         void dessiner ();
         void vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
+        std::vector<std::pair<int, float>> centraliteDegre ();
 
     private:
         std::vector<Sommet*> m_sommets;

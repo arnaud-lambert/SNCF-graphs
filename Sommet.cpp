@@ -18,6 +18,20 @@ void Sommet::affichage()const
 
 void Sommet::dessiner(Svgfile&svgout)
 {
-    svgout.addDisk( m_x*100 , m_y*100 , 5, "black");
+    std::string couleur;
+    switch((int)m_adjacents.size())
+    {
+        case 1 : couleur="cyan";
+                 break;
+        case 2 : couleur="green";
+                 break;
+        case 3 : couleur="blue";
+                 break;
+        case 4 : couleur="red";
+                 break;
+        default : couleur="black";
+                 break;
+    }
+    svgout.addDisk( m_x*100 , m_y*100 , 5, couleur);
     svgout.addText( m_x*100 - 5 , m_y*100 - 10, m_nom, "black" );
 }
