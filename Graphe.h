@@ -6,7 +6,7 @@
 class Graphe
 {
     public:
-        Graphe(std::string nomFichier);
+        Graphe();
         virtual ~Graphe();
         void affichage()const;
         void ponderation();
@@ -16,7 +16,7 @@ class Graphe
         std::vector<Sommet*> m_sommets;
         std::vector<Arete*> m_aretes;
         bool m_orientation;
-        bool m_ponderation=false;
+        bool m_ponderation;
         int m_ordre;
         int m_taille;
 };
