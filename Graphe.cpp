@@ -60,12 +60,6 @@ void Graphe::affichage()const
         m_aretes[i]->affichage();
 }
 
-bool verificationFichier(std::string& nomFichier)
-{
-    std::ifstream ifs(nomFichier.c_str());
-    return !ifs.fail();
-}
-
 void Graphe::ponderation()
 {
     int taille;
@@ -74,10 +68,11 @@ void Graphe::ponderation()
     std::string nomFichier;
     do
     {
+        nomFichier="";
         std::getline(std::cin, nomFichier);
-        if(verificationFichier(nomFichier))
+        std::ifstream ifs{nomFichier};
+        if(ifs)
         {
-            std::ifstream ifs{nomFichier};
             ifs>>taille;
             if(taille==m_taille)
             {
@@ -92,16 +87,10 @@ void Graphe::ponderation()
                 }
             }
             else
-            {
                 std::cout<<std::endl<<"Fichier est incompatible (nombre d'aretes different), veuillez ressaisir un nom de fichier "<<std::endl;
-                nomFichier="";
-            }
         }
         else if(nomFichier!="")
-        {
             std::cout<<std::endl<<"Fichier inexistant, veuillez ressaisir un nom de fichier "<<std::endl;
-            nomFichier="";
-        }
     }
-    while(nomFichier!="" || verif==false);
+    while(nomFichier!="" && !verif);
 }
