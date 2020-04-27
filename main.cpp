@@ -1,3 +1,4 @@
+#include <allegro.h>
 #include <iostream>
 #include "Graphe.h"
 
@@ -10,3 +11,4 @@ int main()
     piscine.affichage();
     return 0;
 }
+END_OF_MAIN();

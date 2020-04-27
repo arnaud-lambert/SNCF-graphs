@@ -1,27 +1,28 @@
 # depslib dependency file v1.0
-1587977623 source:c:\users\ahaz1\onedrive\documents\github\piscine\main.cpp
+1587980116 source:c:\users\ahaz1\onedrive\documents\github\piscine\main.cpp
+	<allegro.h>
 	<iostream>
 	"Graphe.h"
 
-1587977447 source:c:\users\ahaz1\onedrive\documents\github\piscine\arete.cpp
+1587978055 source:c:\users\ahaz1\onedrive\documents\github\piscine\arete.cpp
 	"Arete.h"
 
-1587977348 c:\users\ahaz1\onedrive\documents\github\piscine\arete.h
+1587978055 c:\users\ahaz1\onedrive\documents\github\piscine\arete.h
 	"Sommet.h"
 
-1587977464 c:\users\ahaz1\onedrive\documents\github\piscine\sommet.h
+1587978055 c:\users\ahaz1\onedrive\documents\github\piscine\sommet.h
 	<iostream>
 	<vector>
 	<utility>
 	<string>
 
-1587977493 source:c:\users\ahaz1\onedrive\documents\github\piscine\sommet.cpp
+1587978055 source:c:\users\ahaz1\onedrive\documents\github\piscine\sommet.cpp
 	"Sommet.h"
 
-1587977263 source:c:\users\ahaz1\onedrive\documents\github\piscine\graphe.cpp
+1587978055 source:c:\users\ahaz1\onedrive\documents\github\piscine\graphe.cpp
 	"Graphe.h"
 
-1587977263 c:\users\ahaz1\onedrive\documents\github\piscine\graphe.h
+1587978055 c:\users\ahaz1\onedrive\documents\github\piscine\graphe.h
 	"Arete.h"
 	<fstream>
 
