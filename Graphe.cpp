@@ -1,41 +1,43 @@
 #include "Graphe.h"
 
 ///Lecture du fichier via le constructeur de Graphe
-Graphe::Graphe(std::string nomFichier)
+Graphe::Graphe()
 {
-    ///On ouvre le fichier
-    std::ifstream ifs{nomFichier};
-    if (!ifs)
-        throw std::runtime_error( "Impossible d'ouvrir en lecture " + nomFichier );
-    ///S'il n'y a pas d'erreur
-    else
+    std::cout<<"Quel fichier voulez-vous ouvrir ? ";
+    std::string nom;
+    std::ifstream ifs;
+    do
     {
-        ifs>>m_orientation;
-        ///On récupère l'odre
-        ifs>>m_ordre;
-        int indice;
-        double x, y;
-        std::string nom;
-        ///On crée un nombre de sommet égal à l'odre du graphe
-        for(int i=0; i<m_ordre; ++i)
-        {
-            ifs>>indice>>nom>>x>>y;
-            Sommet* nouv = new Sommet(indice, nom, x, y);
-            m_sommets.push_back(nouv);
-        }
-        ///On récupère la taille du graphe
-        ifs>>m_taille;
-        int extremite1, extremite2;
-        for(int i=0; i<m_taille; ++i)
-        {
-            ifs>>indice>>extremite1>>extremite2;
-            Arete* nouv = new Arete(indice, m_sommets[extremite1], m_sommets[extremite2]);
-            m_aretes.push_back(nouv);
-            m_sommets[extremite1]->ajouterAdjacent(m_sommets[extremite2]);
-            if(!m_orientation)
-                m_sommets[extremite2]->ajouterAdjacent(m_sommets[extremite1]);
-        }
+        std::cin>>nom;
+        ifs.open(nom);
+        if(!ifs)
+            std::cout << "Impossible d'ouvrir le fichier " << nom << ", veuillez ressaisir un nom de fichier" << std::endl;
+    }
+    while(!ifs);
 
+    ifs>>m_orientation;
+    ///On rï¿½cupï¿½re l'odre
+    ifs>>m_ordre;
+    int indice;
+    double x, y;
+    ///On crï¿½e un nombre de sommet ï¿½gal ï¿½ l'odre du graphe
+    for(int i=0; i<m_ordre; ++i)
+    {
+        ifs>>indice>>nom>>x>>y;
+        Sommet* nouv = new Sommet(indice, nom, x, y);
+        m_sommets.push_back(nouv);
+    }
+    ///On rï¿½cupï¿½re la taille du graphe
+    ifs>>m_taille;
+    int extremite1, extremite2;
+    for(int i=0; i<m_taille; ++i)
+    {
+        ifs>>indice>>extremite1>>extremite2;
+        Arete* nouv = new Arete(indice, m_sommets[extremite1], m_sommets[extremite2]);
+        m_aretes.push_back(nouv);
+        m_sommets[extremite1]->ajouterAdjacent(m_sommets[extremite2]);
+        if(!m_orientation)
+            m_sommets[extremite2]->ajouterAdjacent(m_sommets[extremite1]);
     }
 }
 
@@ -94,7 +96,7 @@ void Graphe::ponderation()
                 std::cout<<std::endl<<"Fichier est incompatible (nombre d'aretes different), veuillez ressaisir un nom de fichier "<<std::endl;
         }
         else if(nomFichier!="")
-            std::cout<<std::endl<<"Fichier inexistant, veuillez ressaisir un nom de fichier "<<std::endl;
+            std::cout<<std::endl<<"Impossible d'ouvrir le fichier " << nomFichier << ", veuillez ressaisir un nom de fichier "<<std::endl;
     }
     while(nomFichier!="" && !verif);
 }
@@ -141,4 +143,3 @@ void Graphe::vecteurPropre()
     }
     while(lambda1>lambda2+0.1 || lambda1<lambda2-0.1);
 }
-
