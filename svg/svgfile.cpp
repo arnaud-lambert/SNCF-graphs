@@ -13,7 +13,7 @@ extern const std::string svgBallGradients;
 
 std::set<std::string> Svgfile::s_openfiles;
 
-bool Svgfile::s_verbose = true;
+bool Svgfile::s_verbose = false;
 
 Svgfile::Svgfile(std::string _filename, int _width, int _height) :
     m_filename{_filename}, m_width{_width}, m_height{_height}
