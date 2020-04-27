@@ -55,10 +55,10 @@ void Graphe::affichage()const
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
         m_sommets[i]->affichage();
-//            std::cout << "ajd: ";
-//        for(auto j : m_sommets[i]->getAdjacents())
-//            std::cout << j->getId() << " ";
-//        std::cout << std::endl;
+        std::cout << "ajd: ";
+        for(auto j : m_sommets[i]->getAdjacents())
+            std::cout << j->getId() << " ";
+        std::cout << std::endl;
     }
     std::cout<<m_taille<<std::endl;
     for(size_t i=0; i<m_aretes.size(); ++i)
@@ -123,7 +123,6 @@ void Graphe::vecteurPropre()
     do
     {
         lambda2=lambda1;
-        lambda1=0;
         for(size_t i=0; i<vecIndices.size(); ++i)
         {
             for(size_t j=0; j<vecIndices[i].first->getAdjacents().size(); ++j)
@@ -140,6 +139,9 @@ void Graphe::vecteurPropre()
         for(size_t i=0; i<vecIndices.size(); i++)
             vecIndices[i].second=vecSommeIndices[i]/lambda1;
         vecSommeIndices.clear();
+        for(size_t i=0; i<vecIndices.size(); i++)
+            std::cout<<std::endl<<vecIndices[i].first->getId()<<" "<<vecIndices[i].second;
     }
-    while(lambda1>lambda2+0.1 || lambda1<lambda2-0.1);
+    while(abs(lambda1-lambda2)>0.1);
+
 }

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Graphe.h"
 
 int main()
@@ -6,6 +5,7 @@ int main()
     Graphe a;
     a.ponderation();
     a.affichage();
+    a.vecteurPropre();
     a.dessiner();
 
     return 0;

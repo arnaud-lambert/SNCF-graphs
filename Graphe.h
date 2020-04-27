@@ -3,6 +3,7 @@
 #include "Arete.h"
 #include <fstream>
 #include <math.h>
+#include <cmath>
 
 class Graphe
 {
