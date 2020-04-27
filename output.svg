@@ -60,13 +60,21 @@
 <circle cx="600" cy="300" r="5" fill="black" />
 <text x="595" y="290" fill="black" >I</text>
 <line x1="200" y1="100" x2="300" y2="200" stroke="black" />
+<text x="250" y="145" fill="grey" >3</text>
 <line x1="600" y1="100" x2="500" y2="200" stroke="black" />
+<text x="550" y="145" fill="grey" >2</text>
 <line x1="100" y1="200" x2="300" y2="200" stroke="black" />
+<text x="200" y="195" fill="grey" >7</text>
 <line x1="300" y1="200" x2="400" y2="200" stroke="black" />
+<text x="350" y="195" fill="grey" >4</text>
 <line x1="400" y1="200" x2="500" y2="200" stroke="black" />
+<text x="450" y="195" fill="grey" >2</text>
 <line x1="500" y1="200" x2="700" y2="200" stroke="black" />
+<text x="600" y="195" fill="grey" >8</text>
 <line x1="200" y1="300" x2="300" y2="200" stroke="black" />
+<text x="250" y="245" fill="grey" >3</text>
 <line x1="600" y1="300" x2="500" y2="200" stroke="black" />
+<text x="550" y="245" fill="grey" >2</text>
 
 
 </svg>

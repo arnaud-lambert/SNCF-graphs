@@ -8,7 +8,6 @@ int main()
     std::string nom;
     std::cin>>nom;
     Graphe piscine(nom);
-    std::cin.ignore();
     piscine.ponderation();
     piscine.affichage();
     piscine.dessiner();

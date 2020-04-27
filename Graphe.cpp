@@ -16,7 +16,7 @@ Graphe::Graphe(std::string nomFichier)
         int indice;
         double x, y;
         std::string nom;
-        ///On crée un nombre de sommet égal à l'odre du graphe
+        ///On crée un nombre de sommets égal à l'odre du graphe
         for(int i=0; i<m_ordre; ++i)
         {
             ifs>>indice>>nom>>x>>y;
@@ -66,6 +66,7 @@ void Graphe::ponderation()
     bool verif=false;
     std::cout<<std::endl<<"Quel fichier de ponderation voulez-vous ouvrir ? ";
     std::string nomFichier;
+    std::cin.ignore();
     do
     {
         nomFichier="";
