@@ -113,7 +113,7 @@ void Svgfile::addTriangle(double x1, double y1, double x2, double y2,
             << "\" />\n";
 }
 
-///recatangle avec saisie 4 sommets et couleur sans contour noir
+///rectangle avec saisie 4 sommets et couleur sans contour noir
 void Svgfile::addRectangle(double x1, double y1, double x2, double y2,
                           double x3, double y3, double x4, double y4, std::string colorFill)
 {
@@ -198,7 +198,7 @@ void Svgfile::addGrid(double span, bool numbering, std::string color)
     {
         addLine(0, y, m_width, y, color);
         if (numbering)
-            addText(5, y-5, y, color);
+            addText(5, y-5, y/100, color);
         y+=span;
     }
 
@@ -207,7 +207,7 @@ void Svgfile::addGrid(double span, bool numbering, std::string color)
     {
         addLine(x, 0, x, m_height, color);
         if (numbering)
-            addText(x+5, 15, x, color);
+            addText(x+5, 15, x/100, color);
         x+=span;
     }
 }

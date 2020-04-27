@@ -94,6 +94,7 @@ void Graphe::ponderation(std::string nomFichier)
 void Graphe::dessiner ()
 {
     Svgfile svgout;
+    svgout.addGrid();
 
     for(size_t i=0; i<m_sommets.size(); ++i)
         m_sommets[i]->dessiner(svgout);
