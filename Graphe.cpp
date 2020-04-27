@@ -43,7 +43,10 @@ Graphe::Graphe()
 
 Graphe::~Graphe()
 {
-    //dtor
+    for(auto &i: m_sommets)
+        delete i;
+    for(auto &i: m_aretes)
+        delete i;
 }
 
 void Graphe::affichage()const
@@ -110,25 +113,33 @@ void Graphe::dessiner ()
         m_aretes[j]->dessiner(svgout);
 }
 
-
-std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
+void Graphe::vecteurPropre()
 {
-   std::vector<std::pair<int, float>> centralite_degres;
-   std::pair<int, float> degres;//first est degre non normalisé et second est degré normalisé
+    std::vector<std::pair<Sommet*, double>> vecIndices;
+    std::vector<double> vecSommeIndices;
+    double lambda1=0, lambda2, sommeIndices=0, sommeSommeIndicesCarre=0;
+    for(size_t i=0; i<m_sommets.size(); ++i)
+        vecIndices.push_back({m_sommets[i], 1});
+    do
+    {
+        lambda2=lambda1;
+        lambda1=0;
+        for(size_t i=0; i<vecIndices.size(); ++i)
+        {
+            for(size_t j=0; j<vecIndices[i].first->getAdjacents().size(); ++j)
+                sommeIndices+=vecIndices[vecIndices[i].first->getAdjacents()[j]->getId()].second;
 
-   for(auto i: m_sommets)
-   {
-       degres.first = i->getAdjacents().size();
-       degres.second = ((float)i->getAdjacents().size())/((float)m_ordre-1);
-       centralite_degres.push_back(degres);
-   }
+            vecSommeIndices.push_back(sommeIndices);
+            sommeIndices=0;
+        }
+        for(size_t i=0; i<vecSommeIndices.size(); ++i)
+            sommeSommeIndicesCarre+=pow(vecSommeIndices[i], 2);
 
-//   std::cout<<std::endl<<"Indices de centralite de degre: "<<std::endl;
-//   for(auto j: centralite_degres)
-//   {
-//       std::cout<<"Non normalise: "<<j.first<<"  Normalise: "<<j.second<<std::endl;
-//   }
-
-   return centralite_degres;
+        lambda1=sqrt(sommeSommeIndicesCarre);
+        sommeSommeIndicesCarre=0;
+        for(size_t i=0; i<vecIndices.size(); i++)
+            vecIndices[i].second=vecSommeIndices[i]/lambda1;
+        vecSommeIndices.clear();
+    }
+    while(lambda1>lambda2+0.1 || lambda1<lambda2-0.1);
 }
-
