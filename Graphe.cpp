@@ -109,3 +109,12 @@ void Graphe::dessiner ()
     for(size_t j=0; j<m_aretes.size(); ++j)
         m_aretes[j]->dessiner(svgout);
 }
+
+void Graphe::centraliteDegre ()
+{
+    for(auto i: m_sommets)
+    {
+        i->setDegre(i->getAdjacents().size());
+        i->setDegreNorm((double)(i->getAdjacents().size())/(double)(m_sommets.size()-1));
+    }
+}

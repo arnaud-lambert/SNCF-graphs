@@ -11,6 +11,7 @@ class Graphe
         void affichage()const;
         void ponderation();
         void dessiner ();
+        void centraliteDegre ();
 
     private:
         std::vector<Sommet*> m_sommets;

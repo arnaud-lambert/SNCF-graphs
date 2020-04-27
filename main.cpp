@@ -7,6 +7,7 @@ int main()
     a.ponderation();
     a.affichage();
     a.dessiner();
+    a.centraliteDegre();
 
     return 0;
 }
