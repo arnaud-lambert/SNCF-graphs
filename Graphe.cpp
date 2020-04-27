@@ -46,7 +46,7 @@ Graphe::~Graphe()
 
 void Graphe::affichage()const
 {
-    std::cout<<m_orientation<<std::endl<<m_ordre<<std::endl;
+    std::cout<<std::endl<<m_orientation<<std::endl<<m_ordre<<std::endl;
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
         m_sommets[i]->affichage();
@@ -60,35 +60,39 @@ void Graphe::affichage()const
         m_aretes[i]->affichage();
 }
 
-void Graphe::ponderation(std::string nomFichier)
+void Graphe::ponderation()
 {
-    if(nomFichier=="")
-        m_ponderation=false;
-    else
+    int taille;
+    bool verif=false;
+    std::cout<<std::endl<<"Quel fichier de ponderation voulez-vous ouvrir ? ";
+    std::string nomFichier;
+    do
     {
+        nomFichier="";
+        std::getline(std::cin, nomFichier);
         std::ifstream ifs{nomFichier};
-        if(!ifs)
-            throw std::runtime_error( "Impossible d'ouvrir en lecture " + nomFichier );
-        int taille;
-        ifs>>taille;
-        if(taille==m_taille)
+        if(ifs)
         {
-            m_ponderation=true;
-            int id;
-            double poids;
-            for(int i=0; i<taille; ++i)
+            ifs>>taille;
+            if(taille==m_taille)
             {
-                ifs>>id>>poids;
-                m_aretes[id]->setPoids(poids);
+                verif=true;
+                m_ponderation=true;
+                int id;
+                double poids;
+                for(int i=0; i<taille; ++i)
+                {
+                    ifs>>id>>poids;
+                    m_aretes[id]->setPoids(poids);
+                }
             }
+            else
+                std::cout<<std::endl<<"Fichier est incompatible (nombre d'aretes different), veuillez ressaisir un nom de fichier "<<std::endl;
         }
-        else
-        {
-            m_ponderation=false;
-            std::cout<<"Votre fichier est incompatible (taille incorrecte)"<<std::endl;
-        }
+        else if(nomFichier!="")
+            std::cout<<std::endl<<"Fichier inexistant, veuillez ressaisir un nom de fichier "<<std::endl;
     }
-
+    while(nomFichier!="" && !verif);
 }
 
 void Graphe::dessiner ()
