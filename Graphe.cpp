@@ -113,7 +113,7 @@ void Graphe::dessiner ()
         m_aretes[j]->dessiner(svgout);
 }
 
-void Graphe::vecteurPropre()
+std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
 {
     std::vector<std::pair<Sommet*, double>> vecIndices;
     std::vector<double> vecSommeIndices;
@@ -139,11 +139,13 @@ void Graphe::vecteurPropre()
         for(size_t i=0; i<vecIndices.size(); i++)
             vecIndices[i].second=vecSommeIndices[i]/lambda1;
         vecSommeIndices.clear();
-        for(size_t i=0; i<vecIndices.size(); i++)
-            std::cout<<std::endl<<vecIndices[i].first->getId()<<" "<<vecIndices[i].second;
     }
     while(abs(lambda1-lambda2)>0.1);
 
+    /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
+    for(size_t i=0; i<vecIndices.size(); i++)
+            std::cout<<vecIndices[i].first->getId()<<" "<<vecIndices[i].second<<std::endl;*/
+    return vecIndices;
 }
 
 
