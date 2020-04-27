@@ -1,4 +1,7 @@
 #include "Graphe.h"
+#include <unordered_map>
+#include <set>
+#include <queue>
 
 ///Lecture du fichier via le constructeur de Graphe
 Graphe::Graphe()
@@ -147,15 +150,15 @@ void Graphe::vecteurPropre()
 
 std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
 {
-   std::vector<std::pair<int, float>> centralite_degres;
-   std::pair<int, float> degres;//first est degre non normalisé et second est degré normalisé
+    std::vector<std::pair<int, float>> centralite_degres;
+    std::pair<int, float> degres;//first est degre non normalisé et second est degré normalisé
 
-   for(auto i: m_sommets)
-   {
-       degres.first = i->getAdjacents().size();
-       degres.second = ((float)i->getAdjacents().size())/((float)m_ordre-1);
-       centralite_degres.push_back(degres);
-   }
+    for(auto i: m_sommets)
+    {
+        degres.first = i->getAdjacents().size();
+        degres.second = ((float)i->getAdjacents().size())/((float)m_ordre-1);
+        centralite_degres.push_back(degres);
+    }
 
 //   std::cout<<std::endl<<"Indices de centralite de degre: "<<std::endl;
 //   for(auto j: centralite_degres)
@@ -163,5 +166,69 @@ std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
 //       std::cout<<"Non normalise: "<<j.first<<"  Normalise: "<<j.second<<std::endl;
 //   }
 
-   return centralite_degres;
+    return centralite_degres;
 }
+
+
+
+void Graphe::connexite ()
+{
+    std::queue<Sommet*> file;
+    std::set<Sommet*> marques;
+    int compteur=0;
+
+    Sommet*parcours=m_sommets[0];
+    do
+    {
+        file.push(parcours);
+        marques.insert(parcours);
+        ++compteur;
+
+        while(!file.empty())
+        {
+            file.pop();
+
+            for(auto i: parcours->getAdjacents())
+            {
+                if(marques.find(i)==marques.end())
+                {
+                    marques.insert(i);
+                    file.push(i);
+                }
+            }
+            if(!file.empty())
+                parcours=file.front();
+        }
+
+        if((int)marques.size()!=m_ordre)
+        {
+            for(auto s: m_sommets)
+            {
+                if(marques.find(s)==marques.end())
+                    parcours=s;
+            }
+        }
+
+    }
+    while((int)marques.size()!=m_ordre);
+
+    if(compteur==1)
+        std::cout<<"Graphe connexe"<<std::endl;
+    else
+        std::cout<<"Graphe non connexe. Il contient "<<compteur<<" composantes connexes"<<std::endl;
+
+//    ///affichage test
+//std::cout<<"Composante connexe"<<std::endl;
+//for(auto j: marques)
+//{
+//    std::cout<<j->getId()<<" "<<std::endl;
+//}
+
+}
+
+
+
+
+
+
+
