@@ -110,11 +110,20 @@ void Graphe::dessiner ()
         m_aretes[j]->dessiner(svgout);
 }
 
+//void Graphe::centraliteDegre ()
+//{
+//    for(auto i: m_sommets)
+//    {
+//        i->setDegre(i->getAdjacents().size());
+//        i->setDegreNorm((double)(i->getAdjacents().size())/(double)(m_sommets.size()-1));
+//    }
+//}
+
 void Graphe::centraliteDegre ()
 {
     for(auto i: m_sommets)
     {
-        i->setDegre(i->getAdjacents().size());
-        i->setDegreNorm((double)(i->getAdjacents().size())/(double)(m_sommets.size()-1));
+        i->setDegre((double)i->getAdjacents().size(), m_ordre);
     }
 }
+

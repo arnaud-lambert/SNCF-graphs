@@ -18,8 +18,9 @@ class Sommet
         double getX () const { return m_x; }
         double getY () const { return m_y; }
         void dessiner (Svgfile&svgout);
-        void setDegre( double degre ){ m_degre = degre; }
-        void setDegreNorm( double degreNorm ){ m_degre_norm = degreNorm; }
+//        void setDegre( double degre ){ m_degre = degre; }
+//        void setDegreNorm( double degreNorm ){ m_degre_norm = degreNorm; }
+        void setDegre (double degre, int ordre);
 
     private:
         int m_id;
@@ -27,9 +28,8 @@ class Sommet
         double m_x;
         double m_y;
         std::vector<Sommet*> m_adjacents;
-
-        double m_degre_norm=0;
-        double m_degre=0;
+        double m_degre_norm;
+        double m_degre;
 };
 
 #endif // SOMMET_H
