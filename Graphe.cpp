@@ -16,18 +16,18 @@ Graphe::Graphe()
     while(!ifs);
 
     ifs>>m_orientation;
-    ///On r�cup�re l'odre
+    ///On recupere l'odre
     ifs>>m_ordre;
     int indice;
     double x, y;
-    ///On cr�e un nombre de sommet �gal � l'odre du graphe
+    ///On cree un nombre de sommet egal a l'odre du graphe
     for(int i=0; i<m_ordre; ++i)
     {
         ifs>>indice>>nom>>x>>y;
         Sommet* nouv = new Sommet(indice, nom, x, y);
         m_sommets.push_back(nouv);
     }
-    ///On r�cup�re la taille du graphe
+    ///On recupere la taille du graphe
     ifs>>m_taille;
     int extremite1, extremite2;
     for(int i=0; i<m_taille; ++i)
@@ -55,9 +55,6 @@ void Graphe::affichage()const
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
         m_sommets[i]->affichage();
-        std::cout << "ajd: ";
-        for(auto j : m_sommets[i]->getAdjacents())
-            std::cout << j->getId() << " ";
         std::cout << std::endl;
     }
     std::cout<<m_taille<<std::endl;
@@ -126,7 +123,7 @@ std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
         for(size_t i=0; i<vecIndices.size(); ++i)
         {
             for(size_t j=0; j<vecIndices[i].first->getAdjacents().size(); ++j)
-                sommeIndices+=vecIndices[vecIndices[i].first->getAdjacents()[j]->getId()].second;
+                sommeIndices+=vecIndices[vecIndices[i].first->getAdjacents()[j].first->getId()].second;
 
             vecSommeIndices.push_back(sommeIndices);
             sommeIndices=0;
@@ -136,7 +133,7 @@ std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
 
         lambda1=sqrt(sommeSommeIndicesCarre);
         sommeSommeIndicesCarre=0;
-        for(size_t i=0; i<vecIndices.size(); i++)
+        for(size_t i=0; i<vecIndices.size(); ++i)
             vecIndices[i].second=vecSommeIndices[i]/lambda1;
         vecSommeIndices.clear();
     }
