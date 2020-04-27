@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include "svg/svgfile.h"
 
 class Sommet
 {
@@ -14,6 +15,9 @@ class Sommet
         int getId() { return m_id; }
         std::vector<Sommet*> getAdjacents() { return m_adjacents; }
         void ajouterAdjacent(Sommet* adjacent) { m_adjacents.push_back(adjacent); }
+        double getX () const { return m_x; }
+        double getY () const { return m_y; }
+        void dessiner (Svgfile&svgout);
 
     private:
         int m_id;

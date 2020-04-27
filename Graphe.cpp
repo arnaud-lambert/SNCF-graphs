@@ -90,3 +90,15 @@ void Graphe::ponderation(std::string nomFichier)
     }
 
 }
+
+void Graphe::dessiner ()
+{
+    Svgfile svgout;
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+        m_sommets[i]->dessiner(svgout);
+
+    for(size_t j=0; j<m_aretes.size(); ++j)
+        m_aretes[j]->dessiner(svgout);
+}
+

@@ -10,6 +10,7 @@ class Arete
         void affichage()const;
         std::pair<Sommet*, Sommet*> getExtremites() { return m_extremites; }
         void setPoids(double poids) { m_poids=poids; }
+        void dessiner (Svgfile&svgout);
 
     private:
         int m_id;

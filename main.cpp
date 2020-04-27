@@ -13,6 +13,8 @@ int main()
     std::getline(std::cin, nom);
     piscine.ponderation(nom);
     piscine.affichage();
+    piscine.dessiner();
+
     return 0;
 }
 END_OF_MAIN();

@@ -42,6 +42,8 @@
 		<Unit filename="Sommet.cpp" />
 		<Unit filename="Sommet.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="svg/svgfile.cpp" />
+		<Unit filename="svg/svgfile.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -15,3 +15,8 @@ void Arete::affichage()const
 {
     std::cout<<m_id<<" "<<m_extremites.first->getId()<<" "<<m_extremites.second->getId()<<std::endl;
 }
+
+void Arete::dessiner(Svgfile&svgout)
+{
+    svgout.addLine( (m_extremites.first)->getX()*100, (m_extremites.first)->getY()*100, (m_extremites.second)->getX()*100, (m_extremites.second)->getY()*100, "black");
+}
