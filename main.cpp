@@ -1,9 +1,12 @@
 #include <iostream>
-
-using namespace std;
+#include "Graphe.h"
 
 int main()
 {
-    cout << "Hello world!" << endl;
+    std::cout<<"Quel fichier voulez-vous ouvrir ? ";
+    std::string nom;
+    std::cin>>nom;
+    Graphe piscine(nom);
+    piscine.affichage();
     return 0;
 }
