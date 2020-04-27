@@ -4,6 +4,8 @@
 #include <fstream>
 #include <math.h>
 #include <cmath>
+#include <unordered_map>
+#include <queue>
 
 class Graphe
 {
@@ -16,6 +18,7 @@ class Graphe
         std::vector<std::pair<Sommet*, double>> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
         std::vector<std::pair<int, float>> centraliteDegre ();
+        std::vector<double> intermediarite();
 
     private:
         std::vector<Sommet*> m_sommets;
@@ -25,5 +28,7 @@ class Graphe
         int m_ordre;
         int m_taille;
 };
+
+void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,int>> &predecesseurs);
 
 #endif // GRAPHE_H

@@ -166,3 +166,89 @@ std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
 
    return centralite_degres;
 }
+
+void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,int>> &predecesseurs)
+{
+    if (current == i)
+    ++k;
+    if(predecesseurs.find(current) != predecesseurs.end())
+       for(auto &j : predecesseurs[current].first)
+            recursif(k,i,j,predecesseurs);
+}
+
+std::vector<double> Graphe::intermediarite()
+{
+    Sommet* courant;
+    int longueur;
+    std::vector<double> centralite(m_ordre,0.0);
+
+    auto compare = [](const std::pair<Sommet*,int> s1, const std::pair<Sommet*,int> s2)
+    {
+        return s1.second > s2.second;
+    };
+
+    std::priority_queue<std::pair<Sommet*,int>, std::vector<std::pair<Sommet*,int>>, decltype(compare)> prio(compare);
+    for(auto &j : m_sommets)
+    {
+        std::unordered_map<Sommet*, int> nombreChemins;
+        std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,int>> predecesseurs;
+        prio.push({j,0});
+
+        while(!prio.empty())
+        {
+            courant = prio.top().first;
+            longueur = prio.top().second;
+            prio.pop();
+
+            for(auto &i : courant->getAdjacents())
+            {
+                if(i.first != j)
+                {
+                    if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second) < predecesseurs[i.first].second)//ecrase
+                    {
+                        prio.push({i.first,longueur+i.second});
+                        predecesseurs[i.first] = {{courant},i.second+longueur};
+                        if(courant == j)
+                        {
+                            nombreChemins[i.first] = 1;
+                        }
+                        else
+                        {
+                            nombreChemins[i.first] = nombreChemins[courant];
+                        }
+                    }
+                    else if (longueur+i.second == predecesseurs[i.first].second)//autre chemin court
+                    {
+                        prio.push({i.first,longueur+i.second});
+
+                        predecesseurs[i.first].second = i.second+longueur;
+                        predecesseurs[i.first].first.push_back(courant);
+                        nombreChemins[i.first] += nombreChemins[courant];
+                    }
+                }
+            }
+        }
+
+        for(auto &l : m_sommets)
+        {
+            if(l != j)
+                for(auto &i : nombreChemins)
+                    if(i.first->getId() > j->getId() && i.first != l)
+                    {
+                        int k = 0;
+                        for(auto &z : predecesseurs[i.first].first)
+                            recursif(k,l,z,predecesseurs);
+
+                        //std::cout << "i:" << l->getId() << " j:" << j->getId() << " k:" << i.first->getId()
+                        //std::cout << " nbcheminsjk:"<< nombreChemins[i.first] <<" nbi:" << k << std::endl;
+                        centralite[l->getId()]+=(k/nombreChemins[i.first]);
+                    }
+        }
+    }
+    for(auto &i : centralite)
+    {
+        i = 2*i/(m_ordre*m_ordre*m_ordre - 3*m_ordre + 2);
+        std::cout << i << std::endl;
+    }
+    return centralite;
+}
