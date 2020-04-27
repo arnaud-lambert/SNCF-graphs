@@ -2,6 +2,7 @@
 #define GRAPHE_H
 #include "Arete.h"
 #include <fstream>
+#include <math.h>
 
 class Graphe
 {
@@ -11,6 +12,8 @@ class Graphe
         void affichage()const;
         void ponderation();
         void dessiner ();
+        void vecteurPropre();
+        std::vector<Sommet*> getSommets() { return m_sommets;}
 
     private:
         std::vector<Sommet*> m_sommets;

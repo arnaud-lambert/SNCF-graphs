@@ -41,7 +41,10 @@ Graphe::Graphe(std::string nomFichier)
 
 Graphe::~Graphe()
 {
-    //dtor
+    for(auto &i: m_sommets)
+        delete i;
+    for(auto &i: m_aretes)
+        delete i;
 }
 
 void Graphe::affichage()const
@@ -66,6 +69,7 @@ void Graphe::ponderation()
     bool verif=false;
     std::cout<<std::endl<<"Quel fichier de ponderation voulez-vous ouvrir ? ";
     std::string nomFichier;
+    std::cin.ignore();
     do
     {
         nomFichier="";
@@ -105,5 +109,36 @@ void Graphe::dessiner ()
 
     for(size_t j=0; j<m_aretes.size(); ++j)
         m_aretes[j]->dessiner(svgout);
+}
+
+void Graphe::vecteurPropre()
+{
+    std::vector<std::pair<Sommet*, double>> vecIndices;
+    std::vector<double> vecSommeIndices;
+    double lambda1=0, lambda2, sommeIndices=0, sommeSommeIndicesCarre=0;
+    for(size_t i=0; i<m_sommets.size(); ++i)
+        vecIndices.push_back({m_sommets[i], 1});
+    do
+    {
+        lambda2=lambda1;
+        lambda1=0;
+        for(size_t i=0; i<vecIndices.size(); ++i)
+        {
+            for(size_t j=0; j<vecIndices[i].first->getAdjacents().size(); ++j)
+                sommeIndices+=vecIndices[vecIndices[i].first->getAdjacents()[j]->getId()].second;
+
+            vecSommeIndices.push_back(sommeIndices);
+            sommeIndices=0;
+        }
+        for(size_t i=0; i<vecSommeIndices.size(); ++i)
+            sommeSommeIndicesCarre+=pow(vecSommeIndices[i], 2);
+
+        lambda1=sqrt(sommeSommeIndicesCarre);
+        sommeSommeIndicesCarre=0;
+        for(size_t i=0; i<vecIndices.size(); i++)
+            vecIndices[i].second=vecSommeIndices[i]/lambda1;
+        vecSommeIndices.clear();
+    }
+    while(lambda1>lambda2+0.1 || lambda1<lambda2-0.1);
 }
 

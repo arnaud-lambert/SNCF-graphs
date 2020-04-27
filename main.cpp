@@ -8,11 +8,10 @@ int main()
     std::string nom;
     std::cin>>nom;
     Graphe piscine(nom);
-    std::cin.ignore();
     piscine.ponderation();
     piscine.affichage();
+    piscine.vecteurPropre();
     piscine.dessiner();
-
     return 0;
 }
 END_OF_MAIN();

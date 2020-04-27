@@ -8,7 +8,7 @@ Sommet::Sommet(int id, std::string nom, double x, double y)
 
 Sommet::~Sommet()
 {
-    //dtor
+
 }
 
 void Sommet::affichage()const
