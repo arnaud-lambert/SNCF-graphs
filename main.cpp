@@ -8,6 +8,9 @@ int main()
     std::string nom;
     std::cin>>nom;
     Graphe piscine(nom);
+    std::cout<<"Quel fichier de ponderation voulez-vous ouvrir ?";
+    std::cin>>nom;
+    piscine.ponderation(nom);
     piscine.affichage();
     return 0;
 }

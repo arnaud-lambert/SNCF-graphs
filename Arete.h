@@ -9,10 +9,12 @@ class Arete
         virtual ~Arete();
         void affichage()const;
         std::pair<Sommet*, Sommet*> getExtremites() { return m_extremites; }
+        void setPoids(double poids) { m_poids=poids; }
 
     private:
         int m_id;
         std::pair<Sommet*, Sommet*> m_extremites;
+        double m_poids=0;
 };
 
 #endif // ARETE_H

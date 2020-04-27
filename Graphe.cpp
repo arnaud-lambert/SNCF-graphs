@@ -59,3 +59,34 @@ void Graphe::affichage()const
     for(size_t i=0; i<m_aretes.size(); ++i)
         m_aretes[i]->affichage();
 }
+
+void Graphe::ponderation(std::string nomFichier)
+{
+    if(nomFichier=="")
+        m_ponderation=false;
+    else
+    {
+        std::ifstream ifs{nomFichier};
+        if(!ifs)
+            throw std::runtime_error( "Impossible d'ouvrir en lecture " + nomFichier );
+        int taille;
+        ifs>>taille;
+        if(taille==m_taille)
+        {
+            m_ponderation=true;
+            int id;
+            double poids;
+            for(int i=0; i<taille; ++i)
+            {
+                ifs>>id>>poids;
+                m_aretes[id]->setPoids(poids);
+            }
+        }
+        else
+        {
+            m_ponderation=false;
+            std::cout<<"Votre fichier est incompatible (taille incorrecte)"<<std::endl;
+        }
+    }
+
+}

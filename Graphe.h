@@ -9,6 +9,7 @@ class Graphe
         Graphe(std::string nomFichier);
         virtual ~Graphe();
         void affichage()const;
+        void ponderation(std::string nomFichier);
 
     private:
         std::vector<Sommet*> m_sommets;
