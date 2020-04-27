@@ -6,8 +6,8 @@ int main()
     Graphe a;
     a.ponderation();
     a.affichage();
-    a.dessiner();
     a.centraliteDegre();
+    a.dessiner();
 
     return 0;
 }
