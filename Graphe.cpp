@@ -46,7 +46,7 @@ Graphe::~Graphe()
 
 void Graphe::affichage()const
 {
-    std::cout<<m_orientation<<std::endl<<m_ordre<<std::endl;
+    std::cout<<std::endl<<m_orientation<<std::endl<<m_ordre<<std::endl;
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
         m_sommets[i]->affichage();
@@ -60,33 +60,48 @@ void Graphe::affichage()const
         m_aretes[i]->affichage();
 }
 
-void Graphe::ponderation(std::string nomFichier)
+bool verificationFichier(std::string& nomFichier)
 {
-    if(nomFichier=="")
-        m_ponderation=false;
-    else
+    std::ifstream ifs(nomFichier.c_str());
+    return !ifs.fail();
+}
+
+void Graphe::ponderation()
+{
+    int taille;
+    bool verif=false;
+    std::cout<<std::endl<<"Quel fichier de ponderation voulez-vous ouvrir ? ";
+    std::string nomFichier;
+    do
     {
-        std::ifstream ifs{nomFichier};
-        if(!ifs)
-            throw std::runtime_error( "Impossible d'ouvrir en lecture " + nomFichier );
-        int taille;
-        ifs>>taille;
-        if(taille==m_taille)
+        std::getline(std::cin, nomFichier);
+        if(verificationFichier(nomFichier))
         {
-            m_ponderation=true;
-            int id;
-            double poids;
-            for(int i=0; i<taille; ++i)
+            std::ifstream ifs{nomFichier};
+            ifs>>taille;
+            if(taille==m_taille)
             {
-                ifs>>id>>poids;
-                m_aretes[id]->setPoids(poids);
+                verif=true;
+                m_ponderation=true;
+                int id;
+                double poids;
+                for(int i=0; i<taille; ++i)
+                {
+                    ifs>>id>>poids;
+                    m_aretes[id]->setPoids(poids);
+                }
+            }
+            else
+            {
+                std::cout<<std::endl<<"Fichier est incompatible (nombre d'aretes different), veuillez ressaisir un nom de fichier "<<std::endl;
+                nomFichier="";
             }
         }
-        else
+        else if(nomFichier!="")
         {
-            m_ponderation=false;
-            std::cout<<"Votre fichier est incompatible (taille incorrecte)"<<std::endl;
+            std::cout<<std::endl<<"Fichier inexistant, veuillez ressaisir un nom de fichier "<<std::endl;
+            nomFichier="";
         }
     }
-
+    while(nomFichier!="" || verif==false);
 }
