@@ -17,6 +17,7 @@ class Graphe
         std::vector<std::pair<int, float>> centraliteDegre ();
         void rechercheCC();
         void supprimerArete ();
+        void testConnexite ();
 
     private:
         std::vector<Sommet*> m_sommets;

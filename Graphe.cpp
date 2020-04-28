@@ -170,11 +170,12 @@ std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
 }
 
 
-
+///version modifs
 void Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
     std::set<Sommet*> marques;
+    std::vector<Sommet*> sommets_isoles;
     int compteur=0;
 
     Sommet*parcours=m_sommets[0];
@@ -217,55 +218,57 @@ void Graphe::rechercheCC ()
     else
         std::cout<<"Graphe non connexe. Il contient "<<compteur<<" composantes connexes"<<std::endl;
 
-//    ///affichage test
-//std::cout<<"Composante connexe"<<std::endl;
-//for(auto j: marques)
-//{
-//    std::cout<<j->getId()<<" "<<std::endl;
-//}
+    for(auto s: m_sommets)
+    {
+        if((s->getAdjacents()).size()==0)
+            std::cout<<s->getNom()<<" est un sommet isole"<<std::endl;
+    }
+
 
 }
+
+
 
 void Graphe::supprimerArete ()
 {
     int indice=0;
 
-    std::cout<<"Saisir l'indice de l'arete a supprimer";
-    std::cin>>indice;
+    do
+    {
+        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
+        std::cin>>indice;
+    }
+    while((indice<0)||(indice>(int)m_aretes.size()-1));
 
     std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
     for(auto s: m_sommets)
     {
         if(s==extremites.first)
-        {
-            std::cout<<std::endl<<"Adjacents: ";
-            for(auto j: s->getAdjacents())
-                std::cout<<j->getId()<<" ";
-
             s->suppAdjacent(extremites.second);
 
-            std::cout<<std::endl<<"Adjacents: ";
-            for(auto j: s->getAdjacents())
-                std::cout<<j->getId()<<" ";
-        }
         else if (s==extremites.second)
-        {
-            std::cout<<std::endl<<"Adjacents: ";
-            for(auto j: s->getAdjacents())
-                std::cout<<j->getId()<<" ";
+            s->suppAdjacent(extremites.first);
 
-           s->suppAdjacent(extremites.first);
-
-            std::cout<<std::endl<<"Adjacents: ";
-            for(auto j: s->getAdjacents())
-                std::cout<<j->getId()<<" ";
-        }
     }
     m_aretes.erase(m_aretes.begin()+indice);
     --m_taille;
 
 }
 
+
+void Graphe::testConnexite ()
+{
+    int nb=0;
+    std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
+    std::cin>>nb;
+
+    for(int i=0; i<nb; ++i)
+    {
+        this->supprimerArete();
+    }
+
+    this->rechercheCC();
+}
 
 
 
