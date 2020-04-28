@@ -230,7 +230,7 @@ std::vector<double> Graphe::intermediarite()
         {
             if(l != j)
                 for(auto &i : nombreChemins)
-                    if(i.first->getId() > j->getId() && i.first != l)
+                    if(i.first->getId() > j->getId() && i.first != l && predecesseurs[l].second < predecesseurs[i.first].second)
                     {
                         int k = 0;
                         for(auto &z : predecesseurs[i.first].first)
