@@ -114,6 +114,20 @@ void Graphe::dessiner ()
 
     for(size_t j=0; j<m_aretes.size(); ++j)
         m_aretes[j]->dessiner(svgout);
+
+    ///legende
+    svgout.addRectangle(870, 600, 120, 130, 5, 5, "white");
+    svgout.addText(880, 620, "indice arete", "darkorchid");
+    svgout.addText(880, 640, "poids arete", "darkgrey");
+    svgout.addDisk(885, 655, 5, "cyan");
+    svgout.addText(895, 660, "C_degre = 1", "black");
+    svgout.addDisk(885, 675, 5, "green");
+    svgout.addText(895, 680, "C_degre = 2", "black");
+    svgout.addDisk(885, 695, 5, "blue");
+    svgout.addText(895, 700, "C_degre = 3", "black");
+    svgout.addDisk(885, 715, 5, "red");
+    svgout.addText(895, 720, "C_degre = 4", "black");
+
 }
 
 std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
@@ -174,7 +188,7 @@ std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 }
 
 
-///version modifs
+
 void Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
