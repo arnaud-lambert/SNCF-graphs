@@ -6,8 +6,7 @@ int main()
     Graphe a;
     a.ponderation();
     a.affichage();
-    std::vector<std::pair<int, float>> centralite_degres = a.centraliteDegre ();
-    a.dessiner();
+    std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
     a.testConnexite();
     a.dessiner();
 

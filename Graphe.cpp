@@ -148,15 +148,15 @@ void Graphe::vecteurPropre()
 }
 
 
-std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
+std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 {
-    std::vector<std::pair<int, float>> centralite_degres;
-    std::pair<int, float> degres;//first est degre non normalisé et second est degré normalisé
+    std::vector<std::pair<int, double>> centralite_degres;
+    std::pair<int, double> degres;//first est degre non normalisé et second est degré normalisé
 
     for(auto i: m_sommets)
     {
         degres.first = i->getAdjacents().size();
-        degres.second = ((float)i->getAdjacents().size())/((float)m_ordre-1);
+        degres.second = ((double)i->getAdjacents().size())/((double)m_ordre-1);
         centralite_degres.push_back(degres);
     }
 
@@ -246,7 +246,7 @@ void Graphe::supprimerArete ()
         if(s==extremites.first)
             s->suppAdjacent(extremites.second);
 
-        else if (s==extremites.second)
+        if (s==extremites.second)
             s->suppAdjacent(extremites.first);
 
     }
@@ -259,8 +259,10 @@ void Graphe::supprimerArete ()
 void Graphe::testConnexite ()
 {
     int nb=0;
+    do{
     std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
     std::cin>>nb;
+    }while((nb<0)||(nb>(int)m_taille));
 
     for(int i=0; i<nb; ++i)
     {
