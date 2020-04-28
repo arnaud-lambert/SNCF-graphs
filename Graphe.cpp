@@ -208,14 +208,11 @@ std::vector<double> Graphe::intermediarite()
                     {
                         prio.push({i.first,longueur+i.second});
                         predecesseurs[i.first] = {{courant},i.second+longueur};
+
                         if(courant == j)
-                        {
                             nombreChemins[i.first] = 1;
-                        }
                         else
-                        {
                             nombreChemins[i.first] = nombreChemins[courant];
-                        }
                     }
                     else if (longueur+i.second == predecesseurs[i.first].second)//autre chemin court
                     {
@@ -245,10 +242,12 @@ std::vector<double> Graphe::intermediarite()
                     }
         }
     }
+
     for(auto &i : centralite)
     {
         i = 2*i/(m_ordre*m_ordre*m_ordre - 3*m_ordre + 2);
         std::cout << i << std::endl;
     }
+
     return centralite;
 }
