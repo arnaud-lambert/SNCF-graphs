@@ -298,17 +298,17 @@ void Graphe::testConnexite ()
 void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
 {
     if (current == i)
-    ++k;
+        ++k;
     else if(predecesseurs.find(current) != predecesseurs.end())
        for(auto &j : predecesseurs[current].first)
             recursif(k,i,j,predecesseurs);
 }
 
-std::vector<double> Graphe::intermediarite()
+std::vector<std::pair<double,double>> Graphe::intermediarite()
 {
     Sommet* courant;
     double longueur;
-    std::vector<double> centralite(m_ordre,0.0);
+    std::vector<std::pair<double,double>> centralite(m_ordre,{0.0,0.0});
     std::vector<std::unordered_map<Sommet*, int>> vecNombreChemins;
     std::vector<std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>>> vecPredecesseurs;
 
@@ -364,19 +364,19 @@ std::vector<double> Graphe::intermediarite()
     {
         for(auto &i : m_sommets)
             for(int j = 0 ; j < m_ordre ; ++j)
-                if(i->getId() != j)
+                if(i->getId() != j && vecPredecesseurs[j].find(i) != vecPredecesseurs[j].end())
                     for(int k = m_ordre-1 ; k > j ; --k)
-                        if(i->getId() != k && (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
+                        if(i->getId() != k && vecPredecesseurs[j].find(m_sommets[k]) != vecPredecesseurs[j].end() &&
+                        (vecPredecesseurs[j][i].second + vecPredecesseurs[k][i].second == vecPredecesseurs[j][m_sommets[k]].second))
                         {
                             if(vecNombreChemins[j][m_sommets[k]] == 1)
-                                ++centralite[i->getId()];
+                                ++centralite[i->getId()].first;
                             else
                             {
                                 int compt = 0;
                                 for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
                                     recursif(compt,i,z,vecPredecesseurs[j]);
-
-                                centralite[i->getId()]+=(compt/vecNombreChemins[j][m_sommets[k]]);
+                                centralite[i->getId()].first += (float) compt/vecNombreChemins[j][m_sommets[k]];
                             }
                         }
     }
@@ -386,31 +386,30 @@ std::vector<double> Graphe::intermediarite()
     {
         for(auto &i : m_sommets)
             for(int j = 0 ; j < m_ordre ; ++j)
-                if(i->getId() != j)
+                if(i->getId() != j && vecPredecesseurs[j].find(i) != vecPredecesseurs[j].end())
                     for(int k = 0 ; k < m_ordre ; ++k)
-                        if(j != k && i->getId() != k && (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
+                        if(j != k && i->getId() != k && vecPredecesseurs[j].find(m_sommets[k]) != vecPredecesseurs[j].end() && vecPredecesseurs[i->getId()].find(m_sommets[k]) != vecPredecesseurs[i->getId()].end() &&
+                        (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
                         {
                             if(vecNombreChemins[j][m_sommets[k]] == 1)
-                                ++centralite[i->getId()];
+                                ++centralite[i->getId()].first;
                             else
                             {
                                 int compt = 0;
                                 for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
                                     recursif(compt,i,z,vecPredecesseurs[j]);
 
-                                centralite[i->getId()]+=(compt/vecNombreChemins[j][m_sommets[k]]);
+                                centralite[i->getId()].first+= (float) compt/vecNombreChemins[j][m_sommets[k]];
                             }
                         }
     }
-
     for(auto &i : centralite)
     {
-        i /= (m_ordre*m_ordre*m_ordre - 3*m_ordre + 2);
+        if(m_orientation)
+            i.first /= 2.0;
 
-        if(!m_orientation)
-            i*=2;
-
-        std::cout << i << std::endl;
+         i.second = i.first *2.0/(float)(m_ordre*m_ordre - 3.0*m_ordre + 2.0);
+        std::cout << i.first  << " " << i.second<< std::endl;
     }
 
     return centralite;

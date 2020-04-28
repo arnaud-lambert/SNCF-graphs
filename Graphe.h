@@ -22,7 +22,7 @@ class Graphe
         void supprimerArete ();
         void testConnexite ();
         void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<double> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<double> intermediarite, std::string nomFichier);
-        std::vector<double> intermediarite();
+        std::vector<std::pair<double,double>> intermediarite();
         std::vector<std::pair<double, double>> vecteurProximite();
 
     private:
