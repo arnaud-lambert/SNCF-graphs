@@ -140,7 +140,7 @@ std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
             vecIndices[i].second=vecSommeIndices[i]/lambda1;
         vecSommeIndices.clear();
     }
-    while(abs(lambda1-lambda2)>0.1);
+    while(abs(lambda1-lambda2)>0.01);
 
     /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
     for(size_t i=0; i<vecIndices.size(); i++)
@@ -276,7 +276,7 @@ void Graphe::testConnexite ()
 void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
 {
     if (current == i)
-    ++k;
+        ++k;
     else if(predecesseurs.find(current) != predecesseurs.end())
        for(auto &j : predecesseurs[current].first)
             recursif(k,i,j,predecesseurs);
@@ -353,8 +353,7 @@ std::vector<double> Graphe::intermediarite()
                                 int compt = 0;
                                 for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
                                     recursif(compt,i,z,vecPredecesseurs[j]);
-
-                                centralite[i->getId()]+=(compt/vecNombreChemins[j][m_sommets[k]]);
+                                centralite[i->getId()]+= (float) compt/vecNombreChemins[j][m_sommets[k]];
                             }
                         }
     }
@@ -376,17 +375,16 @@ std::vector<double> Graphe::intermediarite()
                                 for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
                                     recursif(compt,i,z,vecPredecesseurs[j]);
 
-                                centralite[i->getId()]+=(compt/vecNombreChemins[j][m_sommets[k]]);
+                                centralite[i->getId()]+= (float) compt/vecNombreChemins[j][m_sommets[k]];
                             }
                         }
     }
-
     for(auto &i : centralite)
     {
-        i /= (m_ordre*m_ordre*m_ordre - 3*m_ordre + 2);
+        i /= (float) (m_ordre*m_ordre*m_ordre - 3.0*m_ordre + 2.0);
 
         if(!m_orientation)
-            i*=2;
+            i *= 2.0;
 
         std::cout << i << std::endl;
     }
