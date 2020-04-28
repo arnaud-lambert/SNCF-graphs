@@ -111,6 +111,20 @@ void Graphe::dessiner ()
 
     for(size_t j=0; j<m_aretes.size(); ++j)
         m_aretes[j]->dessiner(svgout);
+
+    ///legende
+    svgout.addRectangle(870, 600, 120, 130, 5, 5, "white");
+    svgout.addText(880, 620, "indice arete", "darkorchid");
+    svgout.addText(880, 640, "poids arete", "darkgrey");
+    svgout.addDisk(885, 655, 5, "cyan");
+    svgout.addText(895, 660, "C_degre = 1", "black");
+    svgout.addDisk(885, 675, 5, "green");
+    svgout.addText(895, 680, "C_degre = 2", "black");
+    svgout.addDisk(885, 695, 5, "blue");
+    svgout.addText(895, 700, "C_degre = 3", "black");
+    svgout.addDisk(885, 715, 5, "red");
+    svgout.addText(895, 720, "C_degre = 4", "black");
+
 }
 
 std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
@@ -171,7 +185,7 @@ std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 }
 
 
-///version modifs
+
 void Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
@@ -232,13 +246,18 @@ void Graphe::rechercheCC ()
 void Graphe::supprimerArete ()
 {
     int indice=0;
+    std::set<int> indices;
+    for(auto a: m_aretes)
+    {
+        indices.insert(a->getId());
+    }
 
     do
     {
         std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
         std::cin>>indice;
     }
-    while((indice<0)||(indice>(int)m_aretes.size()-1));
+    while(indices.find(indice)==indices.end());
 
     std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
     for(auto s: m_sommets)
@@ -250,7 +269,12 @@ void Graphe::supprimerArete ()
             s->suppAdjacent(extremites.first);
 
     }
-    m_aretes.erase(m_aretes.begin()+indice);
+
+    for(size_t i=0; i<m_aretes.size(); ++i)
+    {
+        if(m_aretes[i]->getId()==indice)
+            m_aretes.erase(m_aretes.begin()+i);
+    }
     --m_taille;
 
 }
