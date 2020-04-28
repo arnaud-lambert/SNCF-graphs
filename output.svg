@@ -46,8 +46,10 @@
 <circle cx="600" cy="100" r="5" fill="cyan" />
 <text x="595" y="90" fill="black" >B</text>
 <circle cx="100" cy="200" r="5" fill="cyan" />
-<text x="95" y="190" fill="black" >C</text>
-<circle cx="300" cy="200" r="5" fill="blue" />
+<text x="95" y="190" fill="black" >B</text>
+<circle cx="200" cy="200" r="5" fill="red" />
+<text x="195" y="190" fill="black" >C</text>
+<circle cx="300" cy="200" r="5" fill="cyan" />
 <text x="295" y="190" fill="black" >D</text>
 <circle cx="400" cy="200" r="5" fill="cyan" />
 <text x="395" y="190" fill="black" >E</text>

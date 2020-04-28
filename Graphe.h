@@ -15,16 +15,16 @@ class Graphe
         void affichage()const;
         void ponderation();
         void dessiner ();
-        std::vector<std::pair<Sommet*, double>> vecteurPropre();
+        std::vector<double> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
-        
+
         std::vector<std::pair<int, double>> centraliteDegre ();
         void rechercheCC();
         void supprimerArete ();
         void testConnexite ();
 
         std::vector<double> intermediarite();
-        std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> vecteurProximite();
+        std::vector<double> vecteurProximite();
 
     private:
         std::vector<Sommet*> m_sommets;

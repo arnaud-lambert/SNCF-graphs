@@ -127,20 +127,20 @@ void Graphe::dessiner ()
 
 }
 
-std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
+std::vector<double> Graphe::vecteurPropre()
 {
-    std::vector<std::pair<Sommet*, double>> vecIndices;
+    std::vector<double> vecIndices;
     std::vector<double> vecSommeIndices;
     double lambda1=0, lambda2, sommeIndices=0, sommeSommeIndicesCarre=0;
     for(size_t i=0; i<m_sommets.size(); ++i)
-        vecIndices.push_back({m_sommets[i], 1});
+        vecIndices.push_back(1);
     do
     {
         lambda2=lambda1;
-        for(size_t i=0; i<vecIndices.size(); ++i)
+        for(size_t i=0; i<m_sommets.size(); ++i)
         {
-            for(size_t j=0; j<vecIndices[i].first->getAdjacents().size(); ++j)
-                sommeIndices+=vecIndices[vecIndices[i].first->getAdjacents()[j].first->getId()].second;
+            for(size_t j=0; j<m_sommets[i]->getAdjacents().size(); ++j)
+                sommeIndices+=vecIndices[m_sommets[i]->getAdjacents()[j].first->getId()];
 
             vecSommeIndices.push_back(sommeIndices);
             sommeIndices=0;
@@ -151,14 +151,14 @@ std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
         lambda1=sqrt(sommeSommeIndicesCarre);
         sommeSommeIndicesCarre=0;
         for(size_t i=0; i<vecIndices.size(); ++i)
-            vecIndices[i].second=vecSommeIndices[i]/lambda1;
+            vecIndices[i]=vecSommeIndices[i]/lambda1;
         vecSommeIndices.clear();
     }
     while(abs(lambda1-lambda2)>0.01);
 
     /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
-    for(size_t i=0; i<vecIndices.size(); i++)
-            std::cout<<vecIndices[i].first->getId()<<" "<<vecIndices[i].second<<std::endl;*/
+    for(size_t i=0; i<m_sommets.size(); i++)
+            std::cout<<m_sommets[i]->getId()<<" "<<vecIndices[i]<<std::endl;*/
     return vecIndices;
 }
 
@@ -418,13 +418,13 @@ std::vector<double> Graphe::intermediarite()
     return centralite;
 }
 
-std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> Graphe::vecteurProximite()
+std::vector<double> Graphe::vecteurProximite()
 {
     std::vector<double> distance(m_ordre, RAND_MAX);
     Sommet* sommetCourant;
 
     std::map<Sommet*, std::pair<Sommet*, double>> predecesseur;
-    std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> predecesseurS;
+    std::vector<double> indiceSommets;
 
     auto comparaison=[](const std::pair<Sommet*, double> s1, const std::pair<Sommet*, double> s2)
     { return s1.second > s2.second; };
@@ -433,6 +433,7 @@ std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> Graphe::vecteurProxim
 
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
+        indiceSommets.push_back(0);
         file.push({m_sommets[i], 0});
         distance[m_sommets[i]->getId()]=0;
         while(!file.empty())
@@ -449,12 +450,15 @@ std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> Graphe::vecteurProxim
                 }
             }
         }
-        /*for(size_t j=0; j<m_sommets.size(); j++)
-            std::cout<<"Distance totale depuis "<<i<<" : "<<distance[j]<<std::endl;*/
-        predecesseurS.push_back(predecesseur);
+        for(size_t j=0; j<m_sommets.size(); j++)
+        {
+            //std::cout<<"Distance totale depuis "<<i<<" : "<<distance[j]<<std::endl;
+            indiceSommets[i]+=distance[j];
+        }
+        indiceSommets[i]=(m_ordre-1)*(1/indiceSommets[i]);
         predecesseur.clear();
         distance.clear();
         distance.resize(m_ordre, RAND_MAX);
     }
-    return predecesseurS;
+    return indiceSommets;
 }
