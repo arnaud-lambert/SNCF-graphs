@@ -171,7 +171,7 @@ void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, s
 {
     if (current == i)
     ++k;
-    if(predecesseurs.find(current) != predecesseurs.end())
+    else if(predecesseurs.find(current) != predecesseurs.end())
        for(auto &j : predecesseurs[current].first)
             recursif(k,i,j,predecesseurs);
 }
