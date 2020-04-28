@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Graphe.h"
 
 int main()
@@ -7,6 +6,7 @@ int main()
     a.ponderation();
     a.affichage();
     std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
+    std::vector<std::pair<Sommet*, double>> vecteurPropre=a.vecteurPropre();
     a.testConnexite();
     a.dessiner();
 

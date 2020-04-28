@@ -3,6 +3,7 @@
 #include "Arete.h"
 #include <fstream>
 #include <math.h>
+#include <cmath>
 
 class Graphe
 {
@@ -12,7 +13,7 @@ class Graphe
         void affichage()const;
         void ponderation();
         void dessiner ();
-        void vecteurPropre();
+        std::vector<std::pair<Sommet*, double>> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
         std::vector<std::pair<int, double>> centraliteDegre ();
         void rechercheCC();
