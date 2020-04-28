@@ -53,7 +53,7 @@ void Sommet::suppAdjacent (Sommet*adjacent)
 {
     for(size_t i=0; i<m_adjacents.size(); ++i)
     {
-        if(m_adjacents[i]==adjacent)
+        if(m_adjacents[i].first==adjacent)
             m_adjacents.erase(m_adjacents.begin()+i);
     }
 }
