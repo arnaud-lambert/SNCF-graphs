@@ -192,10 +192,10 @@ void Graphe::rechercheCC ()
 
             for(auto i: parcours->getAdjacents())
             {
-                if(marques.find(i)==marques.end())
+                if(marques.find(i.first)==marques.end())
                 {
-                    marques.insert(i);
-                    file.push(i);
+                    marques.insert(i.first);
+                    file.push(i.first);
                 }
             }
             if(!file.empty())
@@ -273,7 +273,7 @@ void Graphe::testConnexite ()
 }
 
 
-void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,int>> &predecesseurs)
+void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
 {
     if (current == i)
     ++k;
