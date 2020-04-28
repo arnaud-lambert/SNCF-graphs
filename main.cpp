@@ -11,10 +11,10 @@ int main()
     a.affichage();
     a.dessiner();
     std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
-    std::vector<double> vecteurPropre=a.vecteurPropre();
+    std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
     a.testConnexite();
     std::vector<std::pair<double, double>> vecteurProximite=a.vecteurProximite();
-    std::vector<double> intermediarite=a.intermediarite();
+    std::vector<std::pair<double, double>> intermediarite=a.intermediarite();
     a.dessiner();
     a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
     return 0;

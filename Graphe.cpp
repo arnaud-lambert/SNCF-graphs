@@ -125,20 +125,20 @@ void Graphe::dessiner ()
 
 }
 
-std::vector<double> Graphe::vecteurPropre()
+std::vector<std::pair<double, double>> Graphe::vecteurPropre()
 {
-    std::vector<double> vecIndices;
+    std::vector<std::pair<double, double>> vecIndices;
     std::vector<double> vecSommeIndices;
     double lambda1=0, lambda2, sommeIndices=0, sommeSommeIndicesCarre=0;
     for(size_t i=0; i<m_sommets.size(); ++i)
-        vecIndices.push_back(1);
+        vecIndices.push_back({0, 1});
     do
     {
         lambda2=lambda1;
         for(size_t i=0; i<m_sommets.size(); ++i)
         {
             for(size_t j=0; j<m_sommets[i]->getAdjacents().size(); ++j)
-                sommeIndices+=vecIndices[m_sommets[i]->getAdjacents()[j].first->getId()];
+                sommeIndices+=vecIndices[m_sommets[i]->getAdjacents()[j].first->getId()].second;
 
             vecSommeIndices.push_back(sommeIndices);
             sommeIndices=0;
@@ -149,14 +149,20 @@ std::vector<double> Graphe::vecteurPropre()
         lambda1=sqrt(sommeSommeIndicesCarre);
         sommeSommeIndicesCarre=0;
         for(size_t i=0; i<vecIndices.size(); ++i)
-            vecIndices[i]=vecSommeIndices[i]/lambda1;
+        {
+            vecIndices[i].first=vecSommeIndices[i];
+            if(lambda1!=0)
+                vecIndices[i].second=vecIndices[i].first/lambda1;
+            else
+                vecIndices[i].second=0;
+        }
         vecSommeIndices.clear();
     }
     while(abs(lambda1-lambda2)>0.01);
 
-    /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
-    for(size_t i=0; i<m_sommets.size(); i++)
-            std::cout<<m_sommets[i]->getId()<<" "<<vecIndices[i]<<std::endl;*/
+    std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
+    /*for(size_t i=0; i<m_sommets.size(); i++)
+            std::cout<<m_sommets[i]->getId()<<" "<<vecIndices[i].first<<" "<<vecIndices[i].second<<std::endl;*/
     return vecIndices;
 }
 
@@ -448,20 +454,46 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
             }
         }
         for(size_t j=0; j<m_sommets.size(); j++)
-        {
-            //std::cout<<"Distance totale depuis "<<i<<" : "<<distance[j]<<std::endl;
             indiceSommets[i].first+=distance[j];
-        }
-        indiceSommets[i].first=1/indiceSommets[i].first;
+
+        if(indiceSommets[i].first!=0)
+            indiceSommets[i].first=1/indiceSommets[i].first;
+
+        else
+            indiceSommets[i].first=0;
+
         indiceSommets[i].second=indiceSommets[i].first*(m_ordre-1);
         predecesseur.clear();
         distance.clear();
         distance.resize(m_ordre, RAND_MAX);
     }
+    /*for(size_t i=0; i<m_sommets.size(); i++)
+        std::cout<<m_sommets[i]->getId()<<" "<<indiceSommets[i].first<<" "<<indiceSommets[i].second<<std::endl;*/
     return indiceSommets;
 }
 
-void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<double> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<double> intermediarite, std::string nomFichier)
+void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<std::pair<double, double>> intermediarite, std::string nomFichier)
 {
-    std::ofstream ofs;
+    bool verif=false;
+    int occurence=0;
+    std::string fichierSauvegarde;
+    while(!verif)
+    {
+        fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence) + ".txt";
+        std::ifstream ifs{fichierSauvegarde};
+        if(!ifs)
+            verif=true;
+        occurence++;
+    }
+    std::ofstream ofs{fichierSauvegarde};
+    if(!ofs)
+        std::cout<<"Ouverture impossible"<<std::endl;
+    else
+    {
+        for(size_t i=0; i<m_sommets.size(); i++)
+            ofs<<i<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
+                       <<vecteurPropre[i].first<<" "<<vecteurPropre[i].second<<" "
+                       <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
+                       <<intermediarite[i].first<<" "<<intermediarite[i].second;
+    }
 }
