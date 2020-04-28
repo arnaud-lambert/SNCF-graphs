@@ -10,7 +10,11 @@ int main()
     a.affichage();
     a.dessiner();
     std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
+        for(auto &i : centralite_degres)
+            std::cout << i.second << std::endl;
     std::vector<std::pair<Sommet*, double>> vecteurPropre=a.vecteurPropre();
+        for(auto &i : vecteurPropre)
+            std::cout << i.second << std::endl;
     a.testConnexite();
     a.dessiner();
 

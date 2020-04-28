@@ -366,9 +366,10 @@ std::vector<double> Graphe::intermediarite()
     {
         for(auto &i : m_sommets)
             for(int j = 0 ; j < m_ordre ; ++j)
-                if(i->getId() != j)
+                if(i->getId() != j && vecPredecesseurs[j].find(i) != vecPredecesseurs[j].end())
                     for(int k = m_ordre-1 ; k > j ; --k)
-                        if(i->getId() != k && (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
+                        if(i->getId() != k && vecPredecesseurs[j].find(m_sommets[k]) != vecPredecesseurs[j].end() &&
+                        (vecPredecesseurs[j][i].second + vecPredecesseurs[k][i].second == vecPredecesseurs[j][m_sommets[k]].second))
                         {
                             if(vecNombreChemins[j][m_sommets[k]] == 1)
                                 ++centralite[i->getId()];
@@ -387,9 +388,10 @@ std::vector<double> Graphe::intermediarite()
     {
         for(auto &i : m_sommets)
             for(int j = 0 ; j < m_ordre ; ++j)
-                if(i->getId() != j)
+                if(i->getId() != j && vecPredecesseurs[j].find(i) != vecPredecesseurs[j].end())
                     for(int k = 0 ; k < m_ordre ; ++k)
-                        if(j != k && i->getId() != k && (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
+                        if(j != k && i->getId() != k && vecPredecesseurs[j].find(m_sommets[k]) != vecPredecesseurs[j].end() && vecPredecesseurs[i->getId()].find(m_sommets[k]) != vecPredecesseurs[i->getId()].end() &&
+                        (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
                         {
                             if(vecNombreChemins[j][m_sommets[k]] == 1)
                                 ++centralite[i->getId()];
