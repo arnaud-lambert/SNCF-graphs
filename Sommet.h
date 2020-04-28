@@ -22,7 +22,7 @@ class Sommet
         void dessiner(Svgfile&svgout);
         void setPoidsAdjacent(double poids, Sommet* adjacent);
         std::string getNom () const { return m_nom; }
-          void suppAdjacent (Sommet*adjacent);
+        void suppAdjacent (Sommet*adjacent);
 
     private:
         int m_id;

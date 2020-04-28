@@ -246,13 +246,18 @@ void Graphe::rechercheCC ()
 void Graphe::supprimerArete ()
 {
     int indice=0;
+    std::set<int> indices;
+    for(auto a: m_aretes)
+    {
+        indices.insert(a->getId());
+    }
 
     do
     {
         std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
         std::cin>>indice;
     }
-    while((indice<0)||(indice>(int)m_aretes.size()-1));
+    while(indices.find(indice)==indices.end());
 
     std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
     for(auto s: m_sommets)
@@ -264,7 +269,12 @@ void Graphe::supprimerArete ()
             s->suppAdjacent(extremites.first);
 
     }
-    m_aretes.erase(m_aretes.begin()+indice);
+
+    for(size_t i=0; i<m_aretes.size(); ++i)
+    {
+        if(m_aretes[i]->getId()==indice)
+            m_aretes.erase(m_aretes.begin()+i);
+    }
     --m_taille;
 
 }

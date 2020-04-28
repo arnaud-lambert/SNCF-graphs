@@ -45,9 +45,9 @@
 <text x="195" y="90" fill="black" >A</text>
 <circle cx="100" cy="200" r="5" fill="cyan" />
 <text x="95" y="190" fill="black" >B</text>
-<circle cx="200" cy="200" r="5" fill="red" />
+<circle cx="200" cy="200" r="5" fill="blue" />
 <text x="195" y="190" fill="black" >C</text>
-<circle cx="300" cy="200" r="5" fill="cyan" />
+<circle cx="300" cy="200" r="5" fill="black" />
 <text x="295" y="190" fill="black" >D</text>
 <circle cx="200" cy="300" r="5" fill="cyan" />
 <text x="195" y="290" fill="black" >E</text>
@@ -55,8 +55,6 @@
 <text x="200" y="165" fill="darkorchid" >0</text>
 <line x1="100" y1="200" x2="200" y2="200" stroke="black" />
 <text x="150" y="215" fill="darkorchid" >1</text>
-<line x1="200" y1="200" x2="300" y2="200" stroke="black" />
-<text x="250" y="215" fill="darkorchid" >2</text>
 <line x1="200" y1="200" x2="200" y2="300" stroke="black" />
 <text x="200" y="265" fill="darkorchid" >3</text>
 <rect x="870" y="600" width="120" height="130" rx="5" ry="5" fill="white" stroke="black" stroke-width="1px" />

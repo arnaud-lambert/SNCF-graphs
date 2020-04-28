@@ -11,12 +11,11 @@ int main()
     a.dessiner();
     std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
     std::vector<std::pair<Sommet*, double>> vecteurPropre=a.vecteurPropre();
-
     a.testConnexite();
+    a.dessiner();
 
     std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> vecteurProximite=a.vecteurProximite();
-    a.intermediarite();
-
+    a.intermediarite();//plante quand plus d'une arete supprimée
     a.dessiner();
 
     return 0;
