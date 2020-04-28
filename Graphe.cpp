@@ -251,3 +251,44 @@ std::vector<double> Graphe::intermediarite()
 
     return centralite;
 }
+
+std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> Graphe::vecteurProximite()
+{
+    std::vector<double> distance(m_ordre, RAND_MAX);
+    Sommet* sommetCourant;
+
+    std::map<Sommet*, std::pair<Sommet*, double>> predecesseur;
+    std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> predecesseurS;
+
+    auto comparaison=[](const std::pair<Sommet*, double> s1, const std::pair<Sommet*, double> s2)
+    { return s1.second > s2.second; };
+
+    std::priority_queue<std::pair<Sommet*, double>, std::vector<std::pair<Sommet*, double>>, decltype(comparaison)> file(comparaison);
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        file.push({m_sommets[i], 0});
+        distance[m_sommets[i]->getId()]=0;
+        while(!file.empty())
+        {
+            sommetCourant=file.top().first;
+            file.pop();
+            for(size_t j=0; j<sommetCourant->getAdjacents().size(); j++)
+            {
+                if(distance[sommetCourant->getAdjacents()[j].first->getId()] > distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second)
+                {
+                    distance[sommetCourant->getAdjacents()[j].first->getId()] = distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second;
+                    file.push({sommetCourant->getAdjacents()[j].first, distance[sommetCourant->getAdjacents()[j].first->getId()]});
+                    predecesseur[sommetCourant->getAdjacents()[j].first]={sommetCourant, distance[sommetCourant->getAdjacents()[j].first->getId()]};
+                }
+            }
+        }
+        /*for(size_t j=0; j<m_sommets.size(); j++)
+            std::cout<<"Distance totale depuis "<<i<<" : "<<distance[j]<<std::endl;*/
+        predecesseurS.push_back(predecesseur);
+        predecesseur.clear();
+        distance.clear();
+        distance.resize(m_ordre, RAND_MAX);
+    }
+    return predecesseurS;
+}

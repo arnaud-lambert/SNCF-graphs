@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <map>
 #include "svg/svgfile.h"
 
 class Sommet

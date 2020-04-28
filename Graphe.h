@@ -19,6 +19,7 @@ class Graphe
         std::vector<Sommet*> getSommets() { return m_sommets;}
         std::vector<std::pair<int, float>> centraliteDegre ();
         std::vector<double> intermediarite();
+        std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> vecteurProximite();
 
     private:
         std::vector<Sommet*> m_sommets;
