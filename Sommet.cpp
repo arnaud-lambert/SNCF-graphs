@@ -35,3 +35,12 @@ void Sommet::dessiner(Svgfile&svgout)
     svgout.addDisk( m_x*100 , m_y*100 , 5, couleur);
     svgout.addText( m_x*100 - 5 , m_y*100 - 10, m_nom, "black" );
 }
+
+void Sommet::suppAdjacent (Sommet*adjacent)
+{
+    for(size_t i=0; i<m_adjacents.size(); ++i)
+    {
+        if(m_adjacents[i]==adjacent)
+            m_adjacents.erase(m_adjacents.begin()+i);
+    }
+}

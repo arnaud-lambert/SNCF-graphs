@@ -43,7 +43,7 @@
 <text x="1005" y="15" fill="lightgrey" >10</text>
 <circle cx="200" cy="100" r="5" fill="cyan" />
 <text x="195" y="90" fill="black" >A</text>
-<circle cx="600" cy="100" r="5" fill="black" />
+<circle cx="600" cy="100" r="5" fill="cyan" />
 <text x="595" y="90" fill="black" >B</text>
 <circle cx="100" cy="200" r="5" fill="cyan" />
 <text x="95" y="190" fill="black" >C</text>
@@ -51,7 +51,7 @@
 <text x="295" y="190" fill="black" >D</text>
 <circle cx="400" cy="200" r="5" fill="cyan" />
 <text x="395" y="190" fill="black" >E</text>
-<circle cx="500" cy="200" r="5" fill="blue" />
+<circle cx="500" cy="200" r="5" fill="red" />
 <text x="495" y="190" fill="black" >F</text>
 <circle cx="700" cy="200" r="5" fill="cyan" />
 <text x="695" y="190" fill="black" >G</text>
@@ -60,6 +60,7 @@
 <circle cx="600" cy="300" r="5" fill="cyan" />
 <text x="595" y="290" fill="black" >I</text>
 <line x1="200" y1="100" x2="300" y2="200" stroke="black" />
+<line x1="600" y1="100" x2="500" y2="200" stroke="black" />
 <line x1="100" y1="200" x2="300" y2="200" stroke="black" />
 <line x1="400" y1="200" x2="500" y2="200" stroke="black" />
 <line x1="500" y1="200" x2="700" y2="200" stroke="black" />

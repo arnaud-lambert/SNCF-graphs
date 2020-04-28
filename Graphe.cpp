@@ -171,7 +171,7 @@ std::vector<std::pair<int, float>> Graphe::centraliteDegre ()
 
 
 
-void Graphe::connexite ()
+void Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
     std::set<Sommet*> marques;
@@ -223,6 +223,46 @@ void Graphe::connexite ()
 //{
 //    std::cout<<j->getId()<<" "<<std::endl;
 //}
+
+}
+
+void Graphe::supprimerArete ()
+{
+    int indice=0;
+
+    std::cout<<"Saisir l'indice de l'arete a supprimer";
+    std::cin>>indice;
+
+    std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
+    for(auto s: m_sommets)
+    {
+        if(s==extremites.first)
+        {
+            std::cout<<std::endl<<"Adjacents: ";
+            for(auto j: s->getAdjacents())
+                std::cout<<j->getId()<<" ";
+
+            s->suppAdjacent(extremites.second);
+
+            std::cout<<std::endl<<"Adjacents: ";
+            for(auto j: s->getAdjacents())
+                std::cout<<j->getId()<<" ";
+        }
+        else if (s==extremites.second)
+        {
+            std::cout<<std::endl<<"Adjacents: ";
+            for(auto j: s->getAdjacents())
+                std::cout<<j->getId()<<" ";
+
+           s->suppAdjacent(extremites.first);
+
+            std::cout<<std::endl<<"Adjacents: ";
+            for(auto j: s->getAdjacents())
+                std::cout<<j->getId()<<" ";
+        }
+    }
+    m_aretes.erase(m_aretes.begin()+indice);
+    --m_taille;
 
 }
 

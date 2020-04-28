@@ -19,6 +19,7 @@ class Sommet
         double getX () const { return m_x; }
         double getY () const { return m_y; }
         void dessiner (Svgfile&svgout);
+        void suppAdjacent (Sommet*adjacent);
 
 
     private:

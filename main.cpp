@@ -7,7 +7,8 @@ int main()
     a.ponderation();
     a.affichage();
     std::vector<std::pair<int, float>> centralite_degres = a.centraliteDegre ();
-    a.connexite();
+    a.supprimerArete();
+    a.rechercheCC();
     a.dessiner();
 
     return 0;
