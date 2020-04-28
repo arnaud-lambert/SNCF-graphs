@@ -29,6 +29,6 @@ class Graphe
         int m_taille;
 };
 
-void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,int>> &predecesseurs);
+void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs);
 
 #endif // GRAPHE_H
