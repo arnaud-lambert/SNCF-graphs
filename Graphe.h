@@ -10,21 +10,20 @@
 class Graphe
 {
     public:
-        Graphe();
+        Graphe(std::string& nomFichier);
         virtual ~Graphe();
         void affichage()const;
         void ponderation();
         void dessiner ();
         std::vector<double> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
-
         std::vector<std::pair<int, double>> centraliteDegre ();
         void rechercheCC();
         void supprimerArete ();
         void testConnexite ();
-
+        void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<double> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<double> intermediarite, std::string nomFichier);
         std::vector<double> intermediarite();
-        std::vector<double> vecteurProximite();
+        std::vector<std::pair<double, double>> vecteurProximite();
 
     private:
         std::vector<Sommet*> m_sommets;

@@ -1,10 +1,8 @@
 #include "Graphe.h"
-#include <unordered_map>
 #include <set>
-#include <queue>
 
 ///Lecture du fichier via le constructeur de Graphe
-Graphe::Graphe()
+Graphe::Graphe(std::string& nomFichier)
 {
     std::cout<<"Quel fichier voulez-vous ouvrir ? ";
     std::string nom;
@@ -17,7 +15,7 @@ Graphe::Graphe()
             std::cout << "Impossible d'ouvrir le fichier " << nom << ", veuillez ressaisir un nom de fichier" << std::endl;
     }
     while(!ifs);
-
+    nomFichier=nom;
     ifs>>m_orientation;
     ///On recupere l'odre
     ifs>>m_ordre;
@@ -418,13 +416,13 @@ std::vector<double> Graphe::intermediarite()
     return centralite;
 }
 
-std::vector<double> Graphe::vecteurProximite()
+std::vector<std::pair<double, double>> Graphe::vecteurProximite()
 {
     std::vector<double> distance(m_ordre, RAND_MAX);
     Sommet* sommetCourant;
 
     std::map<Sommet*, std::pair<Sommet*, double>> predecesseur;
-    std::vector<double> indiceSommets;
+    std::vector<std::pair<double, double>> indiceSommets;
 
     auto comparaison=[](const std::pair<Sommet*, double> s1, const std::pair<Sommet*, double> s2)
     { return s1.second > s2.second; };
@@ -433,7 +431,7 @@ std::vector<double> Graphe::vecteurProximite()
 
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
-        indiceSommets.push_back(0);
+        indiceSommets.push_back({0, 0});
         file.push({m_sommets[i], 0});
         distance[m_sommets[i]->getId()]=0;
         while(!file.empty())
@@ -453,12 +451,18 @@ std::vector<double> Graphe::vecteurProximite()
         for(size_t j=0; j<m_sommets.size(); j++)
         {
             //std::cout<<"Distance totale depuis "<<i<<" : "<<distance[j]<<std::endl;
-            indiceSommets[i]+=distance[j];
+            indiceSommets[i].first+=distance[j];
         }
-        indiceSommets[i]=(m_ordre-1)*(1/indiceSommets[i]);
+        indiceSommets[i].first=1/indiceSommets[i].first;
+        indiceSommets[i].second=indiceSommets[i].first*(m_ordre-1);
         predecesseur.clear();
         distance.clear();
         distance.resize(m_ordre, RAND_MAX);
     }
     return indiceSommets;
+}
+
+void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<double> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<double> intermediarite, std::string nomFichier)
+{
+    std::ofstream ofs;
 }
