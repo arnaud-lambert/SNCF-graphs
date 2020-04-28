@@ -381,7 +381,7 @@ std::vector<double> Graphe::intermediarite()
     }
     for(auto &i : centralite)
     {
-        i /= (float) (m_ordre*m_ordre*m_ordre - 3.0*m_ordre + 2.0);
+        i /= (float) (m_ordre*m_ordre - 3.0*m_ordre + 2.0);
 
         if(!m_orientation)
             i *= 2.0;
