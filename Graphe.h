@@ -23,7 +23,7 @@ class Graphe
         void supprimerArete ();
         void testConnexite ();
 
-        std::vector<double> intermediarite();
+        std::vector<std::pair<double,double>> intermediarite();
         std::vector<double> vecteurProximite();
 
     private:
