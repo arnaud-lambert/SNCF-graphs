@@ -19,18 +19,18 @@ Graphe::Graphe()
     while(!ifs);
 
     ifs>>m_orientation;
-    ///On r�cup�re l'odre
+    ///On recupere l'odre
     ifs>>m_ordre;
     int indice;
     double x, y;
-    ///On cr�e un nombre de sommet �gal � l'odre du graphe
+    ///On cree un nombre de sommet egal a l'odre du graphe
     for(int i=0; i<m_ordre; ++i)
     {
         ifs>>indice>>nom>>x>>y;
         Sommet* nouv = new Sommet(indice, nom, x, y);
         m_sommets.push_back(nouv);
     }
-    ///On r�cup�re la taille du graphe
+    ///On recupere la taille du graphe
     ifs>>m_taille;
     int extremite1, extremite2;
     for(int i=0; i<m_taille; ++i)
@@ -58,9 +58,6 @@ void Graphe::affichage()const
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
         m_sommets[i]->affichage();
-        std::cout << "ajd: ";
-        for(auto j : m_sommets[i]->getAdjacents())
-            std::cout << j->getId() << " ";
         std::cout << std::endl;
     }
     std::cout<<m_taille<<std::endl;
@@ -143,7 +140,7 @@ std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
         for(size_t i=0; i<vecIndices.size(); ++i)
         {
             for(size_t j=0; j<vecIndices[i].first->getAdjacents().size(); ++j)
-                sommeIndices+=vecIndices[vecIndices[i].first->getAdjacents()[j]->getId()].second;
+                sommeIndices+=vecIndices[vecIndices[i].first->getAdjacents()[j].first->getId()].second;
 
             vecSommeIndices.push_back(sommeIndices);
             sommeIndices=0;
@@ -153,7 +150,7 @@ std::vector<std::pair<Sommet*, double>> Graphe::vecteurPropre()
 
         lambda1=sqrt(sommeSommeIndicesCarre);
         sommeSommeIndicesCarre=0;
-        for(size_t i=0; i<vecIndices.size(); i++)
+        for(size_t i=0; i<vecIndices.size(); ++i)
             vecIndices[i].second=vecSommeIndices[i]/lambda1;
         vecSommeIndices.clear();
     }
@@ -209,10 +206,10 @@ void Graphe::rechercheCC ()
 
             for(auto i: parcours->getAdjacents())
             {
-                if(marques.find(i)==marques.end())
+                if(marques.find(i.first)==marques.end())
                 {
-                    marques.insert(i);
-                    file.push(i);
+                    marques.insert(i.first);
+                    file.push(i.first);
                 }
             }
             if(!file.empty())
@@ -244,7 +241,6 @@ void Graphe::rechercheCC ()
 
 
 }
-
 
 
 void Graphe::supprimerArete ()
@@ -291,7 +287,164 @@ void Graphe::testConnexite ()
 }
 
 
+void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
+{
+    if (current == i)
+    ++k;
+    else if(predecesseurs.find(current) != predecesseurs.end())
+       for(auto &j : predecesseurs[current].first)
+            recursif(k,i,j,predecesseurs);
+}
 
+std::vector<double> Graphe::intermediarite()
+{
+    Sommet* courant;
+    double longueur;
+    std::vector<double> centralite(m_ordre,0.0);
+    std::vector<std::unordered_map<Sommet*, int>> vecNombreChemins;
+    std::vector<std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>>> vecPredecesseurs;
 
+    auto compare = [](const std::pair<Sommet*,double> s1, const std::pair<Sommet*,double> s2)
+    {
+        return s1.second > s2.second;
+    };
 
+    std::priority_queue<std::pair<Sommet*,double>, std::vector<std::pair<Sommet*,double>>, decltype(compare)> prio(compare);
+    for(auto &j : m_sommets)
+    {
+        std::unordered_map<Sommet*, int> nombreChemins;
+        std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> predecesseurs;
+        prio.push({j,0.0});
 
+        while(!prio.empty())
+        {
+            courant = prio.top().first;
+            longueur = prio.top().second;
+            prio.pop();
+
+            for(auto &i : courant->getAdjacents())
+            {
+                if(i.first != j)
+                {
+                    if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second) < predecesseurs[i.first].second)//ecrase
+                    {
+                        prio.push({i.first,longueur+i.second});
+                        predecesseurs[i.first] = {{courant},i.second+longueur};
+
+                        if(courant == j)
+                            nombreChemins[i.first] = 1;
+                        else
+                            nombreChemins[i.first] = nombreChemins[courant];
+                    }
+                    else if (longueur+i.second == predecesseurs[i.first].second)//autre chemin court
+                    {
+                        prio.push({i.first,longueur+i.second});
+
+                        predecesseurs[i.first].second = i.second+longueur;
+                        predecesseurs[i.first].first.push_back(courant);
+                        nombreChemins[i.first] += nombreChemins[courant];
+                    }
+                }
+            }
+        }
+        vecNombreChemins.push_back(nombreChemins);
+        vecPredecesseurs.push_back(predecesseurs);
+    }
+
+    //non-orienté
+    if(!m_orientation)
+    {
+        for(auto &i : m_sommets)
+            for(int j = 0 ; j < m_ordre ; ++j)
+                if(i->getId() != j)
+                    for(int k = m_ordre-1 ; k > j ; --k)
+                        if(i->getId() != k && (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
+                        {
+                            if(vecNombreChemins[j][m_sommets[k]] == 1)
+                                ++centralite[i->getId()];
+                            else
+                            {
+                                int compt = 0;
+                                for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
+                                    recursif(compt,i,z,vecPredecesseurs[j]);
+
+                                centralite[i->getId()]+=(compt/vecNombreChemins[j][m_sommets[k]]);
+                            }
+                        }
+    }
+
+    //orienté
+    else
+    {
+        for(auto &i : m_sommets)
+            for(int j = 0 ; j < m_ordre ; ++j)
+                if(i->getId() != j)
+                    for(int k = 0 ; k < m_ordre ; ++k)
+                        if(j != k && i->getId() != k && (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
+                        {
+                            if(vecNombreChemins[j][m_sommets[k]] == 1)
+                                ++centralite[i->getId()];
+                            else
+                            {
+                                int compt = 0;
+                                for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
+                                    recursif(compt,i,z,vecPredecesseurs[j]);
+
+                                centralite[i->getId()]+=(compt/vecNombreChemins[j][m_sommets[k]]);
+                            }
+                        }
+    }
+
+    for(auto &i : centralite)
+    {
+        i /= (m_ordre*m_ordre*m_ordre - 3*m_ordre + 2);
+
+        if(!m_orientation)
+            i*=2;
+
+        std::cout << i << std::endl;
+    }
+
+    return centralite;
+}
+
+std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> Graphe::vecteurProximite()
+{
+    std::vector<double> distance(m_ordre, RAND_MAX);
+    Sommet* sommetCourant;
+
+    std::map<Sommet*, std::pair<Sommet*, double>> predecesseur;
+    std::vector<std::map<Sommet*, std::pair<Sommet*, double>>> predecesseurS;
+
+    auto comparaison=[](const std::pair<Sommet*, double> s1, const std::pair<Sommet*, double> s2)
+    { return s1.second > s2.second; };
+
+    std::priority_queue<std::pair<Sommet*, double>, std::vector<std::pair<Sommet*, double>>, decltype(comparaison)> file(comparaison);
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        file.push({m_sommets[i], 0});
+        distance[m_sommets[i]->getId()]=0;
+        while(!file.empty())
+        {
+            sommetCourant=file.top().first;
+            file.pop();
+            for(size_t j=0; j<sommetCourant->getAdjacents().size(); j++)
+            {
+                if(distance[sommetCourant->getAdjacents()[j].first->getId()] > distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second)
+                {
+                    distance[sommetCourant->getAdjacents()[j].first->getId()] = distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second;
+                    file.push({sommetCourant->getAdjacents()[j].first, distance[sommetCourant->getAdjacents()[j].first->getId()]});
+                    predecesseur[sommetCourant->getAdjacents()[j].first]={sommetCourant, distance[sommetCourant->getAdjacents()[j].first->getId()]};
+                }
+            }
+        }
+        /*for(size_t j=0; j<m_sommets.size(); j++)
+            std::cout<<"Distance totale depuis "<<i<<" : "<<distance[j]<<std::endl;*/
+        predecesseurS.push_back(predecesseur);
+        predecesseur.clear();
+        distance.clear();
+        distance.resize(m_ordre, RAND_MAX);
+    }
+    return predecesseurS;
+}

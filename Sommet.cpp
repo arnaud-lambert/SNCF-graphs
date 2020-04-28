@@ -13,7 +13,20 @@ Sommet::~Sommet()
 
 void Sommet::affichage()const
 {
-    std::cout << m_id << " " << m_nom << " " << m_x << " " << m_y << std::endl;
+    std::cout << m_id << " " << m_nom << " " << m_x << " " << m_y << " adj: ";
+
+    for(auto &i : m_adjacents)
+        std::cout << i.first->getId() << "=" << i.second << " ";
+}
+
+void Sommet::setPoidsAdjacent(double poids, Sommet* adjacent)
+{
+    for(size_t i = 0; i < m_adjacents.size() ; ++i)
+        if(m_adjacents[i].first == adjacent)
+        {
+            m_adjacents[i].second = poids;
+            break;
+        }
 }
 
 void Sommet::dessiner(Svgfile&svgout)
@@ -40,7 +53,7 @@ void Sommet::suppAdjacent (Sommet*adjacent)
 {
     for(size_t i=0; i<m_adjacents.size(); ++i)
     {
-        if(m_adjacents[i]==adjacent)
+        if(m_adjacents[i].first==adjacent)
             m_adjacents.erase(m_adjacents.begin()+i);
     }
 }
