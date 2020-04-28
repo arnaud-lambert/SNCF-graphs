@@ -97,6 +97,12 @@ void Graphe::ponderation()
             std::cout<<std::endl<<"Impossible d'ouvrir le fichier " << nomFichier << ", veuillez ressaisir un nom de fichier "<<std::endl;
     }
     while(nomFichier!="" && !verif);
+    if(nomFichier == "")
+    {
+        m_ponderation = false;
+        for (auto &i : m_aretes)
+            i->setPoids(1.0);
+    }
 }
 
 void Graphe::dessiner ()
