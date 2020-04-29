@@ -1,34 +1,111 @@
 #include "Graphe.h"
-void menu();
+#include <windows.h>
 
+bool menu(Graphe& a, std::string nomFichier);
+
+///Varibale globale qui permet de mettre de la couleur sur le texte de la console
+HANDLE texteConsole=GetStdHandle(STD_OUTPUT_HANDLE);
 
 int main()
 {
-    menu();
-    std::string nomFichier;
-    Graphe a(nomFichier);
-    a.ponderation();
-    a.affichage();
-    a.dessiner();
-    std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
-    std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
-//    a.testConnexite();
-    std::vector<std::pair<double, double>> vecteurProximite=a.vecteurProximite();
-    std::vector<std::pair<double, double>> intermediarite=a.intermediarite();
-    a.dessiner();
-//a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
+    bool continuer=true;
+    do
+    {
+        std::string nomFichier;
+        Graphe a(nomFichier);
+        continuer=menu(a, nomFichier);
+    }
+    while(continuer);
     return 0;
 }
 
 
-
-void menu ()
+bool menu (Graphe& a, std::string nomFichier)
 {
-    std::cout<<"           ***** Menu *****"<<std::endl
-             <<"1. Charger un graphe"<<std::endl
-             <<"2. Changer le systeme de ponderations"<<std::endl
-             <<"3. Calculer l'indice de centralite de degre"<<std::endl
-             <<"4. Calculer l'indice de centralite de vecteur propre"<<std::endl
-             <<"5. Tester la connexite du graphe"<<std::endl<<std::endl;
+    int choix=0;
+    do
+    {
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<std::endl<<"  ____    _____     ___________     ____    ____     ____     ____ "<<std::endl
+                            <<"/      \\/      \\   |    _______|   |    \\  |    |   |    |   |    |"<<std::endl
+                            <<"|              |   |   |           |     \\ |    |   |    |   |    |"<<std::endl
+                            <<"|   |\\    /|   |   |   |____       |      \\|    |   |    |   |    |"<<std::endl
+                            <<"|   | \\__/ |   |   |    ____|      |            |   |    |   |    |"<<std::endl
+                            <<"|   |      |   |   |   |           |    |\\      |   |    |___|    |"<<std::endl
+                            <<"|   |      |   |   |   |_______    |    | \\     |   |             |"<<std::endl
+                            <<"|___|      |___|   |___________|   |____|  \\____|   |_____________|"<<std::endl;
 
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<std::endl<<std::endl<<"1. ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Charger";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" un graphe"<<std::endl<<std::endl<<"2. ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Changer";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" le systeme de ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"ponderations"<<std::endl;
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<std::endl<<"3. ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Calculer";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" et ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Sauvegarder";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" les differents ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"indices";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" de ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"centralite"<<std::endl;
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<std::endl<<"4. ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Tester";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" la ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"vulnerabilite";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" du graphe"<<std::endl;
+        std::cout<<std::endl<<"5. ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Quitter";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" l'application"<<std::endl<<std::endl;
+
+        std::cin>>choix;
+
+        switch(choix)
+        {
+        case 1:
+            return true;
+            break;
+
+        case 2:
+            a.ponderation();
+            break;
+
+        case 3:
+        {
+            std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
+            std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
+            std::vector<std::pair<double, double>> vecteurProximite=a.vecteurProximite();
+            std::vector<std::pair<double, double>> intermediarite=a.intermediarite();
+            a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
+        }
+        break;
+
+        case 4:
+            //a.testConnexite();
+            break;
+        }
+        a.dessiner();
+    }while(choix!=5);
+    return false;
 }
