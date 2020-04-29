@@ -1,5 +1,6 @@
 #include "Graphe.h"
 #include <set>
+#include <algorithm>
 
 ///Lecture du fichier via le constructeur de Graphe
 Graphe::Graphe(std::string& nomFichier)
@@ -44,7 +45,7 @@ Graphe::Graphe(std::string& nomFichier)
 
 //constructeur copie
 Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{source.m_aretes}, m_orientation{source.m_orientation},
-                                     m_ponderation{source.m_ponderation}, m_ordre{source.m_ordre}, m_taille{source.m_taille}
+    m_ponderation{source.m_ponderation}, m_ordre{source.m_ordre}, m_taille{source.m_taille}
 {
     std::map<Sommet*,Sommet*>transpose;
 
@@ -59,8 +60,6 @@ Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{sourc
         m_aretes[i]=new Arete(*source.m_aretes[i]);
         m_aretes[i]->setExtremites(transpose[source.m_aretes[i]->getExtremites().first], transpose[source.m_aretes[i]->getExtremites().second]);
     }
-
-    std::cout<<"Adjacents"<<std::endl;
 
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
@@ -228,14 +227,16 @@ std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 
 
 
-void Graphe::rechercheCC ()
+int Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
     std::set<Sommet*> marques;
     std::vector<Sommet*> sommets_isoles;
     int compteur=0;
 
+
     Sommet*parcours=m_sommets[0];
+
     do
     {
         file.push(parcours);
@@ -258,7 +259,7 @@ void Graphe::rechercheCC ()
                 parcours=file.front();
         }
 
-        if((int)marques.size()!=m_ordre)
+        if((int)marques.size()<m_ordre)
         {
             for(auto s: m_sommets)
             {
@@ -266,76 +267,42 @@ void Graphe::rechercheCC ()
                     parcours=s;
             }
         }
-
     }
-    while((int)marques.size()!=m_ordre);
+    while((int)marques.size()<m_ordre);
 
-    if(compteur==1)
-        std::cout<<"Graphe connexe"<<std::endl;
-    else
-        std::cout<<"Graphe non connexe. Il contient "<<compteur<<" composantes connexes"<<std::endl;
-
-    for(auto s: m_sommets)
-    {
-        if((s->getAdjacents()).size()==0)
-            std::cout<<s->getNom()<<" est un sommet isole"<<std::endl;
-    }
-
-
+    return compteur;
 }
 
-
-void Graphe::supprimerArete ()
-{
-    int indice=0;
-    std::set<int> indices;
-    for(auto a: m_aretes)
-    {
-        indices.insert(a->getId());
-    }
-
-    do
-    {
-        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
-        std::cin>>indice;
-    }
-    while(indices.find(indice)==indices.end());
-
-    std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
-    for(auto s: m_sommets)
-    {
-        if(s==extremites.first)
-            s->suppAdjacent(extremites.second);
-
-        if (s==extremites.second)
-            s->suppAdjacent(extremites.first);
-
-    }
-
-    for(size_t i=0; i<m_aretes.size(); ++i)
-    {
-        if(m_aretes[i]->getId()==indice)
-            m_aretes.erase(m_aretes.begin()+i);
-    }
-    --m_taille;
-
-}
 
 
 void Graphe::testConnexite ()
 {
-    int nb=0;
-    do{
-    std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
-    std::cin>>nb;
-    }while((nb<0)||(nb>(int)m_taille));
+    int nb=0, cc=0;
+
+    do
+    {
+        std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
+        std::cin>>nb;
+    }
+    while((nb<0)||(nb>(int)m_taille));
 
     for(int i=0; i<nb; ++i)
     {
         this->supprimerArete();
     }
 
-    this->rechercheCC();
+    cc= this->rechercheCC();
+
+    if(cc==1)
+        std::cout<<"Graphe connexe"<<std::endl;
+    else
+        std::cout<<"Graphe non connexe. Il contient "<<cc<<" composantes connexes"<<std::endl;
+
+    for(auto s: m_sommets)
+    {
+        if((s->getAdjacents()).size()==0)
+            std::cout<<s->getNom()<<" est un sommet isole"<<std::endl;
+    }
 }
 
 
@@ -343,8 +310,8 @@ void recursif (std::unordered_map<Sommet*,unsigned int> &compt, Sommet* current,
 {
     if ( predecesseurs.find(current) != predecesseurs.end())
     {
-       ++compt[current];
-       for(auto &j : predecesseurs[current].first)
+        ++compt[current];
+        for(auto &j : predecesseurs[current].first)
             recursif(compt,j,predecesseurs);
     }
 }
@@ -353,10 +320,12 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
 {
     Sommet* courant;
     double longueur;
-    std::vector<std::pair<double,double>> centralite(m_ordre,{0.0,0.0});
+    std::vector<std::pair<double,double>> centralite(m_ordre, {0.0,0.0});
 
     auto compare = [](const std::pair<Sommet*,double> s1, const std::pair<Sommet*,double> s2)
-    { return s1.second > s2.second; };
+    {
+        return s1.second > s2.second;
+    };
 
     std::priority_queue<std::pair<Sommet*,double>, std::vector<std::pair<Sommet*,double>>, decltype(compare)> prio(compare);
     for(auto &j : m_sommets)
@@ -413,7 +382,7 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
         if(m_orientation)
             i.first /= 2.0;
 
-         i.second = i.first *2.0/(float)(m_ordre*m_ordre - 3.0*m_ordre + 2.0);
+        i.second = i.first *2.0/(float)(m_ordre*m_ordre - 3.0*m_ordre + 2.0);
         std::cout << i.first  << " " << i.second<< std::endl;
     }
 
@@ -429,7 +398,9 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
     std::vector<std::pair<double, double>> indiceSommets;
 
     auto comparaison=[](const std::pair<Sommet*, double> s1, const std::pair<Sommet*, double> s2)
-    { return s1.second > s2.second; };
+    {
+        return s1.second > s2.second;
+    };
 
     std::priority_queue<std::pair<Sommet*, double>, std::vector<std::pair<Sommet*, double>>, decltype(comparaison)> file(comparaison);
 
@@ -448,7 +419,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
                 {
                     distance[sommetCourant->getAdjacents()[j].first->getId()] = distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second;
                     file.push({sommetCourant->getAdjacents()[j].first, distance[sommetCourant->getAdjacents()[j].first->getId()]});
-                    predecesseur[sommetCourant->getAdjacents()[j].first]={sommetCourant, distance[sommetCourant->getAdjacents()[j].first->getId()]};
+                    predecesseur[sommetCourant->getAdjacents()[j].first]= {sommetCourant, distance[sommetCourant->getAdjacents()[j].first->getId()]};
                 }
             }
         }
@@ -491,15 +462,135 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     {
         for(size_t i=0; i<m_sommets.size(); i++)
             ofs<<i<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
-                       <<vecteurPropre[i].first<<" "<<vecteurPropre[i].second<<" "
-                       <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
-                       <<intermediarite[i].first<<" "<<intermediarite[i].second;
+               <<vecteurPropre[i].first<<" "<<vecteurPropre[i].second<<" "
+               <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
+               <<intermediarite[i].first<<" "<<intermediarite[i].second;
+    }
+}
+
+
+
+void Graphe::supprimerArete ()
+{
+    int indice=0;
+    std::set<int> indices;
+    for(auto a: m_aretes)
+    {
+        indices.insert(a->getId());
+    }
+
+    do
+    {
+        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
+        std::cin>>indice;
+    }
+    while(indices.find(indice)==indices.end());
+
+    std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
+    for(auto s: m_sommets)
+    {
+        if(s==extremites.first)
+            s->suppAdjacent(extremites.second);
+
+        if (s==extremites.second)
+            s->suppAdjacent(extremites.first);
+
+    }
+
+    for(size_t i=0; i<m_aretes.size(); ++i)
+    {
+        if(m_aretes[i]->getId()==indice)
+            m_aretes.erase(m_aretes.begin()+i);
+    }
+    --m_taille;
+
+}
+
+
+
+void Graphe::supprimerSommet (Sommet*s)
+{
+
+    for(auto i: s->getAdjacents())
+    {
+        for(auto j: m_sommets)
+        {
+            if(i.first->getId()==j->getId())
+            {
+                j->suppAdjacent(s);
+            }
+        }
+    }
+
+
+    size_t iterateur=0;
+
+    int i=0;
+    do
+    {
+        for(size_t j=0; j<m_aretes.size(); ++j)
+        {
+            if((m_aretes[j]->getExtremites().first->getId()==s->getId())||(m_aretes[j]->getExtremites().second->getId()==s->getId()))
+            {
+                m_aretes.erase(m_aretes.begin()+j);
+                --m_taille;
+                ++i;
+                break;
+            }
+        }
+
+    }
+    while(i<(int)s->getAdjacents().size());
+
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        if(m_sommets[i]->getId()==s->getId())
+        {
+            m_sommets.erase(m_sommets.begin()+i);
+            --m_ordre;
+        }
     }
 }
 
 void Graphe::kSommetsConnexite ()
 {
     Graphe copie=*this;
-    std::cout<<"Nouvelle copie"<<std::endl;
-    copie.affichage();
+    int nbCC=0, k_sommets=0;//pour recherche si graphe connexe
+
+    std::vector<int> degres;
+
+    nbCC=copie.rechercheCC();
+
+    while(nbCC==1)
+    {
+        degres.clear();
+        for(auto i: copie.m_sommets)
+        {
+            degres.push_back((int)i->getAdjacents().size());
+        }
+        copie.dessiner();
+        std::sort(degres.begin(), degres.end(), [](int a, int b)
+        {
+            return a > b;
+        });
+
+        for(size_t i=0; i<copie.m_sommets.size(); ++i)
+        {
+            if((int)copie.m_sommets[i]->getAdjacents().size()==degres[0])
+            {
+                copie.supprimerSommet(copie.m_sommets[i]);
+                i=copie.m_sommets.size();
+            }
+        }
+
+        ++k_sommets;
+        copie.dessiner();
+        nbCC=copie.rechercheCC();
+        std::cout<<nbCC<<std::endl;
+
+    }
+
+    std::cout<<std::endl<<"Le graphe est "<<k_sommets<<"-sommet(s)-connexe"<<std::endl;
+
 }
