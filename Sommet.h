@@ -11,6 +11,7 @@ class Sommet
 {
     public:
         Sommet(int id, std::string nom, double x, double y);
+        Sommet(Sommet&source);
         virtual ~Sommet();
         void affichage()const;
         int getId() { return m_id; }

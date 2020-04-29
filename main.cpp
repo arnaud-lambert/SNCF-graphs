@@ -9,6 +9,7 @@ int main()
     Graphe a(nomFichier);
     a.ponderation();
     a.affichage();
+    a.kSommetsConnexite();
     a.dessiner();
     std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
     std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();

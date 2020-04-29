@@ -42,6 +42,38 @@ Graphe::Graphe(std::string& nomFichier)
     }
 }
 
+//constructeur copie
+Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{source.m_aretes}, m_orientation{source.m_orientation},
+                                     m_ponderation{source.m_ponderation}, m_ordre{source.m_ordre}, m_taille{source.m_taille}
+{
+    std::map<Sommet*,Sommet*>transpose;
+
+    for(size_t i=0; i<source.m_sommets.size(); ++i)
+    {
+        m_sommets[i]=new Sommet(*source.m_sommets[i]);
+        transpose[source.m_sommets[i]]=m_sommets[i];//associe nvelle adresse de chaque sommet à l'ancienne
+    }
+
+    for(size_t i=0; i<source.m_aretes.size(); ++i)
+    {
+        m_aretes[i]=new Arete(*source.m_aretes[i]);
+        m_aretes[i]->setExtremites(transpose[source.m_aretes[i]->getExtremites().first], transpose[source.m_aretes[i]->getExtremites().second]);
+    }
+
+    std::cout<<"Adjacents"<<std::endl;
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        for(auto j: source.m_sommets[i]->getAdjacents())
+        {
+            m_sommets[i]->ajouterAdjacent(transpose[j.first]);
+            m_sommets[i]->setPoidsAdjacent(j.second, transpose[j.first]);
+        }
+    }
+
+}
+
+
 Graphe::~Graphe()
 {
     for(auto &i: m_sommets)
@@ -463,4 +495,11 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
                        <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
                        <<intermediarite[i].first<<" "<<intermediarite[i].second;
     }
+}
+
+void Graphe::kSommetsConnexite ()
+{
+    Graphe copie=*this;
+    std::cout<<"Nouvelle copie"<<std::endl;
+    copie.affichage();
 }

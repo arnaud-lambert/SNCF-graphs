@@ -6,6 +6,11 @@ Sommet::Sommet(int id, std::string nom, double x, double y)
 
 }
 
+Sommet::Sommet(Sommet&source): m_id{source.m_id}, m_nom{source.m_nom}, m_x{source.m_x}, m_y{source.m_y}
+{
+
+}
+
 Sommet::~Sommet()
 {
 
