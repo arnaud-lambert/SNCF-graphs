@@ -5,17 +5,37 @@
 ///Lecture du fichier via le constructeur de Graphe
 Graphe::Graphe(std::string& nomFichier)
 {
-    std::cout<<"Quel fichier voulez-vous ouvrir ? ";
+    std::cout<<"Quel ";
+    SetConsoleTextAttribute(texteConsole, 10);
+    std::cout<<"fichier";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" voulez-vous ouvrir ? ";
     std::string nom;
     std::ifstream ifs;
     do
     {
+        SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
+        SetConsoleTextAttribute(texteConsole, 15);
         ifs.open(nom);
         if(!ifs)
-            std::cout << "Impossible d'ouvrir le fichier " << nom << ", veuillez ressaisir un nom de fichier" << std::endl;
+        {
+            SetConsoleTextAttribute(texteConsole, 12);
+            std::cout<<std::endl<<"Fichier inexistant";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<< ", veuillez ";
+            SetConsoleTextAttribute(texteConsole, 9);
+            std::cout<<"ressaisir";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" un nom "<<std::endl;
+        }
     }
     while(!ifs);
+    std::cout<<std::endl<<"Lecture du fichier ";
+    SetConsoleTextAttribute(texteConsole, 10);
+    std::cout<<nom;
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<"..."<<std::endl;
     nomFichier=nom;
     ifs>>m_orientation;
     ///On recupere l'odre
@@ -82,7 +102,7 @@ Graphe::~Graphe()
         delete i;
 }
 
-void Graphe::affichage()const
+/*void Graphe::affichage()const
 {
     std::cout<<std::endl<<m_orientation<<std::endl<<m_ordre<<std::endl;
     for(size_t i=0; i<m_sommets.size(); ++i)
@@ -93,19 +113,29 @@ void Graphe::affichage()const
     std::cout<<m_taille<<std::endl;
     for(size_t i=0; i<m_aretes.size(); ++i)
         m_aretes[i]->affichage();
-}
+}*/
 
 void Graphe::ponderation()
 {
     int taille;
     bool verif=false;
-    std::cout<<std::endl<<"Quel fichier de ponderation voulez-vous ouvrir ? ";
+    std::cout<<std::endl<<"Quel ";
+    SetConsoleTextAttribute(texteConsole, 10);
+    std::cout<<"fichier";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" de ";
+    SetConsoleTextAttribute(texteConsole, 10);
+    std::cout<<"ponderation";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" voulez-vous ouvrir ? ";
     std::string nomFichier;
     std::cin.ignore();
     do
     {
         nomFichier="";
+        SetConsoleTextAttribute(texteConsole, 10);
         std::getline(std::cin, nomFichier);
+        SetConsoleTextAttribute(texteConsole, 15);
         std::ifstream ifs{nomFichier};
         if(ifs)
         {
@@ -113,6 +143,11 @@ void Graphe::ponderation()
             if(taille==m_taille)
             {
                 verif=true;
+                std::cout<<std::endl<<"Lecture du fichier ";
+                SetConsoleTextAttribute(texteConsole, 10);
+                std::cout<<nomFichier;
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<"..."<<std::endl;
                 m_ponderation=true;
                 int id;
                 double poids;
@@ -123,10 +158,28 @@ void Graphe::ponderation()
                 }
             }
             else
-                std::cout<<std::endl<<"Fichier est incompatible (nombre d'aretes different), veuillez ressaisir un nom de fichier "<<std::endl;
+            {
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<std::endl<<"Fichier incompatible";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" (nombre d'aretes different), veuillez ";
+                SetConsoleTextAttribute(texteConsole, 9);
+                std::cout<<"ressaisir";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" un nom "<<std::endl;
+            }
         }
         else if(nomFichier!="")
-            std::cout<<std::endl<<"Impossible d'ouvrir le fichier " << nomFichier << ", veuillez ressaisir un nom de fichier "<<std::endl;
+        {
+            SetConsoleTextAttribute(texteConsole, 12);
+            std::cout<<std::endl<<"Fichier inexistant";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout << ", veuillez ";
+            SetConsoleTextAttribute(texteConsole, 9);
+            std::cout<<"ressaisir";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" un nom "<<std::endl;
+        }
     }
     while(nomFichier!="" && !verif);
     if(nomFichier == "")
@@ -198,8 +251,8 @@ std::vector<std::pair<double, double>> Graphe::vecteurPropre()
     }
     while(abs(lambda1-lambda2)>0.01);
 
-    std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
-    /*for(size_t i=0; i<m_sommets.size(); i++)
+    /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
+    for(size_t i=0; i<m_sommets.size(); i++)
             std::cout<<m_sommets[i]->getId()<<" "<<vecIndices[i].first<<" "<<vecIndices[i].second<<std::endl;*/
     return vecIndices;
 }
@@ -308,21 +361,26 @@ void Graphe::testConnexite ()
     }
 }
 
-void recursif (std::unordered_map<Sommet*,unsigned int> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
-{
-    if ( predecesseurs.find(current) != predecesseurs.end())
+void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs){
+    if (predecesseurs.find(current) != predecesseurs.end())
     {
-        ++compt[current];
-        for(auto &j : predecesseurs[current].first)
-            recursif(compt,j,predecesseurs);
+       ++compt.first[current];
+       for(auto &j : predecesseurs[current].first)
+       {
+            recursif(compt,j.first,predecesseurs);
+             if (predecesseurs.find(j.first) != predecesseurs.end())
+                ++compt.second[j.second];
+       }
     }
 }
 
-std::vector<std::pair<double,double>> Graphe::intermediarite()
+std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
 {
     Sommet* courant;
     double longueur;
-    std::vector<std::pair<double,double>> centralite(m_ordre, {0.0,0.0});
+    std::vector<std::pair<double,double>> centraliteSommets(m_ordre,{0.0,0.0});
+    std::vector<std::pair<Arete*,std::pair<double,double>>> centraliteAretes;
+    std::unordered_map<Arete*,double> mapCentraliteAretes;
 
     auto compare = [](const std::pair<Sommet*,double> s1, const std::pair<Sommet*,double> s2)
     {
@@ -333,7 +391,7 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
     for(auto &j : m_sommets)
     {
         std::unordered_map<Sommet*, int> nombreChemins;
-        std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> predecesseurs;
+        std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> predecesseurs;
         prio.push({j,0.0});
 
         while(!prio.empty())
@@ -349,7 +407,7 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
                     if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)//ecrase
                     {
                         prio.push({i.first,longueur+i.second->getPoids()});
-                        predecesseurs[i.first] = {{courant},i.second->getPoids()+longueur};
+                        predecesseurs[i.first] = {{{courant,i.second}} ,i.second->getPoids()+longueur};
 
                         if(courant == j)
                             nombreChemins[i.first] = 1;
@@ -360,7 +418,7 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
                     {
                         prio.push({i.first,longueur+i.second->getPoids()});
                         predecesseurs[i.first].second = i.second->getPoids()+longueur;
-                        predecesseurs[i.first].first.push_back(courant);
+                        predecesseurs[i.first].first.push_back({courant,i.second});
                         nombreChemins[i.first] += nombreChemins[courant];
                     }
                 }
@@ -371,24 +429,36 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
             if(m_orientation || k.first->getId() > j->getId())
                 for(auto &z : predecesseurs[k.first].first)
                 {
-                    std::unordered_map<Sommet*,unsigned int> compt;
-                    recursif(compt,z,predecesseurs);
-                    for(auto &i : compt)
-                        centralite[i.first->getId()].first += (float) i.second/nombreChemins[k.first];
+                    std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
+                    recursif(compt,z.first,predecesseurs);
+                    for(auto &i : compt.first)
+                        centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
+                    for(auto &i : compt.second)
+                        mapCentraliteAretes[i.first] += (double) i.second/nombreChemins[k.first];
                 }
 
     }
 
-    for(auto &i : centralite)
+    for(auto &i : centraliteSommets)
     {
         if(m_orientation)
             i.first /= 2.0;
 
-        i.second = i.first *2.0/(float)(m_ordre*m_ordre - 3.0*m_ordre + 2.0);
-        std::cout << i.first  << " " << i.second<< std::endl;
+         i.second = i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
+        //std::cout << i.first  << " " << i.second<< std::endl;
     }
 
-    return centralite;
+    for(auto &i : mapCentraliteAretes)
+    {
+        centraliteAretes.push_back({i.first,{i.second,i.second*(double)2.0/((m_taille-1)*(m_taille-2))}});
+        //std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
+    }
+    for(auto &i : m_aretes)
+        if(mapCentraliteAretes.find(i) == mapCentraliteAretes.end())
+            centraliteAretes.push_back({i,{0.0,0.0}});
+
+
+    return {centraliteSommets,centraliteAretes};
 }
 
 std::vector<std::pair<double, double>> Graphe::vecteurProximite()
@@ -444,7 +514,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
     return indiceSommets;
 }
 
-void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<std::pair<double, double>> intermediarite, std::string nomFichier)
+void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier)
 {
     bool verif=false;
     int occurence=0;
@@ -459,14 +529,65 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     }
     std::ofstream ofs{fichierSauvegarde};
     if(!ofs)
-        std::cout<<"Ouverture impossible"<<std::endl;
+    {
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<"Ouverture impossible";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", la sauvegarde ne peut avoir lieu"<<std::endl;
+    }
     else
     {
+        std::cout<<std::endl<<"Sauvegarde du fichier ";
+        SetConsoleTextAttribute(texteConsole, 10);
+        std::cout<<nomFichier;
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<"..."<<std::endl;
+        std::cout<<std::endl<<"Affichage de la centralite des sommets : ";
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<"degre";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", ";
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<"vecteur propre";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", ";
+        SetConsoleTextAttribute(texteConsole, 11);
+        std::cout<<"proximite";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", ";
+        SetConsoleTextAttribute(texteConsole, 13);
+        std::cout<<"intermediarite";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" :"<<std::endl<<std::endl;
         for(size_t i=0; i<m_sommets.size(); i++)
+        {
             ofs<<i<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
                <<vecteurPropre[i].first<<" "<<vecteurPropre[i].second<<" "
                <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
-               <<intermediarite[i].first<<" "<<intermediarite[i].second;
+               <<intermediarite.first[i].first<<" "<<intermediarite.first[i].second<<std::endl;
+
+            std::cout<<i<<" ";
+            SetConsoleTextAttribute(texteConsole, 3);
+            std::cout<<centralite_degres[i].first<<" ";
+            std::cout<<centralite_degres[i].second<<" ";
+            SetConsoleTextAttribute(texteConsole, 12);
+            std::cout<<vecteurPropre[i].first<<" ";
+            std::cout<<vecteurPropre[i].second<<" ";
+            SetConsoleTextAttribute(texteConsole, 11);
+            std::cout<<vecteurProximite[i].first<<" ";
+            std::cout<<vecteurProximite[i].second<<" ";
+            SetConsoleTextAttribute(texteConsole, 13);
+            std::cout<<intermediarite.first[i].first<<" ";
+            std::cout<<intermediarite.first[i].second<<std::endl;
+            SetConsoleTextAttribute(texteConsole, 15);
+        }
+        std::cout << std::endl << "intermediarite aretes:" << std::endl << std::endl;
+        ofs << std::endl << "aretes" <<std::endl;
+        for(auto &i : intermediarite.second)
+        {
+            ofs << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
+            std::cout << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
+        }
     }
 }
 

@@ -6,6 +6,10 @@
 #include <cmath>
 #include <unordered_map>
 #include <queue>
+#include <windows.h>
+
+///Varibale globale qui permet de mettre de la couleur sur le texte de la console
+extern HANDLE texteConsole;
 
 class Graphe
 {
@@ -22,8 +26,8 @@ class Graphe
         int rechercheCC ();
         void supprimerArete ();
         void testConnexite ();
-        void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<std::pair<double, double>> intermediarite, std::string nomFichier);
-        std::vector<std::pair<double,double>> intermediarite();
+        void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier);
+        std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite();
         std::vector<std::pair<double, double>> vecteurProximite();
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
@@ -37,6 +41,6 @@ class Graphe
         int m_taille;
 };
 
-void recursif (std::unordered_map<Sommet*,unsigned int> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs);
+void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
 
 #endif // GRAPHE_H
