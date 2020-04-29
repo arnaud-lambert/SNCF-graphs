@@ -559,6 +559,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
         std::cout<<"intermediarite";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" :"<<std::endl<<std::endl;
+
         for(size_t i=0; i<m_sommets.size(); i++)
         {
             ofs<<i<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
@@ -723,3 +724,49 @@ void Graphe::kSommetsConnexite ()
     std::cout<<std::endl<<"Le graphe est "<<k_sommets<<"-sommet(s)-connexe"<<std::endl;
 
 }
+
+
+void Graphe::comparaisonIndices()
+{
+    std::vector<std::pair<int, double>> centralite_degres = this->centraliteDegre ();
+    std::vector<std::pair<double, double>> vecteur_propre= this->vecteurPropre();
+    std::vector<std::pair<double, double>> vecteur_proximite=this->vecteurProximite();
+    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite=this->intermediarite();
+    int nb=0;
+
+    do
+    {
+        std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
+        std::cin>>nb;
+    }
+    while((nb<0)||(nb>(int)m_taille));
+
+    for(int i=0; i<nb; ++i)
+    {
+        this->supprimerArete();
+    }
+
+    std::vector<std::pair<std::pair<double, double>std::pair<double, double>> degres_apres=this->centraliteDegre ();
+    std::vector<std::pair<double, double>> vPropre_apres=this->vecteurPropre();
+    std::vector<std::pair<double, double>> vProx_apres=this->vecteurProximite();
+    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> inter_apres=this->intermediarite();
+
+    std::cout<<std::endl<<"Differences entre les indices de centralite avant et"
+             <<std::endl<<"apres la suppression des aretes selectionnees: "<<std::endl<<std::endl;
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        std::cout<<"Sommet "<<i<<" : "<<centraliteDegre[i].first-degre_apres[i].first
+                 <<"  "<<centraliteDegre[i].second-degre_apres[i].secondt<<"  "
+                 <<vecteur_propre[i].first-vPropre_apres[i].first<<"  "
+                 <<vecteur_propre[i].second-vPropre_apres[i].second<<"  "
+                 <<vecteur_proximite[i].first-vProx[i].first<<"  "<<vecteur_proximite[i].second-vProx[i].second
+                 <<"  "<<intermediarite.first[i].first-inter_apres.first[i].first<<"  "
+                 <<intermediarite.first[i].second-inter_apres.first[i].second<<std::endl;
+
+    }
+}
+
+
+
+

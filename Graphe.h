@@ -31,6 +31,7 @@ class Graphe
         std::vector<std::pair<double, double>> vecteurProximite();
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
+        void comparaisonIndices ();
 
     private:
         std::vector<Sommet*> m_sommets;

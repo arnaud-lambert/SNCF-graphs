@@ -2,6 +2,7 @@
 #include <windows.h>
 
 bool menu(Graphe& a, std::string nomFichier);
+int optionVulnerabilite();
 
 ///Varibale globale qui permet de mettre de la couleur sur le texte de la console
 HANDLE texteConsole=GetStdHandle(STD_OUTPUT_HANDLE);
@@ -94,6 +95,7 @@ bool menu (Graphe& a, std::string nomFichier)
         switch(choix)
         {
         case 1:
+            a.dessiner();
             return true;
             break;
 
@@ -117,26 +119,10 @@ bool menu (Graphe& a, std::string nomFichier)
 
         case 5:
         {
-            int option=0;
-            SetConsoleTextAttribute(texteConsole, 14);
-            std::cout<<std::endl<<"Comment voulez vous tester la vulnerabilite du graphe ?"
-                     <<std::endl<<"    1. ";
-            SetConsoleTextAttribute(texteConsole, 15);
-            std::cout<<"Supprimer une ou plusieurs aretes et tester"<<std::endl
-                     <<"       la connexite du graphe"<<std::endl;
-            SetConsoleTextAttribute(texteConsole, 14);
-            std::cout<<"    2. ";
-            SetConsoleTextAttribute(texteConsole, 15);
-            std::cout<<"Supprimer une ou plusieurs aretes, recalculer"<<std::endl
-                     <<"       et comparer les indices de centralite"<<std::endl;
-
-            SetConsoleTextAttribute(texteConsole, 10);
-            do{ std::cin>>option; } while(option!=1&&option!=2);
-            SetConsoleTextAttribute(texteConsole, 15);
-            if(option==1)
+            if(optionVulnerabilite()==1)
                 a.testConnexite();
-//            else
-//                ///en cours de code
+            else
+                a.comparaisonIndices();
 
         }
         break;
@@ -145,4 +131,33 @@ bool menu (Graphe& a, std::string nomFichier)
     }
     while(choix!=6);
     return false;
+}
+
+
+
+
+int optionVulnerabilite()
+{
+    int option=0;
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<std::endl<<"Comment voulez vous tester la vulnerabilite du graphe ?"
+             <<std::endl<<"    1. ";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<"Supprimer une ou plusieurs aretes et tester"<<std::endl
+             <<"       la connexite du graphe"<<std::endl;
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"    2. ";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<"Supprimer une ou plusieurs aretes, recalculer"<<std::endl
+             <<"       et comparer les indices de centralite"<<std::endl;
+
+    SetConsoleTextAttribute(texteConsole, 10);
+    do
+    {
+        std::cin>>option;
+    }
+    while(option!=1&&option!=2);
+    SetConsoleTextAttribute(texteConsole, 15);
+
+    return option;
 }
