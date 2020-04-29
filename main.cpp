@@ -27,13 +27,13 @@ bool menu (Graphe& a, std::string nomFichier)
     {
         SetConsoleTextAttribute(texteConsole, 3);
         std::cout<<std::endl<<"  ____    _____     ___________     ____    ____     ____     ____ "<<std::endl
-                            <<"/      \\/      \\   |    _______|   |    \\  |    |   |    |   |    |"<<std::endl
-                            <<"|              |   |   |           |     \\ |    |   |    |   |    |"<<std::endl
-                            <<"|   |\\    /|   |   |   |____       |      \\|    |   |    |   |    |"<<std::endl
-                            <<"|   | \\__/ |   |   |    ____|      |            |   |    |   |    |"<<std::endl
-                            <<"|   |      |   |   |   |           |    |\\      |   |    |___|    |"<<std::endl
-                            <<"|   |      |   |   |   |_______    |    | \\     |   |             |"<<std::endl
-                            <<"|___|      |___|   |___________|   |____|  \\____|   |_____________|"<<std::endl;
+                 <<"/      \\/      \\   |    _______|   |    \\  |    |   |    |   |    |"<<std::endl
+                 <<"|              |   |   |           |     \\ |    |   |    |   |    |"<<std::endl
+                 <<"|   |\\    /|   |   |   |____       |      \\|    |   |    |   |    |"<<std::endl
+                 <<"|   | \\__/ |   |   |    ____|      |            |   |    |   |    |"<<std::endl
+                 <<"|   |      |   |   |   |           |    |\\      |   |    |___|    |"<<std::endl
+                 <<"|   |      |   |   |   |_______    |    | \\     |   |             |"<<std::endl
+                 <<"|___|      |___|   |___________|   |____|  \\____|   |_____________|"<<std::endl;
 
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<std::endl<<std::endl<<"1. ";
@@ -50,6 +50,15 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<std::endl<<"3. ";
         SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Etude ";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<"de la ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"k-sommet(s)-connexite ";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<"du graphe"<<std::endl;
+        std::cout<<std::endl<<"4. ";
+        SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"Calculer";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" et ";
@@ -64,7 +73,7 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"centralite"<<std::endl;
         SetConsoleTextAttribute(texteConsole, 15);
-        std::cout<<std::endl<<"4. ";
+        std::cout<<std::endl<<"5. ";
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"Tester";
         SetConsoleTextAttribute(texteConsole, 15);
@@ -73,7 +82,8 @@ bool menu (Graphe& a, std::string nomFichier)
         std::cout<<"vulnerabilite";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" du graphe"<<std::endl;
-        std::cout<<std::endl<<"5. ";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<std::endl<<"6. ";
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"Quitter";
         SetConsoleTextAttribute(texteConsole, 15);
@@ -92,6 +102,10 @@ bool menu (Graphe& a, std::string nomFichier)
             break;
 
         case 3:
+            a.kSommetsConnexite();
+            break;
+
+        case 4:
         {
             std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
             std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
@@ -101,11 +115,34 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         break;
 
-        case 4:
-            //a.testConnexite();
-            break;
+        case 5:
+        {
+            int option=0;
+            SetConsoleTextAttribute(texteConsole, 14);
+            std::cout<<std::endl<<"Comment voulez vous tester la vulnerabilite du graphe ?"
+                     <<std::endl<<"    1. ";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<"Supprimer une ou plusieurs aretes et tester"<<std::endl
+                     <<"       la connexite du graphe"<<std::endl;
+            SetConsoleTextAttribute(texteConsole, 14);
+            std::cout<<"    2. ";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<"Supprimer une ou plusieurs aretes, recalculer"<<std::endl
+                     <<"       et comparer les indices de centralite"<<std::endl;
+
+            SetConsoleTextAttribute(texteConsole, 10);
+            do{ std::cin>>option; } while(option!=1&&option!=2);
+            SetConsoleTextAttribute(texteConsole, 15);
+            if(option==1)
+                a.testConnexite();
+//            else
+//                ///en cours de code
+
+        }
+        break;
         }
         a.dessiner();
-    }while(choix!=5);
+    }
+    while(choix!=6);
     return false;
 }
