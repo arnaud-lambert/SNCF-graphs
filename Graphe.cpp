@@ -307,21 +307,27 @@ void Graphe::rechercheCC ()
 //}
 
 
-void recursif (std::unordered_map<Sommet*,unsigned int> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
+void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs)
 {
-    if ( predecesseurs.find(current) != predecesseurs.end())
+    if (predecesseurs.find(current) != predecesseurs.end())
     {
-       ++compt[current];
+       ++compt.first[current];
        for(auto &j : predecesseurs[current].first)
-            recursif(compt,j,predecesseurs);
+       {
+            recursif(compt,j.first,predecesseurs);
+             if (predecesseurs.find(j.first) != predecesseurs.end())
+                ++compt.second[j.second];
+       }
     }
 }
 
-std::vector<std::pair<double,double>> Graphe::intermediarite()
+std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
 {
     Sommet* courant;
     double longueur;
-    std::vector<std::pair<double,double>> centralite(m_ordre,{0.0,0.0});
+    std::vector<std::pair<double,double>> centraliteSommets(m_ordre,{0.0,0.0});
+    std::vector<std::pair<Arete*,std::pair<double,double>>> centraliteAretes;
+    std::unordered_map<Arete*,double> mapCentraliteAretes;
 
     auto compare = [](const std::pair<Sommet*,double> s1, const std::pair<Sommet*,double> s2)
     { return s1.second > s2.second; };
@@ -330,7 +336,7 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
     for(auto &j : m_sommets)
     {
         std::unordered_map<Sommet*, int> nombreChemins;
-        std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> predecesseurs;
+        std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> predecesseurs;
         prio.push({j,0.0});
 
         while(!prio.empty())
@@ -346,7 +352,7 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
                     if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)//ecrase
                     {
                         prio.push({i.first,longueur+i.second->getPoids()});
-                        predecesseurs[i.first] = {{courant},i.second->getPoids()+longueur};
+                        predecesseurs[i.first] = {{{courant,i.second}} ,i.second->getPoids()+longueur};
 
                         if(courant == j)
                             nombreChemins[i.first] = 1;
@@ -357,7 +363,7 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
                     {
                         prio.push({i.first,longueur+i.second->getPoids()});
                         predecesseurs[i.first].second = i.second->getPoids()+longueur;
-                        predecesseurs[i.first].first.push_back(courant);
+                        predecesseurs[i.first].first.push_back({courant,i.second});
                         nombreChemins[i.first] += nombreChemins[courant];
                     }
                 }
@@ -368,24 +374,32 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
             if(m_orientation || k.first->getId() > j->getId())
                 for(auto &z : predecesseurs[k.first].first)
                 {
-                    std::unordered_map<Sommet*,unsigned int> compt;
-                    recursif(compt,z,predecesseurs);
-                    for(auto &i : compt)
-                        centralite[i.first->getId()].first += (float) i.second/nombreChemins[k.first];
+                    std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
+                    recursif(compt,z.first,predecesseurs);
+                    for(auto &i : compt.first)
+                        centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
+                    for(auto &i : compt.second)
+                        mapCentraliteAretes[i.first] += (double) i.second/nombreChemins[k.first];
                 }
 
     }
 
-    for(auto &i : centralite)
+    for(auto &i : centraliteSommets)
     {
         if(m_orientation)
             i.first /= 2.0;
 
-         i.second = i.first *2.0/(float)(m_ordre*m_ordre - 3.0*m_ordre + 2.0);
+         i.second = i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
         std::cout << i.first  << " " << i.second<< std::endl;
     }
+    std::cout << "aretes :" << std::endl;
+    for(auto &i : mapCentraliteAretes)
+    {
+        centraliteAretes.push_back({i.first,{i.second,i.second*(double)2.0/((m_taille-1)*(m_taille-2))}});
+        std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
+    }
 
-    return centralite;
+    return {centraliteSommets,centraliteAretes};
 }
 
 std::vector<std::pair<double, double>> Graphe::vecteurProximite()
