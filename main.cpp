@@ -13,11 +13,11 @@ int main()
     a.dessiner();
     std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
     std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
-    a.testConnexite();
+//    a.testConnexite();
     std::vector<std::pair<double, double>> vecteurProximite=a.vecteurProximite();
     std::vector<std::pair<double, double>> intermediarite=a.intermediarite();
     a.dessiner();
-    a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
+//a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
     return 0;
 }
 

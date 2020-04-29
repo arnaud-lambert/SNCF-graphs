@@ -1,5 +1,4 @@
-#include "Sommet.h"
-
+#include "Arete.h"
 Sommet::Sommet(int id, std::string nom, double x, double y)
         :m_id{id}, m_nom{nom}, m_x{x}, m_y{y}
 {
@@ -21,17 +20,7 @@ void Sommet::affichage()const
     std::cout << m_id << " " << m_nom << " " << m_x << " " << m_y << " adj: ";
 
     for(auto &i : m_adjacents)
-        std::cout << i.first->getId() << "=" << i.second << " ";
-}
-
-void Sommet::setPoidsAdjacent(double poids, Sommet* adjacent)
-{
-    for(size_t i = 0; i < m_adjacents.size() ; ++i)
-        if(m_adjacents[i].first == adjacent)
-        {
-            m_adjacents[i].second = poids;
-            break;
-        }
+        std::cout << i.first->getId() << "=" << i.second->getPoids() << " ";
 }
 
 void Sommet::dessiner(Svgfile&svgout)
@@ -54,11 +43,11 @@ void Sommet::dessiner(Svgfile&svgout)
     svgout.addText( m_x*100 - 5 , m_y*100 - 10, m_nom, "black" );
 }
 
-void Sommet::suppAdjacent (Sommet*adjacent)
-{
-    for(size_t i=0; i<m_adjacents.size(); ++i)
-    {
-        if(m_adjacents[i].first==adjacent)
-            m_adjacents.erase(m_adjacents.begin()+i);
-    }
-}
+//void Sommet::suppAdjacent (Sommet*adjacent)
+//{
+//    for(size_t i=0; i<m_adjacents.size(); ++i)
+//    {
+//        if(m_adjacents[i].first==adjacent)
+//            m_adjacents.erase(m_adjacents.begin()+i);
+//    }
+//}

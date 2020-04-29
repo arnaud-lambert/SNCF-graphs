@@ -37,9 +37,9 @@ Graphe::Graphe(std::string& nomFichier)
         ifs>>indice>>extremite1>>extremite2;
         Arete* nouv = new Arete(indice, m_sommets[extremite1], m_sommets[extremite2]);
         m_aretes.push_back(nouv);
-        m_sommets[extremite1]->ajouterAdjacent(m_sommets[extremite2]);
+        m_sommets[extremite1]->ajouterAdjacent(m_sommets[extremite2],nouv);
         if(!m_orientation)
-            m_sommets[extremite2]->ajouterAdjacent(m_sommets[extremite1]);
+            m_sommets[extremite2]->ajouterAdjacent(m_sommets[extremite1],nouv);
     }
 }
 
@@ -274,7 +274,58 @@ int Graphe::rechercheCC ()
 }
 
 
+//void Graphe::supprimerArete ()
+//{
+//    int indice=0;
+//    std::set<int> indices;
+//    for(auto a: m_aretes)
+//    {
+//        indices.insert(a->getId());
+//    }
+//
+//    do
+//    {
+//        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
+//        std::cin>>indice;
+//    }
+//    while(indices.find(indice)==indices.end());
+//
+//    std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
+//    for(auto s: m_sommets)
+//    {
+//        if(s==extremites.first)
+//            s->suppAdjacent(extremites.second);
+//
+//        if (s==extremites.second)
+//            s->suppAdjacent(extremites.first);
+//
+//    }
+//
+//    for(size_t i=0; i<m_aretes.size(); ++i)
+//    {
+//        if(m_aretes[i]->getId()==indice)
+//            m_aretes.erase(m_aretes.begin()+i);
+//    }
+//    --m_taille;
+//
+//}
 
+
+//void Graphe::testConnexite ()
+//{
+//    int nb=0;
+//    do{
+//    std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
+//    std::cin>>nb;
+//    }while((nb<0)||(nb>(int)m_taille));
+//
+//    for(int i=0; i<nb; ++i)
+//    {
+//        this->supprimerArete();
+//    }
+//
+//    this->rechercheCC();
+//}
 void Graphe::testConnexite ()
 {
     int nb=0, cc=0;
@@ -304,7 +355,6 @@ void Graphe::testConnexite ()
             std::cout<<s->getNom()<<" est un sommet isole"<<std::endl;
     }
 }
-
 
 void recursif (std::unordered_map<Sommet*,unsigned int> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
 {
@@ -344,20 +394,20 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
             {
                 if(i.first != j)
                 {
-                    if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second) < predecesseurs[i.first].second)//ecrase
+                    if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)//ecrase
                     {
-                        prio.push({i.first,longueur+i.second});
-                        predecesseurs[i.first] = {{courant},i.second+longueur};
+                        prio.push({i.first,longueur+i.second->getPoids()});
+                        predecesseurs[i.first] = {{courant},i.second->getPoids()+longueur};
 
                         if(courant == j)
                             nombreChemins[i.first] = 1;
                         else
                             nombreChemins[i.first] = nombreChemins[courant];
                     }
-                    else if (longueur+i.second == predecesseurs[i.first].second)//autre chemin court
+                    else if (longueur+i.second->getPoids() == predecesseurs[i.first].second)//autre chemin court
                     {
-                        prio.push({i.first,longueur+i.second});
-                        predecesseurs[i.first].second = i.second+longueur;
+                        prio.push({i.first,longueur+i.second->getPoids()});
+                        predecesseurs[i.first].second = i.second->getPoids()+longueur;
                         predecesseurs[i.first].first.push_back(courant);
                         nombreChemins[i.first] += nombreChemins[courant];
                     }
@@ -415,9 +465,9 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
             file.pop();
             for(size_t j=0; j<sommetCourant->getAdjacents().size(); j++)
             {
-                if(distance[sommetCourant->getAdjacents()[j].first->getId()] > distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second)
+                if(distance[sommetCourant->getAdjacents()[j].first->getId()] > distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second->getPoids())
                 {
-                    distance[sommetCourant->getAdjacents()[j].first->getId()] = distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second;
+                    distance[sommetCourant->getAdjacents()[j].first->getId()] = distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second->getPoids();
                     file.push({sommetCourant->getAdjacents()[j].first, distance[sommetCourant->getAdjacents()[j].first->getId()]});
                     predecesseur[sommetCourant->getAdjacents()[j].first]= {sommetCourant, distance[sommetCourant->getAdjacents()[j].first->getId()]};
                 }
