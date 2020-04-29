@@ -11,13 +11,6 @@ Arete::~Arete()
     //dtor
 }
 
-void Arete::setPoids(double poids)
-{
-    m_poids = poids;
-    m_extremites.first->setPoidsAdjacent(poids,m_extremites.second);
-    m_extremites.second->setPoidsAdjacent(poids,m_extremites.first);
-}
-
 void Arete::affichage()const
 {
     std::cout<<m_id<<" "<<m_extremites.first->getId()<<" "<<m_extremites.second->getId()<<std::endl;

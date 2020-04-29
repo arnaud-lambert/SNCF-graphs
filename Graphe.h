@@ -19,7 +19,7 @@ class Graphe
         std::vector<Sommet*> getSommets() { return m_sommets;}
         std::vector<std::pair<int, double>> centraliteDegre ();
         void rechercheCC();
-        void supprimerArete ();
+//        void supprimerArete ();
         void testConnexite ();
         void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<std::pair<double, double>> intermediarite, std::string nomFichier);
         std::vector<std::pair<double,double>> intermediarite();

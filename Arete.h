@@ -9,14 +9,15 @@ class Arete
         virtual ~Arete();
         void affichage()const;
         std::pair<Sommet*, Sommet*> getExtremites() { return m_extremites; }
-        void setPoids(double poids);
+        void setPoids(double poids) { m_poids = poids; }
+        double getPoids() { return m_poids; }
         void dessiner (Svgfile&svgout);
         int getId () const { return m_id; }
 
     private:
         int m_id;
         std::pair<Sommet*, Sommet*> m_extremites;
-        double m_poids=0;
+        double m_poids = 1.0;
 };
 
 #endif // ARETE_H
