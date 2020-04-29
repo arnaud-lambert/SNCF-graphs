@@ -443,14 +443,18 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
             i.first /= 2.0;
 
          i.second = i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
-        std::cout << i.first  << " " << i.second<< std::endl;
+        //std::cout << i.first  << " " << i.second<< std::endl;
     }
-    std::cout << "aretes :" << std::endl;
+
     for(auto &i : mapCentraliteAretes)
     {
         centraliteAretes.push_back({i.first,{i.second,i.second*(double)2.0/((m_taille-1)*(m_taille-2))}});
-        std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
+        //std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
     }
+    for(auto &i : m_aretes)
+        if(mapCentraliteAretes.find(i) == mapCentraliteAretes.end())
+            centraliteAretes.push_back({i,{0.0,0.0}});
+
 
     return {centraliteSommets,centraliteAretes};
 }
@@ -508,7 +512,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
     return indiceSommets;
 }
 
-void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::vector<std::pair<double, double>> intermediarite, std::string nomFichier)
+void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier)
 {
     bool verif=false;
     int occurence=0;
@@ -558,7 +562,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             ofs<<i<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
                <<vecteurPropre[i].first<<" "<<vecteurPropre[i].second<<" "
                <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
-               <<intermediarite[i].first<<" "<<intermediarite[i].second<<std::endl;
+               <<intermediarite.first[i].first<<" "<<intermediarite.first[i].second<<std::endl;
 
             std::cout<<i<<" ";
             SetConsoleTextAttribute(texteConsole, 3);
@@ -571,9 +575,16 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             std::cout<<vecteurProximite[i].first<<" ";
             std::cout<<vecteurProximite[i].second<<" ";
             SetConsoleTextAttribute(texteConsole, 13);
-            std::cout<<intermediarite[i].first<<" ";
-            std::cout<<intermediarite[i].second<<std::endl;
+            std::cout<<intermediarite.first[i].first<<" ";
+            std::cout<<intermediarite.first[i].second<<std::endl;
             SetConsoleTextAttribute(texteConsole, 15);
+        }
+        std::cout << std::endl << "intermediarite aretes:" << std::endl << std::endl;
+        ofs << std::endl << "aretes" <<std::endl;
+        for(auto &i : intermediarite.second)
+        {
+            ofs << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
+            std::cout << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
         }
     }
 }
