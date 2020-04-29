@@ -307,13 +307,14 @@ void Graphe::testConnexite ()
 }
 
 
-void recursif (int &k, Sommet* i, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
+void recursif (std::unordered_map<Sommet*,unsigned int> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>> &predecesseurs)
 {
-    if (current == i)
-        ++k;
-    else if(predecesseurs.find(current) != predecesseurs.end())
+    if ( predecesseurs.find(current) != predecesseurs.end())
+    {
+       ++compt[current];
        for(auto &j : predecesseurs[current].first)
-            recursif(k,i,j,predecesseurs);
+            recursif(compt,j,predecesseurs);
+    }
 }
 
 std::vector<std::pair<double,double>> Graphe::intermediarite()
@@ -321,13 +322,9 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
     Sommet* courant;
     double longueur;
     std::vector<std::pair<double,double>> centralite(m_ordre,{0.0,0.0});
-    std::vector<std::unordered_map<Sommet*, int>> vecNombreChemins;
-    std::vector<std::unordered_map<Sommet*, std::pair<std::vector<Sommet*>,double>>> vecPredecesseurs;
 
     auto compare = [](const std::pair<Sommet*,double> s1, const std::pair<Sommet*,double> s2)
-    {
-        return s1.second > s2.second;
-    };
+    { return s1.second > s2.second; };
 
     std::priority_queue<std::pair<Sommet*,double>, std::vector<std::pair<Sommet*,double>>, decltype(compare)> prio(compare);
     for(auto &j : m_sommets)
@@ -359,7 +356,6 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
                     else if (longueur+i.second == predecesseurs[i.first].second)//autre chemin court
                     {
                         prio.push({i.first,longueur+i.second});
-
                         predecesseurs[i.first].second = i.second+longueur;
                         predecesseurs[i.first].first.push_back(courant);
                         nombreChemins[i.first] += nombreChemins[courant];
@@ -367,54 +363,19 @@ std::vector<std::pair<double,double>> Graphe::intermediarite()
                 }
             }
         }
-        vecNombreChemins.push_back(nombreChemins);
-        vecPredecesseurs.push_back(predecesseurs);
+
+        for(auto &k : predecesseurs)
+            if(m_orientation || k.first->getId() > j->getId())
+                for(auto &z : predecesseurs[k.first].first)
+                {
+                    std::unordered_map<Sommet*,unsigned int> compt;
+                    recursif(compt,z,predecesseurs);
+                    for(auto &i : compt)
+                        centralite[i.first->getId()].first += (float) i.second/nombreChemins[k.first];
+                }
+
     }
 
-    //non-orienté
-    if(!m_orientation)
-    {
-        for(auto &i : m_sommets)
-            for(int j = 0 ; j < m_ordre ; ++j)
-                if(i->getId() != j && vecPredecesseurs[j].find(i) != vecPredecesseurs[j].end())
-                    for(int k = m_ordre-1 ; k > j ; --k)
-                        if(i->getId() != k && vecPredecesseurs[j].find(m_sommets[k]) != vecPredecesseurs[j].end() &&
-                        (vecPredecesseurs[j][i].second + vecPredecesseurs[k][i].second == vecPredecesseurs[j][m_sommets[k]].second))
-                        {
-                            if(vecNombreChemins[j][m_sommets[k]] == 1)
-                                ++centralite[i->getId()].first;
-                            else
-                            {
-                                int compt = 0;
-                                for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
-                                    recursif(compt,i,z,vecPredecesseurs[j]);
-                                centralite[i->getId()].first += (float) compt/vecNombreChemins[j][m_sommets[k]];
-                            }
-                        }
-    }
-
-    //orienté
-    else
-    {
-        for(auto &i : m_sommets)
-            for(int j = 0 ; j < m_ordre ; ++j)
-                if(i->getId() != j && vecPredecesseurs[j].find(i) != vecPredecesseurs[j].end())
-                    for(int k = 0 ; k < m_ordre ; ++k)
-                        if(j != k && i->getId() != k && vecPredecesseurs[j].find(m_sommets[k]) != vecPredecesseurs[j].end() && vecPredecesseurs[i->getId()].find(m_sommets[k]) != vecPredecesseurs[i->getId()].end() &&
-                        (vecPredecesseurs[j][i].second + vecPredecesseurs[i->getId()][m_sommets[k]].second == vecPredecesseurs[j][m_sommets[k]].second))
-                        {
-                            if(vecNombreChemins[j][m_sommets[k]] == 1)
-                                ++centralite[i->getId()].first;
-                            else
-                            {
-                                int compt = 0;
-                                for(auto &z : vecPredecesseurs[j][m_sommets[k]].first)
-                                    recursif(compt,i,z,vecPredecesseurs[j]);
-
-                                centralite[i->getId()].first+= (float) compt/vecNombreChemins[j][m_sommets[k]];
-                            }
-                        }
-    }
     for(auto &i : centralite)
     {
         if(m_orientation)
