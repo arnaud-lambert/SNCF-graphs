@@ -48,6 +48,7 @@ Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{sourc
     m_ponderation{source.m_ponderation}, m_ordre{source.m_ordre}, m_taille{source.m_taille}
 {
     std::map<Sommet*,Sommet*>transpose;
+    std::map<Arete*, Arete*>trans_aretes;
 
     for(size_t i=0; i<source.m_sommets.size(); ++i)
     {
@@ -58,6 +59,7 @@ Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{sourc
     for(size_t i=0; i<source.m_aretes.size(); ++i)
     {
         m_aretes[i]=new Arete(*source.m_aretes[i]);
+        trans_aretes[source.m_aretes[i]]=m_aretes[i];
         m_aretes[i]->setExtremites(transpose[source.m_aretes[i]->getExtremites().first], transpose[source.m_aretes[i]->getExtremites().second]);
     }
 
@@ -65,8 +67,7 @@ Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{sourc
     {
         for(auto j: source.m_sommets[i]->getAdjacents())
         {
-            m_sommets[i]->ajouterAdjacent(transpose[j.first]);
-            m_sommets[i]->setPoidsAdjacent(j.second, transpose[j.first]);
+            m_sommets[i]->ajouterAdjacent(transpose[j.first], trans_aretes[j.second]);
         }
     }
 
@@ -274,58 +275,9 @@ int Graphe::rechercheCC ()
 }
 
 
-//void Graphe::supprimerArete ()
-//{
-//    int indice=0;
-//    std::set<int> indices;
-//    for(auto a: m_aretes)
-//    {
-//        indices.insert(a->getId());
-//    }
-//
-//    do
-//    {
-//        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
-//        std::cin>>indice;
-//    }
-//    while(indices.find(indice)==indices.end());
-//
-//    std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
-//    for(auto s: m_sommets)
-//    {
-//        if(s==extremites.first)
-//            s->suppAdjacent(extremites.second);
-//
-//        if (s==extremites.second)
-//            s->suppAdjacent(extremites.first);
-//
-//    }
-//
-//    for(size_t i=0; i<m_aretes.size(); ++i)
-//    {
-//        if(m_aretes[i]->getId()==indice)
-//            m_aretes.erase(m_aretes.begin()+i);
-//    }
-//    --m_taille;
-//
-//}
 
 
-//void Graphe::testConnexite ()
-//{
-//    int nb=0;
-//    do{
-//    std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
-//    std::cin>>nb;
-//    }while((nb<0)||(nb>(int)m_taille));
-//
-//    for(int i=0; i<nb; ++i)
-//    {
-//        this->supprimerArete();
-//    }
-//
-//    this->rechercheCC();
-//}
+
 void Graphe::testConnexite ()
 {
     int nb=0, cc=0;
@@ -524,6 +476,8 @@ void Graphe::supprimerArete ()
 {
     int indice=0;
     std::set<int> indices;
+    std::pair<Sommet*, Sommet*> extremites;
+
     for(auto a: m_aretes)
     {
         indices.insert(a->getId());
@@ -536,13 +490,18 @@ void Graphe::supprimerArete ()
     }
     while(indices.find(indice)==indices.end());
 
-    std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
+    for(auto i: m_aretes)
+    {
+        if(i->getId()==indice)
+            extremites = i->getExtremites();
+    }
+
     for(auto s: m_sommets)
     {
-        if(s==extremites.first)
+        if(s->getId()==extremites.first->getId())
             s->suppAdjacent(extremites.second);
 
-        if (s==extremites.second)
+        if (s->getId()==extremites.second->getId())
             s->suppAdjacent(extremites.first);
 
     }
@@ -573,7 +532,6 @@ void Graphe::supprimerSommet (Sommet*s)
     }
 
 
-    size_t iterateur=0;
 
     int i=0;
     do

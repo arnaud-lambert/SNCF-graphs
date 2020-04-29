@@ -19,12 +19,12 @@ class Sommet
         int getId() { return m_id; }
         void setId(int id) { m_id=id; }
         std::vector<std::pair<Sommet*,Arete*>> getAdjacents() { return m_adjacents; }
-        void ajouterAdjacent(Sommet* adjacent,Arete* arete) { m_adjacents.push_back({adjacent,arete}); }
+        void ajouterAdjacent(Sommet* adjacent, Arete* arete) { m_adjacents.push_back({adjacent,arete}); }
         double getX() const { return m_x; }
         double getY() const { return m_y; }
         void dessiner(Svgfile&svgout);
         std::string getNom () const { return m_nom; }
-//        void suppAdjacent (Sommet*adjacent);
+        void suppAdjacent (Sommet*adjacent);
 
     private:
         int m_id;
