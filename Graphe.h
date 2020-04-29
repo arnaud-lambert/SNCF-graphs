@@ -6,6 +6,10 @@
 #include <cmath>
 #include <unordered_map>
 #include <queue>
+#include <windows.h>
+
+///Varibale globale qui permet de mettre de la couleur sur le texte de la console
+extern HANDLE texteConsole;
 
 class Graphe
 {
