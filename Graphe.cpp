@@ -361,16 +361,17 @@ void Graphe::testConnexite ()
     }
 }
 
-void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs){
+void recursif (std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs)
+{
     if (predecesseurs.find(current) != predecesseurs.end())
     {
-       ++compt.first[current];
-       for(auto &j : predecesseurs[current].first)
-       {
+        ++compt.first[current];
+        for(auto &j : predecesseurs[current].first)
+        {
             recursif(compt,j.first,predecesseurs);
-             if (predecesseurs.find(j.first) != predecesseurs.end())
+            if (predecesseurs.find(j.first) != predecesseurs.end())
                 ++compt.second[j.second];
-       }
+        }
     }
 }
 
@@ -378,7 +379,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
 {
     Sommet* courant;
     double longueur;
-    std::vector<std::pair<double,double>> centraliteSommets(m_ordre,{0.0,0.0});
+    std::vector<std::pair<double,double>> centraliteSommets(m_ordre, {0.0,0.0});
     std::vector<std::pair<Arete*,std::pair<double,double>>> centraliteAretes;
     std::unordered_map<Arete*,double> mapCentraliteAretes;
 
@@ -407,7 +408,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
                     if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)//ecrase
                     {
                         prio.push({i.first,longueur+i.second->getPoids()});
-                        predecesseurs[i.first] = {{{courant,i.second}} ,i.second->getPoids()+longueur};
+                        predecesseurs[i.first] = {{{courant,i.second}},i.second->getPoids()+longueur};
 
                         if(courant == j)
                             nombreChemins[i.first] = 1;
@@ -429,7 +430,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
             if(m_orientation || k.first->getId() > j->getId())
                 for(auto &z : predecesseurs[k.first].first)
                 {
-                    std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
+                    std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> compt;
                     recursif(compt,z.first,predecesseurs);
                     for(auto &i : compt.first)
                         centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
@@ -444,7 +445,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
         if(m_orientation)
             i.first /= 2.0;
 
-         i.second = i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
+        i.second = i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
         //std::cout << i.first  << " " << i.second<< std::endl;
     }
 
@@ -689,6 +690,7 @@ void Graphe::kSommetsConnexite ()
     int nbCC=0, k_sommets=0;//pour recherche si graphe connexe
 
     std::vector<int> degres;
+    std::vector<std::string> sommets_supp;
 
     nbCC=copie.rechercheCC();
 
@@ -710,6 +712,7 @@ void Graphe::kSommetsConnexite ()
             if((int)copie.m_sommets[i]->getAdjacents().size()==degres[0])
             {
                 copie.supprimerSommet(copie.m_sommets[i]);
+                sommets_supp.push_back(copie.m_sommets[i]->getNom());
                 i=copie.m_sommets.size();
             }
         }
@@ -717,11 +720,19 @@ void Graphe::kSommetsConnexite ()
         ++k_sommets;
         copie.dessiner();
         nbCC=copie.rechercheCC();
-        std::cout<<nbCC<<std::endl;
-
     }
 
-    std::cout<<std::endl<<"Le graphe est "<<k_sommets<<"-sommet(s)-connexe"<<std::endl;
+    if(k>0)
+    {
+        std::cout<<std::endl<<"Le graphe est "<<k_sommets<<"-sommet(s)-connexe."<<std::endl
+                 <<"Exemple: Le graphe n'est plus connexe si l'on supprime le(s) sommet(s) ";
+        for(auto i: sommets_supp)
+        {
+            std::cout<<i<<" ";
+        }
+    }
+    else
+        std::cout<<"Ce graphe n'est pas connexe. Etude impossible."<<std::endl;
 
 }
 
@@ -729,10 +740,10 @@ void Graphe::kSommetsConnexite ()
 void Graphe::comparaisonIndices()
 {
     std::vector<std::pair<int, double>> centralite_degres1 = centraliteDegre ();
-            std::vector<std::pair<double, double>> vecteurPropre1=vecteurPropre();
-            std::vector<std::pair<double, double>> vecteurProximite1=vecteurProximite();
-            std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite1=intermediarite();
-            int nb=0;
+    std::vector<std::pair<double, double>> vecteurPropre1=vecteurPropre();
+    std::vector<std::pair<double, double>> vecteurProximite1=vecteurProximite();
+    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite1=intermediarite();
+    int nb=0;
 
     do
     {
@@ -749,30 +760,30 @@ void Graphe::comparaisonIndices()
     }
 
     std::vector<std::pair<int, double>> centralite_degres2 = centraliteDegre ();
-            std::vector<std::pair<double, double>> vecteurPropre2=vecteurPropre();
-            std::vector<std::pair<double, double>> vecteurProximite2=vecteurProximite();
-            std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite2=intermediarite();
+    std::vector<std::pair<double, double>> vecteurPropre2=vecteurPropre();
+    std::vector<std::pair<double, double>> vecteurProximite2=vecteurProximite();
+    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite2=intermediarite();
 
     std::cout<<std::endl<<"Differences entre les indices de centralite avant et"
              <<std::endl<<"apres la suppression des aretes selectionnees: "<<std::endl<<std::endl;
 
-for(size_t i=0; i<m_sommets.size();++i)
-{
-     std::cout<<"sommet "<<i<<" : "<<std::endl;
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        std::cout<<"sommet "<<i<<" : "<<std::endl;
 
-            std::cout<<"    C_degre: ";
-            std::cout<<centralite_degres1[i].first-centralite_degres2[i].first<<" ";
-            std::cout<<centralite_degres1[i].second-centralite_degres2[i].second<<" ";
-            std::cout<<std::endl<<"    C_vec_propre: ";
-            std::cout<<vecteurPropre1[i].first-vecteurPropre2[i].first<<" ";
-            std::cout<<vecteurPropre1[i].second-vecteurPropre2[i].second<<" ";
-            std::cout<<std::endl<<"    C_vec_proximite: ";
-            std::cout<<vecteurProximite1[i].first-vecteurProximite2[i].first<<" ";
-            std::cout<<vecteurProximite1[i].second-vecteurProximite2[i].second<<" ";
-            std::cout<<std::endl<<"    C_intemediarite: ";
-            std::cout<<intermediarite1.first[i].first-intermediarite2.first[i].first<<" ";
-            std::cout<<intermediarite1.first[i].second-intermediarite2.first[i].second<<std::endl;
-}
+        std::cout<<"    C_degre: ";
+        std::cout<<centralite_degres1[i].first-centralite_degres2[i].first<<" ";
+        std::cout<<centralite_degres1[i].second-centralite_degres2[i].second<<" ";
+        std::cout<<std::endl<<"    C_vec_propre: ";
+        std::cout<<vecteurPropre1[i].first-vecteurPropre2[i].first<<" ";
+        std::cout<<vecteurPropre1[i].second-vecteurPropre2[i].second<<" ";
+        std::cout<<std::endl<<"    C_vec_proximite: ";
+        std::cout<<vecteurProximite1[i].first-vecteurProximite2[i].first<<" ";
+        std::cout<<vecteurProximite1[i].second-vecteurProximite2[i].second<<" ";
+        std::cout<<std::endl<<"    C_intemediarite: ";
+        std::cout<<intermediarite1.first[i].first-intermediarite2.first[i].first<<" ";
+        std::cout<<intermediarite1.first[i].second-intermediarite2.first[i].second<<std::endl;
+    }
 }
 
 
