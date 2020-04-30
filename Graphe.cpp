@@ -728,16 +728,18 @@ void Graphe::kSommetsConnexite ()
 
 void Graphe::comparaisonIndices()
 {
-    std::vector<std::pair<int, double>> centralite_degres = this->centraliteDegre ();
-    std::vector<std::pair<double, double>> vecteur_propre= this->vecteurPropre();
-    std::vector<std::pair<double, double>> vecteur_proximite=this->vecteurProximite();
-    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite=this->intermediarite();
-    int nb=0;
+    std::vector<std::pair<int, double>> centralite_degres1 = centraliteDegre ();
+            std::vector<std::pair<double, double>> vecteurPropre1=vecteurPropre();
+            std::vector<std::pair<double, double>> vecteurProximite1=vecteurProximite();
+            std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite1=intermediarite();
+            int nb=0;
 
     do
     {
         std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
+        SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nb;
+        SetConsoleTextAttribute(texteConsole, 15);
     }
     while((nb<0)||(nb>(int)m_taille));
 
@@ -746,25 +748,31 @@ void Graphe::comparaisonIndices()
         this->supprimerArete();
     }
 
-    std::vector<std::pair<std::pair<double, double>std::pair<double, double>> degres_apres=this->centraliteDegre ();
-    std::vector<std::pair<double, double>> vPropre_apres=this->vecteurPropre();
-    std::vector<std::pair<double, double>> vProx_apres=this->vecteurProximite();
-    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> inter_apres=this->intermediarite();
+    std::vector<std::pair<int, double>> centralite_degres2 = centraliteDegre ();
+            std::vector<std::pair<double, double>> vecteurPropre2=vecteurPropre();
+            std::vector<std::pair<double, double>> vecteurProximite2=vecteurProximite();
+            std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite2=intermediarite();
 
     std::cout<<std::endl<<"Differences entre les indices de centralite avant et"
              <<std::endl<<"apres la suppression des aretes selectionnees: "<<std::endl<<std::endl;
 
-    for(size_t i=0; i<m_sommets.size(); ++i)
-    {
-        std::cout<<"Sommet "<<i<<" : "<<centraliteDegre[i].first-degre_apres[i].first
-                 <<"  "<<centraliteDegre[i].second-degre_apres[i].secondt<<"  "
-                 <<vecteur_propre[i].first-vPropre_apres[i].first<<"  "
-                 <<vecteur_propre[i].second-vPropre_apres[i].second<<"  "
-                 <<vecteur_proximite[i].first-vProx[i].first<<"  "<<vecteur_proximite[i].second-vProx[i].second
-                 <<"  "<<intermediarite.first[i].first-inter_apres.first[i].first<<"  "
-                 <<intermediarite.first[i].second-inter_apres.first[i].second<<std::endl;
+for(size_t i=0; i<m_sommets.size();++i)
+{
+     std::cout<<"sommet "<<i<<" : "<<std::endl;
 
-    }
+            std::cout<<"    C_degre: ";
+            std::cout<<centralite_degres1[i].first-centralite_degres2[i].first<<" ";
+            std::cout<<centralite_degres1[i].second-centralite_degres2[i].second<<" ";
+            std::cout<<std::endl<<"    C_vec_propre: ";
+            std::cout<<vecteurPropre1[i].first-vecteurPropre2[i].first<<" ";
+            std::cout<<vecteurPropre1[i].second-vecteurPropre2[i].second<<" ";
+            std::cout<<std::endl<<"    C_vec_proximite: ";
+            std::cout<<vecteurProximite1[i].first-vecteurProximite2[i].first<<" ";
+            std::cout<<vecteurProximite1[i].second-vecteurProximite2[i].second<<" ";
+            std::cout<<std::endl<<"    C_intemediarite: ";
+            std::cout<<intermediarite1.first[i].first-intermediarite2.first[i].first<<" ";
+            std::cout<<intermediarite1.first[i].second-intermediarite2.first[i].second<<std::endl;
+}
 }
 
 
