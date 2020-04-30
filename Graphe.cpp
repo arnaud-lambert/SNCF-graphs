@@ -790,26 +790,6 @@ void Graphe::comparaisonIndices()
     }
 }
 
-//
-//void Graphe::kAretesConnexite ()
-//{
-//    Graphe copie=*this;
-//    int i=0, nbCC=0;
-//
-//    for(int j=1; j<m_taille; ++j)
-//    {
-//       for(int i=0; i<m_taille; ++i)
-//    {
-//        copie.supprimerArete(copie.m_aretes[i]->getId());
-//        nbCC=copie.rechercheCC();
-//        if(nbCC>1)
-//            i=m_taille;
-//        else
-//            copie=*this;
-//    }
-//    }
-//
-//}
 
 
 

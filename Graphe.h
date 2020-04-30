@@ -34,6 +34,7 @@ class Graphe
         void comparaisonIndices ();
         void SuppAreteI (int indice);
 
+
     private:
         std::vector<Sommet*> m_sommets;
         std::vector<Arete*> m_aretes;
