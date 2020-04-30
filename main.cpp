@@ -100,14 +100,14 @@ bool menu (Graphe& a, std::string nomFichier)
         else
             choix=saisie.front();
 
-        switch(std::stoi(choix))
+        switch(choix)
         {
         case '1':
             a.dessiner();
             return true;
             break;
 
-        case 2:
+        case '2':
             a.ponderation();
             break;
 
@@ -135,11 +135,11 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         break;
 
-        case '6':
+        case '6': std::cout<<"Au revoir !"<<std::endl;
             break;
 
-        default : std::cout<<"erreur de saisie"<<std::endl;
-        break;
+        default : std::cout<<"Saisie invalide."<<std::endl;
+            break;
         }
 
         a.dessiner();
