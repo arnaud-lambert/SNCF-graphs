@@ -361,18 +361,16 @@ void Graphe::testConnexite ()
     }
 }
 
-void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current,
-               std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
-{
+void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs){
     if (predecesseurs.find(current) != predecesseurs.end())
     {
-        compt.first[current]+=nombreChemins[current];
-        for(auto &j : predecesseurs[current].first)
-        {
-            recursif(compt,j.first,predecesseurs,nombreChemins);
-            if (predecesseurs.find(j.first) != predecesseurs.end())
-                compt.second[j.second]+=nombreChemins[j.first];
-        }
+       ++compt.first[current];
+       for(auto &j : predecesseurs[current].first)
+       {
+            recursif(compt,j.first,predecesseurs);
+             if (predecesseurs.find(j.first) != predecesseurs.end())
+                ++compt.second[j.second];
+       }
     }
 }
 
@@ -418,6 +416,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
                     }
                     else if (longueur+i.second->getPoids() == predecesseurs[i.first].second)//autre chemin court
                     {
+                        prio.push({i.first,longueur+i.second->getPoids()});
                         predecesseurs[i.first].second = i.second->getPoids()+longueur;
                         predecesseurs[i.first].first.push_back({courant,i.second});
                         nombreChemins[i.first] += nombreChemins[courant];
@@ -431,14 +430,13 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
                 for(auto &z : predecesseurs[k.first].first)
                 {
                     std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
-                    recursif(compt,z.first,predecesseurs,nombreChemins);
-
+                    recursif(compt,z.first,predecesseurs);
                     for(auto &i : compt.first)
                         centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
-
                     for(auto &i : compt.second)
                         mapCentraliteAretes[i.first] += (double) i.second/nombreChemins[k.first];
                 }
+
     }
 
     for(auto &i : centraliteSommets)
@@ -446,7 +444,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
         if(m_orientation)
             i.first /= 2.0;
 
-         i.second =i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
+         i.second = i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
         //std::cout << i.first  << " " << i.second<< std::endl;
     }
 
@@ -459,8 +457,6 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
         if(mapCentraliteAretes.find(i) == mapCentraliteAretes.end())
             centraliteAretes.push_back({i,{0.0,0.0}});
 
-     std::sort(centraliteAretes.begin(), centraliteAretes.end(), [](std::pair<Arete*,std::pair<double,double>> a1, std::pair<Arete*,std::pair<double,double>> a2)
-        { return a1.first->getId() < a2.first->getId(); });
 
     return {centraliteSommets,centraliteAretes};
 }
