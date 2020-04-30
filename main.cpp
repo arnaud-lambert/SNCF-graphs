@@ -22,7 +22,7 @@ int main()
 
 bool menu (Graphe& a, std::string nomFichier)
 {
-    int choix=0;
+    char choix='0';
     do
     {
         SetConsoleTextAttribute(texteConsole, 3);
@@ -79,19 +79,22 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" l'application"<<std::endl<<std::endl;
 
-        std::cin>>choix;
+        do
+        {
+            std::cin>>choix;
+        }while((int)choix<1 && (int)choix>5);
 
         switch(choix)
         {
-        case 1:
+        case '1':
             return true;
             break;
 
-        case 2:
+        case '2':
             a.ponderation();
             break;
 
-        case 3:
+        case '3':
         {
             std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
             std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
@@ -101,11 +104,11 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         break;
 
-        case 4:
+        case '4':
             //a.testConnexite();
             break;
         }
         a.dessiner();
-    }while(choix!=5);
+    }while(choix!='5');
     return false;
 }

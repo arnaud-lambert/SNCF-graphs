@@ -1,5 +1,6 @@
 #include "Graphe.h"
 #include <set>
+#include <algorithm>
 
 ///Lecture du fichier via le constructeur de Graphe
 Graphe::Graphe(std::string& nomFichier)
@@ -61,6 +62,37 @@ Graphe::Graphe(std::string& nomFichier)
             m_sommets[extremite2]->ajouterAdjacent(m_sommets[extremite1],nouv);
     }
 }
+
+//constructeur copie
+Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{source.m_aretes}, m_orientation{source.m_orientation},
+    m_ponderation{source.m_ponderation}, m_ordre{source.m_ordre}, m_taille{source.m_taille}
+{
+    std::map<Sommet*,Sommet*>transpose;
+    std::map<Arete*, Arete*>trans_aretes;
+
+    for(size_t i=0; i<source.m_sommets.size(); ++i)
+    {
+        m_sommets[i]=new Sommet(*source.m_sommets[i]);
+        transpose[source.m_sommets[i]]=m_sommets[i];//associe nvelle adresse de chaque sommet à l'ancienne
+    }
+
+    for(size_t i=0; i<source.m_aretes.size(); ++i)
+    {
+        m_aretes[i]=new Arete(*source.m_aretes[i]);
+        trans_aretes[source.m_aretes[i]]=m_aretes[i];
+        m_aretes[i]->setExtremites(transpose[source.m_aretes[i]->getExtremites().first], transpose[source.m_aretes[i]->getExtremites().second]);
+    }
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        for(auto j: source.m_sommets[i]->getAdjacents())
+        {
+            m_sommets[i]->ajouterAdjacent(transpose[j.first], trans_aretes[j.second]);
+        }
+    }
+
+}
+
 
 Graphe::~Graphe()
 {
@@ -249,14 +281,16 @@ std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 
 
 
-void Graphe::rechercheCC ()
+int Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
     std::set<Sommet*> marques;
     std::vector<Sommet*> sommets_isoles;
     int compteur=0;
 
+
     Sommet*parcours=m_sommets[0];
+
     do
     {
         file.push(parcours);
@@ -279,7 +313,7 @@ void Graphe::rechercheCC ()
                 parcours=file.front();
         }
 
-        if((int)marques.size()!=m_ordre)
+        if((int)marques.size()<m_ordre)
         {
             for(auto s: m_sommets)
             {
@@ -287,14 +321,38 @@ void Graphe::rechercheCC ()
                     parcours=s;
             }
         }
-
     }
-    while((int)marques.size()!=m_ordre);
+    while((int)marques.size()<m_ordre);
 
-    if(compteur==1)
+    return compteur;
+}
+
+
+
+
+
+void Graphe::testConnexite ()
+{
+    int nb=0, cc=0;
+
+    do
+    {
+        std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
+        std::cin>>nb;
+    }
+    while((nb<0)||(nb>(int)m_taille));
+
+    for(int i=0; i<nb; ++i)
+    {
+        this->supprimerArete();
+    }
+
+    cc= this->rechercheCC();
+
+    if(cc==1)
         std::cout<<"Graphe connexe"<<std::endl;
     else
-        std::cout<<"Graphe non connexe. Il contient "<<compteur<<" composantes connexes"<<std::endl;
+        std::cout<<"Graphe non connexe. Il contient "<<cc<<" composantes connexes"<<std::endl;
 
     for(auto s: m_sommets)
     {
@@ -302,61 +360,6 @@ void Graphe::rechercheCC ()
             std::cout<<s->getNom()<<" est un sommet isole"<<std::endl;
     }
 }
-
-
-//void Graphe::supprimerArete ()
-//{
-//    int indice=0;
-//    std::set<int> indices;
-//    for(auto a: m_aretes)
-//    {
-//        indices.insert(a->getId());
-//    }
-//
-//    do
-//    {
-//        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
-//        std::cin>>indice;
-//    }
-//    while(indices.find(indice)==indices.end());
-//
-//    std::pair<Sommet*, Sommet*> extremites = m_aretes[indice]->getExtremites();
-//    for(auto s: m_sommets)
-//    {
-//        if(s==extremites.first)
-//            s->suppAdjacent(extremites.second);
-//
-//        if (s==extremites.second)
-//            s->suppAdjacent(extremites.first);
-//
-//    }
-//
-//    for(size_t i=0; i<m_aretes.size(); ++i)
-//    {
-//        if(m_aretes[i]->getId()==indice)
-//            m_aretes.erase(m_aretes.begin()+i);
-//    }
-//    --m_taille;
-//
-//}
-
-
-//void Graphe::testConnexite ()
-//{
-//    int nb=0;
-//    do{
-//    std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
-//    std::cin>>nb;
-//    }while((nb<0)||(nb>(int)m_taille));
-//
-//    for(int i=0; i<nb; ++i)
-//    {
-//        this->supprimerArete();
-//    }
-//
-//    this->rechercheCC();
-//}
-
 
 void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current,
                std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
@@ -591,4 +594,137 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             std::cout << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
         }
     }
+}
+
+
+
+void Graphe::supprimerArete ()
+{
+    int indice=0;
+    std::set<int> indices;
+    std::pair<Sommet*, Sommet*> extremites;
+
+    for(auto a: m_aretes)
+    {
+        indices.insert(a->getId());
+    }
+
+    do
+    {
+        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
+        std::cin>>indice;
+    }
+    while(indices.find(indice)==indices.end());
+
+    for(auto i: m_aretes)
+    {
+        if(i->getId()==indice)
+            extremites = i->getExtremites();
+    }
+
+    for(auto s: m_sommets)
+    {
+        if(s->getId()==extremites.first->getId())
+            s->suppAdjacent(extremites.second);
+
+        if (s->getId()==extremites.second->getId())
+            s->suppAdjacent(extremites.first);
+
+    }
+
+    for(size_t i=0; i<m_aretes.size(); ++i)
+    {
+        if(m_aretes[i]->getId()==indice)
+            m_aretes.erase(m_aretes.begin()+i);
+    }
+    --m_taille;
+
+}
+
+
+
+void Graphe::supprimerSommet (Sommet*s)
+{
+
+    for(auto i: s->getAdjacents())
+    {
+        for(auto j: m_sommets)
+        {
+            if(i.first->getId()==j->getId())
+            {
+                j->suppAdjacent(s);
+            }
+        }
+    }
+
+
+
+    int i=0;
+    do
+    {
+        for(size_t j=0; j<m_aretes.size(); ++j)
+        {
+            if((m_aretes[j]->getExtremites().first->getId()==s->getId())||(m_aretes[j]->getExtremites().second->getId()==s->getId()))
+            {
+                m_aretes.erase(m_aretes.begin()+j);
+                --m_taille;
+                ++i;
+                break;
+            }
+        }
+
+    }
+    while(i<(int)s->getAdjacents().size());
+
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+    {
+        if(m_sommets[i]->getId()==s->getId())
+        {
+            m_sommets.erase(m_sommets.begin()+i);
+            --m_ordre;
+        }
+    }
+}
+
+void Graphe::kSommetsConnexite ()
+{
+    Graphe copie=*this;
+    int nbCC=0, k_sommets=0;//pour recherche si graphe connexe
+
+    std::vector<int> degres;
+
+    nbCC=copie.rechercheCC();
+
+    while(nbCC==1)
+    {
+        degres.clear();
+        for(auto i: copie.m_sommets)
+        {
+            degres.push_back((int)i->getAdjacents().size());
+        }
+        copie.dessiner();
+        std::sort(degres.begin(), degres.end(), [](int a, int b)
+        {
+            return a > b;
+        });
+
+        for(size_t i=0; i<copie.m_sommets.size(); ++i)
+        {
+            if((int)copie.m_sommets[i]->getAdjacents().size()==degres[0])
+            {
+                copie.supprimerSommet(copie.m_sommets[i]);
+                i=copie.m_sommets.size();
+            }
+        }
+
+        ++k_sommets;
+        copie.dessiner();
+        nbCC=copie.rechercheCC();
+        std::cout<<nbCC<<std::endl;
+
+    }
+
+    std::cout<<std::endl<<"Le graphe est "<<k_sommets<<"-sommet(s)-connexe"<<std::endl;
+
 }

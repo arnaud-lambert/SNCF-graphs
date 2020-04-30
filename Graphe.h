@@ -16,6 +16,7 @@ class Graphe
 {
     public:
         Graphe(std::string& nomFichier);
+        Graphe(const Graphe&source);
         virtual ~Graphe();
         void affichage()const;
         void ponderation();
@@ -23,12 +24,14 @@ class Graphe
         std::vector<std::pair<double, double>> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
         std::vector<std::pair<int, double>> centraliteDegre ();
-        void rechercheCC();
-//        void supprimerArete ();
+        int rechercheCC ();
+        void supprimerArete ();
         void testConnexite ();
         void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier);
         std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite();
         std::vector<std::pair<double, double>> vecteurProximite();
+        void kSommetsConnexite ();
+        void supprimerSommet (Sommet*s);
 
     private:
         std::vector<Sommet*> m_sommets;

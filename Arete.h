@@ -6,9 +6,11 @@ class Arete
 {
     public:
         Arete(int id, Sommet* s1, Sommet* s2);
+        Arete(Arete&source);
         virtual ~Arete();
         void affichage()const;
         std::pair<Sommet*, Sommet*> getExtremites() { return m_extremites; }
+        void setExtremites (Sommet*s1, Sommet*s2);
         void setPoids(double poids) { m_poids = poids; }
         double getPoids() { return m_poids; }
         void dessiner (Svgfile&svgout);

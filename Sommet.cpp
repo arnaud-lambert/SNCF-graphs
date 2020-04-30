@@ -5,6 +5,11 @@ Sommet::Sommet(int id, std::string nom, double x, double y)
 
 }
 
+Sommet::Sommet(Sommet&source): m_id{source.m_id}, m_nom{source.m_nom}, m_x{source.m_x}, m_y{source.m_y}
+{
+
+}
+
 Sommet::~Sommet()
 {
 
@@ -38,11 +43,13 @@ void Sommet::dessiner(Svgfile&svgout)
     svgout.addText( m_x*100 - 5 , m_y*100 - 10, m_nom, "black" );
 }
 
-//void Sommet::suppAdjacent (Sommet*adjacent)
-//{
-//    for(size_t i=0; i<m_adjacents.size(); ++i)
-//    {
-//        if(m_adjacents[i].first==adjacent)
-//            m_adjacents.erase(m_adjacents.begin()+i);
-//    }
-//}
+void Sommet::suppAdjacent (Sommet*adjacent)
+{
+    for(size_t i=0; i<m_adjacents.size(); ++i)
+    {
+        if(m_adjacents[i].first==adjacent)
+        {
+            m_adjacents.erase(m_adjacents.begin()+i);
+        }
+    }
+}
