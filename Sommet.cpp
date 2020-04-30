@@ -43,7 +43,7 @@ void Sommet::dessiner(Svgfile&svgout)
     svgout.addText( m_x*100 - 5 , m_y*100 - 10, m_nom, "black" );
 }
 
-void Sommet::suppAdjacent (Sommet*adjacent)
+void Sommet::suppAdjacent(Sommet*adjacent)
 {
     for(size_t i=0; i<m_adjacents.size(); ++i)
     {

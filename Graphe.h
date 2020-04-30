@@ -4,7 +4,9 @@
 #include <fstream>
 #include <math.h>
 #include <cmath>
+#include <unordered_set>
 #include <unordered_map>
+#include <map>
 #include <queue>
 #include <windows.h>
 
@@ -31,9 +33,8 @@ class Graphe
         std::vector<std::pair<double, double>> vecteurProximite();
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
-        void comparaisonIndices ();
-        void SuppAreteI (int indice);
-
+        void comparaisonIndices();
+        std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> tousLesChemins();
 
     private:
         std::vector<Sommet*> m_sommets;
@@ -44,6 +45,6 @@ class Graphe
         int m_taille;
 };
 
-void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
-
+void recursifIntermediarite (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k);
 #endif // GRAPHE_H
