@@ -722,7 +722,7 @@ void Graphe::kSommetsConnexite ()
         nbCC=copie.rechercheCC();
     }
 
-    if(k>0)
+    if(k_sommets>0)
     {
         std::cout<<std::endl<<"Le graphe est "<<k_sommets<<"-sommet(s)-connexe."<<std::endl
                  <<"Exemple: Le graphe n'est plus connexe si l'on supprime le(s) sommet(s) ";

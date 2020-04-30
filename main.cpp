@@ -1,8 +1,5 @@
 #include "Graphe.h"
 #include <windows.h>
-#include <limits>
-
-bool blindage_saisie( int & choix );
 
 bool menu(Graphe& a, std::string nomFichier);
 int optionVulnerabilite();
@@ -26,7 +23,8 @@ int main()
 
 bool menu (Graphe& a, std::string nomFichier)
 {
-    int choix=0;
+    std::string saisie;
+    char choix='0';
     do
     {
         SetConsoleTextAttribute(texteConsole, 3);
@@ -94,25 +92,30 @@ bool menu (Graphe& a, std::string nomFichier)
         std::cout<<" l'application"<<std::endl<<std::endl;
 
 
-        if(blindage_saisie(choix))
-            std::cout<<"Choix menu: "<<choix<<std::endl;
+        std::cin>>saisie;
+        if(saisie.length()>1)
+        {
+            choix='d';
+        }
+        else
+            choix=saisie.front();
 
         switch(choix)
         {
-        case 1:
+        case '1':
             a.dessiner();
             return true;
             break;
 
-        case 2:
+        case '2':
             a.ponderation();
             break;
 
-        case 3:
+        case '3':
             a.kSommetsConnexite();
             break;
 
-        case 4:
+        case '4':
         {
             std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
             std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
@@ -122,7 +125,7 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         break;
 
-        case 5:
+        case '5':
         {
             if(optionVulnerabilite()==1)
                 a.testConnexite();
@@ -132,7 +135,7 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         break;
 
-        case 6:
+        case '6':
             break;
 
         default : std::cout<<"erreur de saisie"<<std::endl;
@@ -140,7 +143,7 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         a.dessiner();
     }
-    while(choix!=6);
+    while(choix!='6');
     return false;
 }
 
@@ -173,23 +176,3 @@ int optionVulnerabilite()
     return option;
 }
 
-
-
-
-bool blindage_saisie( int & choix )
-{
-    while ( ! ( std::cin >> choix ) || choix < 1 || choix > 6 )
-    {
-        if ( std::cin.eof() )
-        {
-            return false;
-        }
-        else
-        {
-            std::cout << "Saisie incorrecte, recommencez : ";
-            std::cin.clear();
-            std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
-        }
-    }
-    return true;
-}
