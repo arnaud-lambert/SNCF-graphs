@@ -100,14 +100,14 @@ bool menu (Graphe& a, std::string nomFichier)
         else
             choix=saisie.front();
 
-        switch(choix)
+        switch(std::stoi(choix))
         {
         case '1':
             a.dessiner();
             return true;
             break;
 
-        case '2':
+        case 2:
             a.ponderation();
             break;
 
@@ -141,6 +141,7 @@ bool menu (Graphe& a, std::string nomFichier)
         default : std::cout<<"erreur de saisie"<<std::endl;
         break;
         }
+
         a.dessiner();
     }
     while(choix!='6');
@@ -175,4 +176,3 @@ int optionVulnerabilite()
 
     return option;
 }
-
