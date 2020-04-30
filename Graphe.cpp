@@ -619,15 +619,10 @@ void Graphe::supprimerArete ()
             extremites = i->getExtremites();
     }
 
-    for(auto s: m_sommets)
-    {
-        if(s->getId()==extremites.first->getId())
-            s->suppAdjacent(extremites.second);
+    extremites.first->suppAdjacent(extremites.second);
 
-        if (s->getId()==extremites.second->getId())
-            s->suppAdjacent(extremites.first);
-
-    }
+    if(!m_orientation)
+       extremites.second->suppAdjacent(extremites.first);
 
     for(size_t i=0; i<m_aretes.size(); ++i)
     {
@@ -647,7 +642,7 @@ void Graphe::supprimerSommet (Sommet*s)
     {
         for(auto j: m_sommets)
         {
-            if(i.first->getId()==j->getId())
+            if(i.first == j)
             {
                 j->suppAdjacent(s);
             }
