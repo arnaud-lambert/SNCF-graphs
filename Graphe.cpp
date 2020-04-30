@@ -781,7 +781,7 @@ void Graphe::comparaisonIndices()
     }
 }
 
-void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k)
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> &sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k)
 {
     if(sommets.find(current.first) == sommets.end())
     {
@@ -789,29 +789,37 @@ void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, st
         if (current.first == k)
             commun.push_back(cheminUnique);
         else
+        {
+            sommets.insert(current.first);
             for (auto i : current.first->getAdjacents())
                 recursifTousLesChemins(commun,sommets, cheminUnique,i,k);
+        }
     }
 }
 
 std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Graphe::tousLesChemins()
 {
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> chemins;
-
+    long k = LONG_MAX;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
             if(m_orientation || j->getId() > i->getId())
             {
                 std::vector<std::unordered_set<Arete*>> commun;
+                std::unordered_set<Sommet*> sommets {i};
                 for(auto &l : i->getAdjacents())
                 {
                     std::unordered_set<Arete*> cheminUnique;
-                    std::unordered_set<Sommet*> sommets {i};
                     recursifTousLesChemins(commun,sommets,cheminUnique,l,j);
                 }
                 chemins[{i,j}] = commun;
+
+                    if(commun.size() != 0)
+                k = std::min(k,(long)commun.size());
                 //std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[{i,j}].size() << " chemins" << std::endl;
             }
+
+        std::cout << k << "-arete connexe";
 
     return chemins;
 }
