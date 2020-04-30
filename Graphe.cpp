@@ -599,7 +599,6 @@ void Graphe::supprimerArete ()
 {
     int indice=0;
     std::set<int> indices;
-    std::pair<Sommet*, Sommet*> extremites;
 
     for(auto a: m_aretes)
     {
@@ -612,6 +611,14 @@ void Graphe::supprimerArete ()
         std::cin>>indice;
     }
     while(indices.find(indice)==indices.end());
+
+    this->SuppAreteI(indice);
+
+}
+
+void Graphe::SuppAreteI (int indice)
+{
+    std::pair<Sommet*, Sommet*> extremites;
 
     for(auto i: m_aretes)
     {
@@ -635,10 +642,7 @@ void Graphe::supprimerArete ()
             m_aretes.erase(m_aretes.begin()+i);
     }
     --m_taille;
-
 }
-
-
 
 void Graphe::supprimerSommet (Sommet*s)
 {
@@ -786,6 +790,26 @@ void Graphe::comparaisonIndices()
     }
 }
 
+//
+//void Graphe::kAretesConnexite ()
+//{
+//    Graphe copie=*this;
+//    int i=0, nbCC=0;
+//
+//    for(int j=1; j<m_taille; ++j)
+//    {
+//       for(int i=0; i<m_taille; ++i)
+//    {
+//        copie.supprimerArete(copie.m_aretes[i]->getId());
+//        nbCC=copie.rechercheCC();
+//        if(nbCC>1)
+//            i=m_taille;
+//        else
+//            copie=*this;
+//    }
+//    }
+//
+//}
 
 
 

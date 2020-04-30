@@ -32,6 +32,7 @@ class Graphe
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
         void comparaisonIndices ();
+        void SuppAreteI (int indice);
 
     private:
         std::vector<Sommet*> m_sommets;
