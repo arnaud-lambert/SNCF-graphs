@@ -426,14 +426,13 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
             }
         }
 
-
         for(auto &k : predecesseurs)
             if(m_orientation || k.first->getId() > j->getId())
                 for(auto &z : predecesseurs[k.first].first)
                 {
                     std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
-
                     recursif(compt,z.first,predecesseurs,nombreChemins);
+
                     for(auto &i : compt.first)
                         centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
 
