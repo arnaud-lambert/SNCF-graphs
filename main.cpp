@@ -23,7 +23,7 @@ int main()
 
 bool menu (Graphe& a, std::string nomFichier)
 {
-    int choix=0;
+    char choix='0';
     do
     {
         SetConsoleTextAttribute(texteConsole, 3);
@@ -90,7 +90,10 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" l'application"<<std::endl<<std::endl;
 
-        std::cin>>choix;
+        do
+        {
+            std::cin>>choix;
+        }while((int)choix<1 && (int)choix>5);
 
         switch(choix)
         {
@@ -99,7 +102,7 @@ bool menu (Graphe& a, std::string nomFichier)
             return true;
             break;
 
-        case 2:
+        case '2':
             a.ponderation();
             break;
 

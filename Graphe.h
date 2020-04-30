@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <queue>
 #include <windows.h>
+#include <algorithm>
 
 ///Varibale globale qui permet de mettre de la couleur sur le texte de la console
 extern HANDLE texteConsole;
@@ -36,12 +37,13 @@ class Graphe
     private:
         std::vector<Sommet*> m_sommets;
         std::vector<Arete*> m_aretes;
-        bool m_orientation;
+        int m_orientation;
         bool m_ponderation;
         int m_ordre;
         int m_taille;
 };
 
-void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
+void recursif (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current,
+               std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins);
 
 #endif // GRAPHE_H
