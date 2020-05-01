@@ -157,9 +157,9 @@ bool menu (Graphe& a, std::string nomFichier)
         case '6':
             a.testForteConnexite();
             break;
-        case '7':
+        case '8':
             {
-              a.kAretesConnexe();
+              a.tousLesChemins();
             }
             break;
 

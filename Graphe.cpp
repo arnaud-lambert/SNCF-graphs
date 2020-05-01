@@ -862,14 +862,13 @@ void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, st
         if (current.first == debFin.second)
             commun.push_back(cheminUnique);
         else
-        {
-            sommets.insert(current.first);
+
             for (auto i : current.first->getAdjacents())
                 recursifTousLesChemins(commun, cheminUnique,i,debFin);
     }
 }
 
-std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> Graphe::tousLesChemins()
+std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Graphe::tousLesChemins()
 {
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> chemins;
     for(auto &i : m_sommets)
@@ -890,6 +889,76 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> Graphe::tousLesC
 
     return chemins;
 }
+
+
+
+//void Graphe::kAretesConnexe ()
+//{
+//    std::vector<int>nb;
+//    std::vector<std::set<int>> chemins_p;
+//    int compteur=1;
+//    int h=0;
+//    std::set <int> tempo;
+//    std::set<int> suivant;
+//
+//    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> chemins = tousLesChemins();
+//    for(auto&i: m_sommets)
+//    {
+//        for(auto&j: m_sommets)
+//        {
+//            chemins_p=chemins[{i,j}];
+//            for(size_t c=0; c<chemins_p.size(); ++c)
+//            {
+////                tempo.clear();
+////                suivant.clear();
+//                tempo=chemins_p[c];
+//                std::cout<<"nb: "<<chemins_p.size()<<std::endl;
+//                if((c+1)<chemins_p.size())
+//                {
+//                    suivant=chemins_p[c+1];
+//                std::cout<<"c: "<<c<<std::endl;
+//
+//
+//                tempo.insert(suivant.begin(),suivant.end());
+//
+//                for(size_t a=0; a<m_aretes.size(); ++a)
+//                {
+//                    if(tempo.count(m_aretes[a]->getId())>1)
+//                        {
+//                            a=m_aretes.size();
+//                            h=1;
+//                            std::cout<<"arete: "<<m_aretes[a]->getId()<<std::endl;
+//                        }
+//                }
+//
+//                if(h==0)
+//                {
+//                    std::cout<<"yep"<<std::endl;
+//                    ++compteur;
+//                    chemins_p[c+1]=tempo;
+//                }
+//                else
+//                    chemins_p[c+1]=chemins_p[c];
+//
+//                h=0;
+//                }
+//            }
+//            std::cout<<compteur<<std::endl;
+//            nb.push_back(compteur);
+//            compteur=1;
+//        }
+//    }
+//
+//    std::sort(nb.begin(), nb.end(), [](int a, int b)
+//    {
+//        return a < b;
+//    });
+//    std::cout<<std::endl<<"GRAPHE EST "<<nb[0]<<" ARETES CONNEXE"<<std::endl;
+//}
+
+
+
+
 void Graphe::testForteConnexite()
 {
     std::vector<bool> sommetCouleur(m_ordre, false);
@@ -941,70 +1010,4 @@ for(size_t i=0; i<composantesFortementConnexes.size(); i++)
 }
 std::cout<<std::endl;
 
-}
-
-
-
-void Graphe::kAretesConnexe ()
-{
-    std::vector<int>nb;
-    std::vector<std::set<int>> chemins_p;
-    int compteur=1;
-    int h=0;
-    std::set <int> tempo;
-    std::set<int> suivant;
-
-    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> chemins = tousLesChemins();
-    for(auto&i: m_sommets)
-    {
-        for(auto&j: m_sommets)
-        {
-            chemins_p=chemins[{i,j}];
-            for(size_t c=0; c<chemins_p.size(); ++c)
-            {
-//                tempo.clear();
-//                suivant.clear();
-                tempo=chemins_p[c];
-                std::cout<<"nb: "<<chemins_p.size()<<std::endl;
-                if((c+1)<chemins_p.size())
-                {
-                    suivant=chemins_p[c+1];
-                std::cout<<"c: "<<c<<std::endl;
-
-
-                tempo.insert(suivant.begin(),suivant.end());
-
-                for(size_t a=0; a<m_aretes.size(); ++a)
-                {
-                    if(tempo.count(m_aretes[a]->getId())>1)
-                        {
-                            a=m_aretes.size();
-                            h=1;
-                            std::cout<<"arete: "<<m_aretes[a]->getId()<<std::endl;
-                        }
-                }
-
-                if(h==0)
-                {
-                    std::cout<<"yep"<<std::endl;
-                    ++compteur;
-                    chemins_p[c+1]=tempo;
-                }
-                else
-                    chemins_p[c+1]=chemins_p[c];
-
-                h=0;
-                }
-            }
-            std::cout<<compteur<<std::endl;
-            nb.push_back(compteur);
-            compteur=1;
-        }
-    }
-
-    std::sort(nb.begin(), nb.end(), [](int a, int b)
-    {
-        return a < b;
-    });
-    std::cout<<std::endl<<"GRAPHE EST "<<nb[0]<<" ARETES CONNEXE"<<std::endl;
 }
