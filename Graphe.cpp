@@ -846,47 +846,75 @@ void Graphe::comparaisonIndices(int nb)
     }
 }
 
-void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> &sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k)
+bool recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &ensemble, std::unordered_map<Sommet*,size_t> &sommets, std::unordered_set<Arete*> &aretes, std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
 {
-    if(sommets.find(current.first) == sommets.end())
+    if(aretes.find(current.second) == aretes.end() && cheminUnique.first.find(current.first) == cheminUnique.first.end() && current.first != debFin.first)
     {
-        cheminUnique.insert(current.second);
-        if (current.first == k)
-            commun.push_back(cheminUnique);
-        else
+        aretes.insert(current.second);
+        std::cout << current.first->getNom();
+        cheminUnique.second.insert(current.second);
+        cheminUnique.first.insert(current.first);
+        if (current.first == debFin.second)
         {
-            sommets.insert(current.first);
-            for (auto i : current.first->getAdjacents())
-                recursifTousLesChemins(commun,sommets, cheminUnique,i,k);
+            ensemble.push_back(cheminUnique.second);
+            return true;
         }
+
+        else if(sommets[current.first] < current.first->getAdjacents().size())
+        {
+            for(size_t i = sommets[current.first]; i < current.first->getAdjacents().size();)
+            {
+                if(!recursifTousLesChemins(ensemble,sommets,aretes,cheminUnique,current.first->getAdjacents()[i],debFin))
+                        ++i;
+                else
+                    {
+                       sommets[current.first]=i+1;
+                       return true;
+                    }
+            }
+            //std::cout << current.first->getNom() << " " << sommets[current.first] << " ";
+        }
+
+            for(auto &i : cheminUnique.second)
+                aretes.erase(i);
+            aretes.insert(current.second);
+            return false;
+    }
+    else
+    {
+        return false;
     }
 }
 
-std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Graphe::tousLesChemins()
+int Graphe::tousLesChemins()
 {
-    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> chemins;
+    std::cout <<"DEBUT" << std::endl;
     long k = LONG_MAX;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
             if(m_orientation || j->getId() > i->getId())
             {
-                std::vector<std::unordered_set<Arete*>> commun;
-                std::unordered_set<Sommet*> sommets {i};
+                std::pair<Sommet*,Sommet*> debFin = {i,j};
+                std::vector<std::unordered_set<Arete*>> ensemble;
+                std::unordered_map<Sommet*,size_t> sommets;
+                std::unordered_set<Arete*> aretes;
+
                 for(auto &l : i->getAdjacents())
                 {
-                    std::unordered_set<Arete*> cheminUnique;
-                    recursifTousLesChemins(commun,sommets,cheminUnique,l,j);
+                    std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique;
+                    std::cout << i->getNom() <<"," << j->getNom() << ": ";
+                    recursifTousLesChemins(ensemble,sommets,aretes,cheminUnique,l,debFin);
+                    std::cout << std::endl;
                 }
-                chemins[{i,j}] = commun;
-
-                    if(commun.size() != 0)
-                k = std::min(k,(long)commun.size());
-                //std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[{i,j}].size() << " chemins" << std::endl;
+                k = std::min(k,(long)ensemble.size());
+                    if(ensemble.size() == 0)
+                        std::cout << "PB " << i->getNom() <<","<< j->getNom();
+                std::cout << std::endl;
             }
 
         std::cout << k << "-arete connexe";
 
-    return chemins;
+    return (int) k;
 }
 void Graphe::testForteConnexite()
 {
