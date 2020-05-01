@@ -137,6 +137,11 @@ bool menu (Graphe& a, std::string nomFichier)
 
         case '6': std::cout<<"Au revoir !"<<std::endl;
             break;
+        case '7':
+            {
+              a.kAretesConnexe();
+            }
+            break;
 
         default : std::cout<<"Saisie invalide."<<std::endl;
             break;

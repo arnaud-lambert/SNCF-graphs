@@ -26,6 +26,7 @@ class Graphe
         std::vector<Sommet*> getSommets() { return m_sommets;}
         std::vector<std::pair<int, double>> centraliteDegre ();
         int rechercheCC ();
+        void SuppAreteI (int indice);
         void supprimerArete ();
         void testConnexite ();
         void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier);
@@ -34,7 +35,9 @@ class Graphe
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
         void comparaisonIndices();
-        std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> tousLesChemins();
+        std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> tousLesChemins();
+        void kAretesConnexe ();
+
 
     private:
         std::vector<Sommet*> m_sommets;
@@ -46,5 +49,5 @@ class Graphe
 };
 
 void recursifIntermediarite (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
-void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k);
+void recursifTousLesChemins (std::vector<std::set<int>> &commun, std::set<Sommet*> sommets, std::set<int> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k);
 #endif // GRAPHE_H
