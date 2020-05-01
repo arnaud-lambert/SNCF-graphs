@@ -36,7 +36,7 @@ class Graphe
         void supprimerSommet (Sommet*s);
         void comparaisonIndices (int nb);
         void testForteConnexite();
-        int tousLesChemins();
+        std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> tousLesChemins();
 
     private:
         std::vector<Sommet*> m_sommets;
@@ -48,5 +48,5 @@ class Graphe
 };
 
 void recursifIntermediarite (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
-bool recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &ensemble, std::unordered_map<Sommet*,size_t> &sommets, std::unordered_set<Arete*> &aretes, std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique, std::pair<Sommet*,Arete*> current,std::pair<Sommet*,Sommet*> &debFin);
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> &sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k);
 #endif // GRAPHE_H
