@@ -846,45 +846,37 @@ void Graphe::comparaisonIndices(int nb)
     }
 }
 
-void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> &sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k)
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
 {
-    if(sommets.find(current.first) == sommets.end())
+    if(current.first != debFin.first)
     {
         cheminUnique.insert(current.second);
-        if (current.first == k)
+        if (current.first == debFin.second)
             commun.push_back(cheminUnique);
         else
-        {
-            sommets.insert(current.first);
             for (auto i : current.first->getAdjacents())
-                recursifTousLesChemins(commun,sommets, cheminUnique,i,k);
-        }
+                recursifTousLesChemins(commun, cheminUnique,i,debFin);
     }
 }
 
 std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Graphe::tousLesChemins()
 {
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> chemins;
-    long k = LONG_MAX;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
             if(m_orientation || j->getId() > i->getId())
             {
+                std::pair<Sommet*,Sommet*> debFin = {i,j};
                 std::vector<std::unordered_set<Arete*>> commun;
-                std::unordered_set<Sommet*> sommets {i};
+
                 for(auto &l : i->getAdjacents())
                 {
                     std::unordered_set<Arete*> cheminUnique;
-                    recursifTousLesChemins(commun,sommets,cheminUnique,l,j);
+                    recursifTousLesChemins(commun,cheminUnique,l,debFin);
                 }
                 chemins[{i,j}] = commun;
-
-                    if(commun.size() != 0)
-                k = std::min(k,(long)commun.size());
                 //std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[{i,j}].size() << " chemins" << std::endl;
             }
-
-        std::cout << k << "-arete connexe";
 
     return chemins;
 }
