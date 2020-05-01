@@ -854,13 +854,14 @@ void Graphe::comparaisonIndices(int nb)
     }
 }
 
-void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun,std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
 {
-    if(current.first != debFin.first)
+    if(current.first != debFin.first && cheminUnique.first.find(current.first) == cheminUnique.first.end() && cheminUnique.second.find(current.second) == cheminUnique.second.end() )
     {
-        cheminUnique.insert(current.second);
+        cheminUnique.second.insert(current.second);
+        cheminUnique.first.insert(current.first);
         if (current.first == debFin.second)
-            commun.push_back(cheminUnique);
+            commun.push_back(cheminUnique.second);
         else
 
             for (auto i : current.first->getAdjacents())
@@ -880,7 +881,7 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Gra
 
                 for(auto &l : i->getAdjacents())
                 {
-                    std::unordered_set<Arete*> cheminUnique;
+                    std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique;
                     recursifTousLesChemins(commun,cheminUnique,l,debFin);
                 }
                 chemins[ {i,j}] = commun;
