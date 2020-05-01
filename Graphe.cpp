@@ -368,14 +368,14 @@ void Graphe::testConnexite (int nb)
     }
 }
 
-void recursif (std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs)
+void recursifIntermediarite (std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs)
 {
     if (predecesseurs.find(current) != predecesseurs.end())
     {
         ++compt.first[current];
         for(auto &j : predecesseurs[current].first)
         {
-            recursif(compt,j.first,predecesseurs);
+            recursifIntermediarite(compt,j.first,predecesseurs);
             if (predecesseurs.find(j.first) != predecesseurs.end())
                 ++compt.second[j.second];
         }
@@ -438,7 +438,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
                 for(auto &z : predecesseurs[k.first].first)
                 {
                     std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> compt;
-                    recursif(compt,z.first,predecesseurs);
+                    recursifIntermediarite(compt,z.first,predecesseurs);
                     for(auto &i : compt.first)
                         centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
                     for(auto &i : compt.second)
@@ -665,17 +665,12 @@ void Graphe::supprimerArete ()
         if(i->getId()==indice)
             extremites = i->getExtremites();
     }
-    ///
-    for(auto s: m_sommets)
-    {
-        if(s->getId()==extremites.first->getId())
-            s->suppAdjacent(extremites.second);
 
-        if (s->getId()==extremites.second->getId())
-            s->suppAdjacent(extremites.first);
+    extremites.first->suppAdjacent(extremites.second);
 
-    }
-    ///
+    if(!m_orientation)
+       extremites.second->suppAdjacent(extremites.first);
+
     for(size_t i=0; i<m_aretes.size(); ++i)
     {
         if(m_aretes[i]->getId()==indice)
@@ -693,8 +688,8 @@ void Graphe::supprimerSommet (Sommet*s)
     for(auto i: s->getAdjacents())
     {
         for(auto j: m_sommets)
-        {   ///
-            if(i.first->getId()==j->getId())
+        {
+            if(i.first == j)
             {
                 j->suppAdjacent(s);
             }
@@ -851,6 +846,40 @@ void Graphe::comparaisonIndices(int nb)
     }
 }
 
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Sommet*> sommets, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k)
+{
+    if(sommets.find(current.first) == sommets.end())
+    {
+        cheminUnique.insert(current.second);
+        if (current.first == k)
+            commun.push_back(cheminUnique);
+        else
+            for (auto i : current.first->getAdjacents())
+                recursifTousLesChemins(commun,sommets, cheminUnique,i,k);
+    }
+}
+
+std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Graphe::tousLesChemins()
+{
+    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> chemins;
+
+    for(auto &i : m_sommets)
+        for(auto &j : m_sommets)
+            if(m_orientation || j->getId() > i->getId())
+            {
+                std::vector<std::unordered_set<Arete*>> commun;
+                for(auto &l : i->getAdjacents())
+                {
+                    std::unordered_set<Arete*> cheminUnique;
+                    std::unordered_set<Sommet*> sommets {i};
+                    recursifTousLesChemins(commun,sommets,cheminUnique,l,j);
+                }
+                chemins[{i,j}] = commun;
+                //std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[{i,j}].size() << " chemins" << std::endl;
+            }
+
+    return chemins;
+}
 void Graphe::testForteConnexite()
 {
     std::vector<bool> sommetCouleur(m_ordre, false);
