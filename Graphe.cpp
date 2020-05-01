@@ -751,6 +751,7 @@ void Graphe::kSommetsConnexite ()
     std::unordered_set<int>actuel;
     std::unordered_set<int> tempo2;
     std::unordered_set<int> suivant;
+    std::vector<int> reference_s;
 
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();
     for(auto&i: m_sommets)
@@ -771,7 +772,7 @@ void Graphe::kSommetsConnexite ()
                         suivant=chemins_p[y+1];
                         for(auto a: m_aretes)
                         {
-                            if(actuel.find(a->getId())!=actuel.end())
+                            if(suivant.find(a->getId())!=suivant.end())
                             {
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
                                         tempo.push_back(a->getExtremites().first->getId());
@@ -779,7 +780,7 @@ void Graphe::kSommetsConnexite ()
                                         tempo.push_back(a->getExtremites().second->getId());
 
                             }
-                            if(suivant.find(a->getId())!=suivant.end())
+                            if(actuel.find(a->getId())!=actuel.end())
                             {
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
                                         tempo2.insert(a->getExtremites().first->getId());
@@ -791,7 +792,7 @@ void Graphe::kSommetsConnexite ()
 
                         for(auto&l: tempo)
                         {
-                                //std::cout<<l<<"  ";
+//                                std::cout<<l<<"  ";
                                 if(tempo2.find(l)!=tempo2.end())
                                     {
                                         h=1;
@@ -808,9 +809,12 @@ void Graphe::kSommetsConnexite ()
                         if(h==0)
                         {
                             ++compteur;
-                            chemins_p[y+1].insert(chemins_p[y].begin(),chemins_p[y].end());
+                            //tempo2.insert(tempo.begin(),tempo.end());
                         }
+
                         h=0;
+                        tempo.clear();
+                        tempo2.clear();
                     }
 
                 }
@@ -931,7 +935,7 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe
                     recursifTousLesChemins(commun,cheminUnique,l,debFin);
                 }
                 chemins[ {i,j}] = commun;
-                std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[ {i,j}].size() << " chemins" << std::endl;
+                //std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[ {i,j}].size() << " chemins" << std::endl;
             }
 
     return chemins;

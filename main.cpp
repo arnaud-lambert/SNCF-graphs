@@ -56,7 +56,7 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"de la ";
         SetConsoleTextAttribute(texteConsole, 14);
-        std::cout<<"k-arete(s)-connexite ";
+        std::cout<<"k-connexite ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"du graphe"<<std::endl;
         std::cout<<std::endl<<"4. ";
@@ -117,7 +117,7 @@ bool menu (Graphe& a, std::string nomFichier)
             break;
 
         case '3':
-            //a.kAretesConnexe();
+            a.kAretesConnexe();
             a.kSommetsConnexite();
             break;
 
