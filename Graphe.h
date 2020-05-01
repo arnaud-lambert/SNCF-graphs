@@ -24,16 +24,18 @@ class Graphe
         void dessiner ();
         std::vector<std::pair<double, double>> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
+        int getTaille() {return m_taille; }
         std::vector<std::pair<int, double>> centraliteDegre ();
         int rechercheCC ();
         void supprimerArete ();
-        void testConnexite ();
+        void testConnexite (int nb);
         void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier);
         std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite();
         std::vector<std::pair<double, double>> vecteurProximite();
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
-        void comparaisonIndices();
+        void comparaisonIndices (int nb);
+        void testForteConnexite();
         std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> tousLesChemins();
 
     private:
