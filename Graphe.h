@@ -48,5 +48,5 @@ class Graphe
 };
 
 void recursifIntermediarite (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
-void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin);
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun,std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin);
 #endif // GRAPHE_H
