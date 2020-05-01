@@ -56,7 +56,7 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"de la ";
         SetConsoleTextAttribute(texteConsole, 14);
-        std::cout<<"k-sommet(s)-connexite ";
+        std::cout<<"k-arete(s)-connexite ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"du graphe"<<std::endl;
         std::cout<<std::endl<<"4. ";
@@ -117,7 +117,7 @@ bool menu (Graphe& a, std::string nomFichier)
             break;
 
         case '3':
-            a.kSommetsConnexite();
+            a.kAretesConnexe();
             break;
 
         case '4':
@@ -141,6 +141,11 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         break;
 
+        case '6':
+            a.testForteConnexite();
+            break;
+
+
         case '7':
             SetConsoleTextAttribute(texteConsole, 3);
             std::cout<<" _________    ____     ____    __________ "<<std::endl
@@ -154,15 +159,6 @@ bool menu (Graphe& a, std::string nomFichier)
             SetConsoleTextAttribute(texteConsole, 15);
             break;
 
-
-        case '6':
-            a.testForteConnexite();
-            break;
-        case '8':
-            {
-              a.tousLesChemins();
-            }
-            break;
 
         default :
             std::cout<<"Saisie ";

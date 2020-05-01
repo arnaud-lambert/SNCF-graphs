@@ -710,7 +710,8 @@ void Graphe::supprimerSommet (Sommet*s)
     do
     {
         for(size_t j=0; j<m_aretes.size(); ++j)
-        {   ///
+        {
+            ///
             if((m_aretes[j]->getExtremites().first->getId()==s->getId())||(m_aretes[j]->getExtremites().second->getId()==s->getId()))
             {
                 m_aretes.erase(m_aretes.begin()+j);
@@ -725,7 +726,8 @@ void Graphe::supprimerSommet (Sommet*s)
 
 
     for(size_t i=0; i<m_sommets.size(); ++i)
-    {   ///
+    {
+        ///
         if(m_sommets[i]->getId()==s->getId())
         {
             m_sommets.erase(m_sommets.begin()+i);
@@ -854,11 +856,11 @@ void Graphe::comparaisonIndices(int nb)
     }
 }
 
-void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun,std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
+void recursifTousLesChemins (std::vector<std::unordered_set<int>> &commun,std::pair<std::unordered_set<Sommet*>,std::unordered_set<int>> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
 {
-    if(current.first != debFin.first && cheminUnique.first.find(current.first) == cheminUnique.first.end() && cheminUnique.second.find(current.second) == cheminUnique.second.end() )
+    if(current.first != debFin.first && cheminUnique.first.find(current.first) == cheminUnique.first.end() && cheminUnique.second.find(current.second->getId()) == cheminUnique.second.end() )
     {
-        cheminUnique.second.insert(current.second);
+        cheminUnique.second.insert(current.second->getId());
         cheminUnique.first.insert(current.first);
         if (current.first == debFin.second)
             commun.push_back(cheminUnique.second);
@@ -869,23 +871,23 @@ void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun,std
     }
 }
 
-std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Graphe::tousLesChemins()
+std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe::tousLesChemins()
 {
-    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> chemins;
+    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
             if(m_orientation || j->getId() > i->getId())
             {
                 std::pair<Sommet*,Sommet*> debFin = {i,j};
-                std::vector<std::unordered_set<Arete*>> commun;
+                std::vector<std::unordered_set<int>> commun;
 
                 for(auto &l : i->getAdjacents())
                 {
-                    std::pair<std::unordered_set<Sommet*>,std::unordered_set<Arete*>> cheminUnique;
+                    std::pair<std::unordered_set<Sommet*>,std::unordered_set<int>> cheminUnique;
                     recursifTousLesChemins(commun,cheminUnique,l,debFin);
                 }
                 chemins[ {i,j}] = commun;
-                std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[{i,j}].size() << " chemins" << std::endl;
+                std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[ {i,j}].size() << " chemins" << std::endl;
             }
 
     return chemins;
@@ -893,69 +895,73 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> Gra
 
 
 
-//void Graphe::kAretesConnexe ()
-//{
-//    std::vector<int>nb;
-//    std::vector<std::set<int>> chemins_p;
-//    int compteur=1;
-//    int h=0;
-//    std::set <int> tempo;
-//    std::set<int> suivant;
-//
-//    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> chemins = tousLesChemins();
-//    for(auto&i: m_sommets)
-//    {
-//        for(auto&j: m_sommets)
-//        {
-//            chemins_p=chemins[{i,j}];
-//            for(size_t c=0; c<chemins_p.size(); ++c)
-//            {
-////                tempo.clear();
-////                suivant.clear();
-//                tempo=chemins_p[c];
-//                std::cout<<"nb: "<<chemins_p.size()<<std::endl;
-//                if((c+1)<chemins_p.size())
-//                {
-//                    suivant=chemins_p[c+1];
-//                std::cout<<"c: "<<c<<std::endl;
-//
-//
-//                tempo.insert(suivant.begin(),suivant.end());
-//
-//                for(size_t a=0; a<m_aretes.size(); ++a)
-//                {
-//                    if(tempo.count(m_aretes[a]->getId())>1)
+void Graphe::kAretesConnexe ()
+{
+    std::vector<int>nb;
+    std::vector<std::unordered_set<int>> chemins_p;
+    int compteur=1, h=0;
+    std::vector <int> tempo;
+    //std::vector <int> tempo2;
+    std::unordered_set<int> suivant;
+
+    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();
+    for(auto&i: m_sommets)
+    {
+        for(auto&j: m_sommets)
+        {
+            if(m_orientation || j->getId() > i->getId())
+            {
+                chemins_p=chemins[{i,j}];
+                //std::cout<<"PAIRE"<<std::endl;
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b) { return a.size()<b.size();} );
+                for(size_t y=0; y<chemins_p.size(); ++y)
+                {
+                    //std::cout<<"Comparaison"<<std::endl;
+                    tempo={chemins_p[y].begin(), chemins_p[y].end()};
+                    if(y+1<chemins_p.size())
+                    {
+                        suivant={chemins_p[y+1].begin(), chemins_p[y+1].end()};
+                        //tempo2={chemins_p[y+1].begin(), chemins_p[y+1].end()};
+                        for(auto&l: tempo)
+                        {
+                                //std::cout<<l<<"  ";
+                                if(suivant.find(l)!=suivant.end())
+                                    {
+                                        h=1;
+                                        chemins_p[y+1]=chemins_p[y];
+                                    }
+                        }
+//                        std::cout<<std::endl;
+//                        for(auto&l: tempo2)
 //                        {
-//                            a=m_aretes.size();
-//                            h=1;
-//                            std::cout<<"arete: "<<m_aretes[a]->getId()<<std::endl;
+//                                std::cout<<l<<"  ";
 //                        }
-//                }
-//
-//                if(h==0)
-//                {
-//                    std::cout<<"yep"<<std::endl;
-//                    ++compteur;
-//                    chemins_p[c+1]=tempo;
-//                }
-//                else
-//                    chemins_p[c+1]=chemins_p[c];
-//
-//                h=0;
-//                }
-//            }
-//            std::cout<<compteur<<std::endl;
-//            nb.push_back(compteur);
-//            compteur=1;
-//        }
-//    }
-//
-//    std::sort(nb.begin(), nb.end(), [](int a, int b)
-//    {
-//        return a < b;
-//    });
-//    std::cout<<std::endl<<"GRAPHE EST "<<nb[0]<<" ARETES CONNEXE"<<std::endl;
-//}
+//                        std::cout<<std::endl;
+
+                        if(h==0)
+                        {
+                            ++compteur;
+                            chemins_p[y+1].insert(chemins_p[y].begin(),chemins_p[y].end());
+                        }
+                        h=0;
+                    }
+
+                }
+                //std::cout<<"cpt: "<<compteur<<std::endl;
+                nb.push_back(compteur);
+                compteur=1;
+                chemins_p.clear();
+            }
+
+        }
+    }
+
+    std::sort(nb.begin(), nb.end(), [](int a, int b)
+    {
+        return a < b;
+    });
+    std::cout<<std::endl<<"Ce graphe est "<<nb[0]<<"-arete(s) connexe"<<std::endl;
+}
 
 
 
@@ -996,19 +1002,19 @@ void Graphe::testForteConnexite()
         }
     }
 
-std::cout<<"Il y a ";
-SetConsoleTextAttribute(texteConsole, 14);
-std::cout<<(int)composantesFortementConnexes.size()<<" composante(s) fortement connexe(s)";
-SetConsoleTextAttribute(texteConsole, 15);
-std::cout<<" : "<<std::endl;
-for(size_t i=0; i<composantesFortementConnexes.size(); i++)
-{
+    std::cout<<"Il y a ";
     SetConsoleTextAttribute(texteConsole, 14);
-    std::cout<<std::endl<<i+1<<" : ";
+    std::cout<<(int)composantesFortementConnexes.size()<<" composante(s) fortement connexe(s)";
     SetConsoleTextAttribute(texteConsole, 15);
-    for(size_t j=0; j<composantesFortementConnexes[i].size(); j++)
-        std::cout<<composantesFortementConnexes[i][j]<<" ";
-}
-std::cout<<std::endl;
+    std::cout<<" : "<<std::endl;
+    for(size_t i=0; i<composantesFortementConnexes.size(); i++)
+    {
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<std::endl<<i+1<<" : ";
+        SetConsoleTextAttribute(texteConsole, 15);
+        for(size_t j=0; j<composantesFortementConnexes[i].size(); j++)
+            std::cout<<composantesFortementConnexes[i][j]<<" ";
+    }
+    std::cout<<std::endl;
 
 }
