@@ -674,7 +674,11 @@ void Graphe::supprimerArete ()
     for(size_t i=0; i<m_aretes.size(); ++i)
     {
         if(m_aretes[i]->getId()==indice)
+        {
+            delete m_aretes[i];
             m_aretes.erase(m_aretes.begin()+i);
+        }
+
     }
     --m_taille;
 
