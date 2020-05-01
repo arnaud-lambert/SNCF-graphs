@@ -24,18 +24,20 @@ class Graphe
         void dessiner ();
         std::vector<std::pair<double, double>> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
+        int getTaille() {return m_taille; }
         std::vector<std::pair<int, double>> centraliteDegre ();
         int rechercheCC ();
         void SuppAreteI (int indice);
         void supprimerArete ();
-        void testConnexite ();
+        void testConnexite (int nb);
         void sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier);
         std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite();
         std::vector<std::pair<double, double>> vecteurProximite();
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
-        void comparaisonIndices();
-        std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> tousLesChemins();
+        void comparaisonIndices (int nb);
+        void testForteConnexite();
+        std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> tousLesChemins();
         void kAretesConnexe ();
 
 
@@ -49,5 +51,5 @@ class Graphe
 };
 
 void recursifIntermediarite (std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs);
-void recursifTousLesChemins (std::vector<std::set<int>> &commun, std::set<Sommet*> sommets, std::set<int> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k);
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin);
 #endif // GRAPHE_H

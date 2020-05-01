@@ -17,7 +17,7 @@ Graphe::Graphe(std::string& nomFichier)
         SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
         SetConsoleTextAttribute(texteConsole, 15);
-        ifs.open(nom);
+        ifs.open(nom + ".txt");
         if(!ifs)
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -27,7 +27,7 @@ Graphe::Graphe(std::string& nomFichier)
             SetConsoleTextAttribute(texteConsole, 9);
             std::cout<<"ressaisir";
             SetConsoleTextAttribute(texteConsole, 15);
-            std::cout<<" un nom "<<std::endl;
+            std::cout<<" un nom : ";
         }
     }
     while(!ifs);
@@ -119,7 +119,7 @@ void Graphe::ponderation()
 {
     int taille;
     bool verif=false;
-    std::cout<<std::endl<<"Quel ";
+    std::cout<<"Quel ";
     SetConsoleTextAttribute(texteConsole, 10);
     std::cout<<"fichier";
     SetConsoleTextAttribute(texteConsole, 15);
@@ -166,7 +166,7 @@ void Graphe::ponderation()
                 SetConsoleTextAttribute(texteConsole, 9);
                 std::cout<<"ressaisir";
                 SetConsoleTextAttribute(texteConsole, 15);
-                std::cout<<" un nom "<<std::endl;
+                std::cout<<" un nom : ";
             }
         }
         else if(nomFichier!="")
@@ -178,7 +178,7 @@ void Graphe::ponderation()
             SetConsoleTextAttribute(texteConsole, 9);
             std::cout<<"ressaisir";
             SetConsoleTextAttribute(texteConsole, 15);
-            std::cout<<" un nom "<<std::endl;
+            std::cout<<" un nom : ";
         }
     }
     while(nomFichier!="" && !verif);
@@ -327,37 +327,44 @@ int Graphe::rechercheCC ()
     return compteur;
 }
 
-
-
-
-
-void Graphe::testConnexite ()
+void Graphe::testConnexite (int nb)
 {
-    int nb=0, cc=0;
-
-    do
-    {
-        std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
-        std::cin>>nb;
-    }
-    while((nb<0)||(nb>(int)m_taille));
+    int cc=0;
 
     for(int i=0; i<nb; ++i)
-    {
         this->supprimerArete();
-    }
 
     cc= this->rechercheCC();
 
+    std::cout<<std::endl<<"Le graphe est ";
+    SetConsoleTextAttribute(texteConsole, 14);
+
     if(cc==1)
-        std::cout<<"Graphe connexe"<<std::endl;
+        std::cout<<"connexe"<<std::endl;
+
     else
-        std::cout<<"Graphe non connexe. Il contient "<<cc<<" composantes connexes"<<std::endl;
+    {
+        std::cout<<"non connexe";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<". Il contient ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<cc<<" "<<"composantes connexes"<<std::endl;
+    }
+
+    SetConsoleTextAttribute(texteConsole, 15);
 
     for(auto s: m_sommets)
     {
         if((s->getAdjacents()).size()==0)
-            std::cout<<s->getNom()<<" est un sommet isole"<<std::endl;
+        {
+            SetConsoleTextAttribute(texteConsole, 14);
+            std::cout<<std::endl<<s->getNom();
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" est un sommet ";
+            SetConsoleTextAttribute(texteConsole, 14);
+            std::cout<<"isole"<<std::endl;
+            SetConsoleTextAttribute(texteConsole, 15);
+        }
     }
 }
 
@@ -522,8 +529,8 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     std::string fichierSauvegarde;
     while(!verif)
     {
-        fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence) + ".txt";
-        std::ifstream ifs{fichierSauvegarde};
+        fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
+        std::ifstream ifs{fichierSauvegarde + ".txt"};
         if(!ifs)
             verif=true;
         occurence++;
@@ -532,18 +539,25 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
-        std::cout<<"Ouverture impossible";
+        std::cout<<std::endl<<"Ouverture impossible";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<", la sauvegarde ne peut avoir lieu"<<std::endl;
     }
     else
     {
-        std::cout<<std::endl<<"Sauvegarde du fichier ";
+        std::cout<<"Sauvegarde du fichier ";
         SetConsoleTextAttribute(texteConsole, 10);
         std::cout<<nomFichier;
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"..."<<std::endl;
-        std::cout<<std::endl<<"Affichage de la centralite des sommets : ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<std::endl<<"Indice";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" de ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"centralite";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" des sommets : ";
         SetConsoleTextAttribute(texteConsole, 3);
         std::cout<<"degre";
         SetConsoleTextAttribute(texteConsole, 15);
@@ -559,36 +573,40 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
         SetConsoleTextAttribute(texteConsole, 13);
         std::cout<<"intermediarite";
         SetConsoleTextAttribute(texteConsole, 15);
-        std::cout<<" :"<<std::endl<<std::endl;
+        std::cout<<" :"<<std::endl;
 
         for(size_t i=0; i<m_sommets.size(); i++)
         {
-            ofs<<i<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
+            ofs<<m_sommets[i]->getId()<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
                <<vecteurPropre[i].first<<" "<<vecteurPropre[i].second<<" "
                <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
                <<intermediarite.first[i].first<<" "<<intermediarite.first[i].second<<std::endl;
 
-            std::cout<<i<<" ";
+            std::cout<<std::endl<<"Sommet "<<m_sommets[i]->getId()<<" : "<<std::endl;
             SetConsoleTextAttribute(texteConsole, 3);
-            std::cout<<centralite_degres[i].first<<" ";
-            std::cout<<centralite_degres[i].second<<" ";
+            std::cout<<"   "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<std::endl;
             SetConsoleTextAttribute(texteConsole, 12);
-            std::cout<<vecteurPropre[i].first<<" ";
-            std::cout<<vecteurPropre[i].second<<" ";
+            std::cout<<"   "<<vecteurPropre[i].first<<" "<<vecteurPropre[i].second<<std::endl;
             SetConsoleTextAttribute(texteConsole, 11);
-            std::cout<<vecteurProximite[i].first<<" ";
-            std::cout<<vecteurProximite[i].second<<" ";
+            std::cout<<"   "<<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<std::endl;
             SetConsoleTextAttribute(texteConsole, 13);
-            std::cout<<intermediarite.first[i].first<<" ";
-            std::cout<<intermediarite.first[i].second<<std::endl;
+            std::cout<<"   "<<intermediarite.first[i].first<<" "<<intermediarite.first[i].second<<std::endl;
             SetConsoleTextAttribute(texteConsole, 15);
         }
-        std::cout << std::endl << "intermediarite aretes:" << std::endl << std::endl;
+        std::cout << std::endl << "Indice de ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"centralite intermediaire";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" des ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"aretes";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" : "<< std::endl << std::endl;
         ofs << std::endl << "aretes" <<std::endl;
         for(auto &i : intermediarite.second)
         {
             ofs << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
-            std::cout << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
+            std::cout << "Arete "<<i.first->getId() << " : " << " " << i.second.first << " " << i.second.second << std::endl;
         }
     }
 }
@@ -605,10 +623,39 @@ void Graphe::supprimerArete ()
         indices.insert(a->getId());
     }
 
+    std::cout<<std::endl<<"Saisissez l'";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"indice";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" de l'";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"arete";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" a ";
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"supprimer";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" : ";
+
     do
     {
-        std::cout<<"Saisissez l'indice de l'arete a supprimer svp: ";
         std::cin>>indice;
+        if(indices.find(indice)==indices.end())
+        {
+            std::cout<<std::endl<<"Cet ";
+            SetConsoleTextAttribute(texteConsole, 14);
+            std::cout<<"indice";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" est ";
+            SetConsoleTextAttribute(texteConsole, 12);
+            std::cout<<"invalide";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<", veuillez le ";
+            SetConsoleTextAttribute(texteConsole, 9);
+            std::cout<<"ressaisir";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" : ";
+        }
     }
     while(indices.find(indice)==indices.end());
 
@@ -634,7 +681,11 @@ void Graphe::SuppAreteI (int indice)
     for(size_t i=0; i<m_aretes.size(); ++i)
     {
         if(m_aretes[i]->getId()==indice)
+        {
+            delete m_aretes[i];
             m_aretes.erase(m_aretes.begin()+i);
+        }
+
     }
     --m_taille;
 }
@@ -659,7 +710,7 @@ void Graphe::supprimerSommet (Sommet*s)
     do
     {
         for(size_t j=0; j<m_aretes.size(); ++j)
-        {
+        {   ///
             if((m_aretes[j]->getExtremites().first->getId()==s->getId())||(m_aretes[j]->getExtremites().second->getId()==s->getId()))
             {
                 m_aretes.erase(m_aretes.begin()+j);
@@ -674,7 +725,7 @@ void Graphe::supprimerSommet (Sommet*s)
 
 
     for(size_t i=0; i<m_sommets.size(); ++i)
-    {
+    {   ///
         if(m_sommets[i]->getId()==s->getId())
         {
             m_sommets.erase(m_sommets.begin()+i);
@@ -736,92 +787,160 @@ void Graphe::kSommetsConnexite ()
 }
 
 
-void Graphe::comparaisonIndices()
+void Graphe::comparaisonIndices(int nb)
 {
     std::vector<std::pair<int, double>> centralite_degres1 = centraliteDegre ();
     std::vector<std::pair<double, double>> vecteurPropre1=vecteurPropre();
     std::vector<std::pair<double, double>> vecteurProximite1=vecteurProximite();
     std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite1=intermediarite();
-    int nb=0;
-
-    do
-    {
-        std::cout<<std::endl<<"Combien d'aretes voulez vous supprimer ? ";
-        SetConsoleTextAttribute(texteConsole, 10);
-        std::cin>>nb;
-        SetConsoleTextAttribute(texteConsole, 15);
-    }
-    while((nb<0)||(nb>(int)m_taille));
 
     for(int i=0; i<nb; ++i)
-    {
         this->supprimerArete();
-    }
 
     std::vector<std::pair<int, double>> centralite_degres2 = centraliteDegre ();
     std::vector<std::pair<double, double>> vecteurPropre2=vecteurPropre();
     std::vector<std::pair<double, double>> vecteurProximite2=vecteurProximite();
     std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite2=intermediarite();
 
-    std::cout<<std::endl<<"Differences entre les indices de centralite avant et"
-             <<std::endl<<"apres la suppression des aretes selectionnees: "<<std::endl<<std::endl;
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<std::endl<<"Difference";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" des ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"indices";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" de ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"centralite";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<", ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"avant";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" et ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"apres";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" la ";
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"suppression";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" d'arete(s)"<<std::endl;
 
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
-        std::cout<<"sommet "<<i<<" : "<<std::endl;
+        std::cout<<std::endl<<"Sommet "<<m_sommets[i]->getId()<<" : "<<std::endl;
 
-        std::cout<<"    C_degre: ";
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<"   Degre: ";
+        SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<centralite_degres1[i].first-centralite_degres2[i].first<<" ";
         std::cout<<centralite_degres1[i].second-centralite_degres2[i].second<<" ";
-        std::cout<<std::endl<<"    C_vec_propre: ";
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<std::endl<<"   Vecteur Propre: ";
+        SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<vecteurPropre1[i].first-vecteurPropre2[i].first<<" ";
         std::cout<<vecteurPropre1[i].second-vecteurPropre2[i].second<<" ";
-        std::cout<<std::endl<<"    C_vec_proximite: ";
+        SetConsoleTextAttribute(texteConsole, 11);
+        std::cout<<std::endl<<"   Proximite: ";
+        SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<vecteurProximite1[i].first-vecteurProximite2[i].first<<" ";
         std::cout<<vecteurProximite1[i].second-vecteurProximite2[i].second<<" ";
-        std::cout<<std::endl<<"    C_intemediarite: ";
+        SetConsoleTextAttribute(texteConsole, 13);
+        std::cout<<std::endl<<"   Intemediarite: ";
+        SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<intermediarite1.first[i].first-intermediarite2.first[i].first<<" ";
         std::cout<<intermediarite1.first[i].second-intermediarite2.first[i].second<<std::endl;
     }
 }
 
-void recursifTousLesChemins (std::vector<std::set<int>> &commun, std::set<Sommet*> sommets, std::set<int> cheminUnique, std::pair<Sommet*,Arete*> current, Sommet* k)
+void recursifTousLesChemins (std::vector<std::unordered_set<Arete*>> &commun, std::unordered_set<Arete*> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
 {
-    if(sommets.find(current.first) == sommets.end())
+    if(current.first != debFin.first)
     {
-        cheminUnique.insert(current.second->getId());
-        if (current.first == k)
+        cheminUnique.insert(current.second);
+        if (current.first == debFin.second)
             commun.push_back(cheminUnique);
         else
         {
             sommets.insert(current.first);
             for (auto i : current.first->getAdjacents())
-                recursifTousLesChemins(commun,sommets, cheminUnique,i,k);
-
-        }
+                recursifTousLesChemins(commun, cheminUnique,i,debFin);
     }
 }
 
 std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> Graphe::tousLesChemins()
 {
-    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::set<int>>> chemins;
-
+    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<Arete*>>> chemins;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
             if(m_orientation || j->getId() > i->getId())
             {
-                std::vector<std::set<int>> commun;
+                std::pair<Sommet*,Sommet*> debFin = {i,j};
+                std::vector<std::unordered_set<Arete*>> commun;
+
                 for(auto &l : i->getAdjacents())
                 {
-                    std::set<int> cheminUnique;
-                    std::set<Sommet*> sommets {i};
-                    recursifTousLesChemins(commun,sommets,cheminUnique,l,j);
+                    std::unordered_set<Arete*> cheminUnique;
+                    recursifTousLesChemins(commun,cheminUnique,l,debFin);
                 }
                 chemins[ {i,j}] = commun;
                 std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[{i,j}].size() << " chemins" << std::endl;
             }
 
     return chemins;
+}
+void Graphe::testForteConnexite()
+{
+    std::vector<bool> sommetCouleur(m_ordre, false);
+    std::vector<int> ordreSommet;
+
+    for(size_t i=0; i<m_sommets.size(); i++)
+    {
+        if(sommetCouleur[i]==false)
+            m_sommets[i]->dfs(sommetCouleur, ordreSommet);
+    }
+
+    std::reverse(ordreSommet.begin(), ordreSommet.end());
+    sommetCouleur.clear();
+    sommetCouleur.resize(m_ordre, false);
+
+    std::vector<std::vector<int>> reverseAdjacents(m_ordre);
+
+    for(size_t i=0; i<m_sommets.size(); i++)
+    {
+        for(size_t j=0; j<m_sommets[i]->getAdjacents().size(); j++)
+            reverseAdjacents[m_sommets[i]->getAdjacents()[j].first->getId()].push_back(m_sommets[i]->getId());
+    }
+
+    std::vector<int> composanteFortementConnexe;
+    std::vector<std::vector<int>> composantesFortementConnexes;
+
+    for(size_t i=0; i<ordreSommet.size(); i++)
+    {
+        if(sommetCouleur[ordreSommet[i]]==false)
+        {
+            m_sommets[ordreSommet[i]]->dfsReverse(sommetCouleur, reverseAdjacents, composanteFortementConnexe, getSommets());
+            composantesFortementConnexes.push_back(composanteFortementConnexe);
+            composanteFortementConnexe.clear();
+        }
+    }
+
+std::cout<<"Il y a ";
+SetConsoleTextAttribute(texteConsole, 14);
+std::cout<<(int)composantesFortementConnexes.size()<<" composante(s) fortement connexe(s)";
+SetConsoleTextAttribute(texteConsole, 15);
+std::cout<<" : "<<std::endl;
+for(size_t i=0; i<composantesFortementConnexes.size(); i++)
+{
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<std::endl<<i+1<<" : ";
+    SetConsoleTextAttribute(texteConsole, 15);
+    for(size_t j=0; j<composantesFortementConnexes[i].size(); j++)
+        std::cout<<composantesFortementConnexes[i][j]<<" ";
+}
+std::cout<<std::endl;
+
 }
 
 

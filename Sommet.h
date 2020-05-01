@@ -25,6 +25,8 @@ class Sommet
         void dessiner(Svgfile&svgout);
         std::string getNom () const { return m_nom; }
         void suppAdjacent (Sommet*adjacent);
+        void dfsReverse(std::vector<bool>& sommetCouleur, std::vector<std::vector<int>> reverseAdjacents, std::vector<int>& composanteFortementConnexe, std::vector<Sommet*> m_sommets);
+        void dfs(std::vector<bool>& sommetCouleur, std::vector<int>& ordreSommet);
 
     private:
         int m_id;
