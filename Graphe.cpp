@@ -329,12 +329,13 @@ int Graphe::rechercheCC ()
 
 void Graphe::testConnexite (int nb)
 {
+    Graphe copie=*this;
     int cc=0;
 
     for(int i=0; i<nb; ++i)
-        this->supprimerArete();
+        copie.supprimerArete();
 
-    cc= this->rechercheCC();
+    cc= copie.rechercheCC();
 
     std::cout<<std::endl<<"Le graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
@@ -353,7 +354,7 @@ void Graphe::testConnexite (int nb)
 
     SetConsoleTextAttribute(texteConsole, 15);
 
-    for(auto s: m_sommets)
+    for(auto s: copie.m_sommets)
     {
         if((s->getAdjacents()).size()==0)
         {
@@ -791,18 +792,20 @@ void Graphe::kSommetsConnexite ()
 
 void Graphe::comparaisonIndices(int nb)
 {
+    Graphe copie=*this;
+
     std::vector<std::pair<int, double>> centralite_degres1 = centraliteDegre ();
     std::vector<std::pair<double, double>> vecteurPropre1=vecteurPropre();
     std::vector<std::pair<double, double>> vecteurProximite1=vecteurProximite();
     std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite1=intermediarite();
 
     for(int i=0; i<nb; ++i)
-        this->supprimerArete();
+        copie.supprimerArete();
 
-    std::vector<std::pair<int, double>> centralite_degres2 = centraliteDegre ();
-    std::vector<std::pair<double, double>> vecteurPropre2=vecteurPropre();
-    std::vector<std::pair<double, double>> vecteurProximite2=vecteurProximite();
-    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite2=intermediarite();
+    std::vector<std::pair<int, double>> centralite_degres2 = copie.centraliteDegre ();
+    std::vector<std::pair<double, double>> vecteurPropre2=copie.vecteurPropre();
+    std::vector<std::pair<double, double>> vecteurProximite2=copie.vecteurProximite();
+    std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite2=copie.intermediarite();
 
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<std::endl<<"Difference";
@@ -829,7 +832,7 @@ void Graphe::comparaisonIndices(int nb)
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" d'arete(s)"<<std::endl;
 
-    for(size_t i=0; i<m_sommets.size(); ++i)
+    for(size_t i=0; i<copie.m_sommets.size(); ++i)
     {
         std::cout<<std::endl<<"Sommet "<<m_sommets[i]->getId()<<" : "<<std::endl;
 
