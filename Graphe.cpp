@@ -367,6 +367,7 @@ void Graphe::testConnexite (int nb)
             SetConsoleTextAttribute(texteConsole, 15);
         }
     }
+
 }
 
 void recursifIntermediarite (std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current, std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs)
@@ -739,54 +740,90 @@ void Graphe::supprimerSommet (Sommet*s)
 
 void Graphe::kSommetsConnexite ()
 {
-    Graphe copie=*this;
-    int nbCC=0, k_sommets=0;//pour recherche si graphe connexe
+    std::vector<int>nb;
+    std::vector<std::unordered_set<int>> chemins_p;
+    int compteur=1, h=0;
+    std::vector <int> tempo;
+    std::unordered_set<int>actuel;
+    std::unordered_set<int> tempo2;
+    std::unordered_set<int> suivant;
 
-    std::vector<int> degres;
-    std::vector<std::string> sommets_supp;
-
-    nbCC=copie.rechercheCC();
-
-    while(nbCC==1)
+    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();
+    for(auto&i: m_sommets)
     {
-        degres.clear();
-        for(auto i: copie.m_sommets)
+        for(auto&j: m_sommets)
         {
-            degres.push_back((int)i->getAdjacents().size());
-        }
-        copie.dessiner();
-        std::sort(degres.begin(), degres.end(), [](int a, int b)
-        {
-            return a > b;
-        });
-
-        for(size_t i=0; i<copie.m_sommets.size(); ++i)
-        {
-            if((int)copie.m_sommets[i]->getAdjacents().size()==degres[0])
+            if((m_orientation && j!=i) || j->getId() > i->getId())
             {
-                copie.supprimerSommet(copie.m_sommets[i]);
-                sommets_supp.push_back(copie.m_sommets[i]->getNom());
-                i=copie.m_sommets.size();
+                chemins_p=chemins[{i,j}];
+                //std::cout<<"PAIRE"<<std::endl;
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b) { return a.size()<b.size();} );
+                for(size_t y=0; y<chemins_p.size(); ++y)
+                {
+                    //std::cout<<"Comparaison"<<std::endl;
+                    actuel=chemins_p[y];
+                    if(y+1<chemins_p.size())
+                    {
+                        suivant=chemins_p[y+1];
+                        for(auto a: m_aretes)
+                        {
+                            if(actuel.find(a->getId())!=actuel.end())
+                            {
+                                if(a->getExtremites().first!=i && a->getExtremites().first!=j)
+                                        tempo.push_back(a->getExtremites().first->getId());
+                                if(a->getExtremites().second!=i && a->getExtremites().second!=j)
+                                        tempo.push_back(a->getExtremites().second->getId());
+
+                            }
+                            if(suivant.find(a->getId())!=suivant.end())
+                            {
+                                if(a->getExtremites().first!=i && a->getExtremites().first!=j)
+                                        tempo2.insert(a->getExtremites().first->getId());
+                                if(a->getExtremites().second!=i && a->getExtremites().second!=j)
+                                        tempo2.insert(a->getExtremites().second->getId());
+
+                            }
+                        }
+
+                        for(auto&l: tempo)
+                        {
+                                //std::cout<<l<<"  ";
+                                if(tempo2.find(l)!=tempo2.end())
+                                    {
+                                        h=1;
+                                        chemins_p[y+1]=chemins_p[y];
+                                    }
+                        }
+//                        std::cout<<std::endl;
+//                        for(auto&l: tempo2)
+//                        {
+//                                std::cout<<l<<"  ";
+//                        }
+//                        std::cout<<std::endl;
+
+                        if(h==0)
+                        {
+                            ++compteur;
+                            chemins_p[y+1].insert(chemins_p[y].begin(),chemins_p[y].end());
+                        }
+                        h=0;
+                    }
+
+                }
+                //std::cout<<"cpt: "<<compteur<<std::endl;
+                nb.push_back(compteur);
+                compteur=1;
+                chemins_p.clear();
             }
-        }
 
-        ++k_sommets;
-        copie.dessiner();
-        nbCC=copie.rechercheCC();
+        }
     }
 
-    if(k_sommets>0)
+    std::sort(nb.begin(), nb.end(), [](int a, int b)
     {
-        std::cout<<std::endl<<"Le graphe est "<<k_sommets<<"-sommet(s)-connexe."<<std::endl
-                 <<"Exemple: Le graphe n'est plus connexe si l'on supprime le(s) sommet(s) ";
-        for(auto i: sommets_supp)
-        {
-            std::cout<<i<<" ";
-        }
-    }
-    else
-        std::cout<<"Ce graphe n'est pas connexe. Etude impossible."<<std::endl;
-
+        return a < b;
+    });
+    std::cout<<std::endl<<"Ce graphe est "<<nb[0]<<"-sommet(s) connexe"<<std::endl;
 }
 
 
@@ -879,7 +916,7 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
-            if(m_orientation || j->getId() > i->getId())
+            if((m_orientation && j!=i)|| j->getId() > i->getId())
             {
                 std::pair<Sommet*,Sommet*> debFin = {i,j};
                 std::vector<std::unordered_set<int>> commun;
@@ -912,7 +949,7 @@ void Graphe::kAretesConnexe ()
     {
         for(auto&j: m_sommets)
         {
-            if(m_orientation || j->getId() > i->getId())
+            if((m_orientation && j!=i) || j->getId() > i->getId())
             {
                 chemins_p=chemins[{i,j}];
                 //std::cout<<"PAIRE"<<std::endl;

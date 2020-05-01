@@ -117,7 +117,8 @@ bool menu (Graphe& a, std::string nomFichier)
             break;
 
         case '3':
-            a.kAretesConnexe();
+            //a.kAretesConnexe();
+            a.kSommetsConnexite();
             break;
 
         case '4':
