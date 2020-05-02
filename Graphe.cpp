@@ -146,7 +146,10 @@ void Graphe::ponderation()
             if(taille==m_taille)
             {
                 verif=true;
-                std::cout<<std::endl<<"Lecture du fichier ";
+                SetConsoleTextAttribute(texteConsole, 10);
+                std::cout<<std::endl<<"Lecture";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" du fichier ";
                 SetConsoleTextAttribute(texteConsole, 10);
                 std::cout<<nomFichier;
                 SetConsoleTextAttribute(texteConsole, 15);
@@ -853,7 +856,11 @@ void Graphe::kSommetsConnexite ()
     {
         return a < b;
     });
-    std::cout<<std::endl<<"Ce graphe est "<<nb[0]<<"-sommet(s) connexe"<<std::endl;
+    std::cout<<std::endl<<"Ce graphe est ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<nb[0]<<"-sommet(s)";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" connexe"<<std::endl;
 }
 
 
@@ -1033,21 +1040,28 @@ void Graphe::kAretesConnexe ()
     {
         return a < b;
     });
-    std::cout<<std::endl<<"Ce graphe est "<<nb[0]<<"-arete(s) connexe"<<std::endl;
+    std::cout<<std::endl<<"Ce graphe est ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<nb[0]<<"-arete(s)";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" connexe"<<std::endl;
 }
 
 
-
-
-void Graphe::testForteConnexite()
+void Graphe::testForteConnexite(int nb)
 {
+    Graphe copie=*this;
+
+    for(int i=0; i<nb; ++i)
+        copie.supprimerArete();
+
     std::vector<bool> sommetCouleur(m_ordre, false);
     std::vector<int> ordreSommet;
 
-    for(size_t i=0; i<m_sommets.size(); i++)
+    for(size_t i=0; i<copie.m_sommets.size(); i++)
     {
         if(sommetCouleur[i]==false)
-            m_sommets[i]->dfs(sommetCouleur, ordreSommet);
+            copie.m_sommets[i]->dfs(sommetCouleur, ordreSommet);
     }
 
     std::reverse(ordreSommet.begin(), ordreSommet.end());
@@ -1056,10 +1070,10 @@ void Graphe::testForteConnexite()
 
     std::vector<std::vector<int>> reverseAdjacents(m_ordre);
 
-    for(size_t i=0; i<m_sommets.size(); i++)
+    for(size_t i=0; i<copie.m_sommets.size(); i++)
     {
-        for(size_t j=0; j<m_sommets[i]->getAdjacents().size(); j++)
-            reverseAdjacents[m_sommets[i]->getAdjacents()[j].first->getId()].push_back(m_sommets[i]->getId());
+        for(size_t j=0; j<copie.m_sommets[i]->getAdjacents().size(); j++)
+            reverseAdjacents[copie.m_sommets[i]->getAdjacents()[j].first->getId()].push_back(copie.m_sommets[i]->getId());
     }
 
     std::vector<int> composanteFortementConnexe;
@@ -1069,13 +1083,13 @@ void Graphe::testForteConnexite()
     {
         if(sommetCouleur[ordreSommet[i]]==false)
         {
-            m_sommets[ordreSommet[i]]->dfsReverse(sommetCouleur, reverseAdjacents, composanteFortementConnexe, getSommets());
+            copie.m_sommets[ordreSommet[i]]->dfsReverse(sommetCouleur, reverseAdjacents, composanteFortementConnexe, getSommets());
             composantesFortementConnexes.push_back(composanteFortementConnexe);
             composanteFortementConnexe.clear();
         }
     }
 
-    std::cout<<"Il y a ";
+    std::cout<<std::endl<<"Il y a ";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<(int)composantesFortementConnexes.size()<<" composante(s) fortement connexe(s)";
     SetConsoleTextAttribute(texteConsole, 15);
@@ -1089,7 +1103,6 @@ void Graphe::testForteConnexite()
             std::cout<<composantesFortementConnexes[i][j]<<" ";
     }
     std::cout<<std::endl;
-
 }
 
 
@@ -1160,12 +1173,13 @@ std::vector<double> Graphe::intermediariteFlots()
                 }
                 for(size_t n=0; n<m_sommets.size(); n++)
                 {
-                    if(m_sommets[n]!=m_sommets[i] && m_sommets[n]!=m_sommets[j])
+                    if(m_sommets[n]->getId()!=m_sommets[i]->getId() && m_sommets[n]->getId()!=m_sommets[j]->getId())
                     {
                         std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
                         double flotSommetn=0;
-                        if(b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn)!=0)
-                            flotsMax[n]+=flotSommetn/(2*b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn));
+                        double flotMax=b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn);
+                        if(flotMax!=0)
+                            flotsMax[n]+=flotSommetn/flotMax;
                     }
                 }
             }
@@ -1194,12 +1208,12 @@ void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<doub
     std::cout<<"repartition";
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" du flot ?     1 : OUI     2 : NON"<<std::endl<<std::endl;
+    SetConsoleTextAttribute(texteConsole, 3);
+    std::cout<<"> ";
+    SetConsoleTextAttribute(texteConsole, 15);
 
     do
     {
-        SetConsoleTextAttribute(texteConsole, 3);
-        std::cout<<"> ";
-        SetConsoleTextAttribute(texteConsole, 15);
         std::cin>>saisie;
         if(saisie.length()>1)
         {

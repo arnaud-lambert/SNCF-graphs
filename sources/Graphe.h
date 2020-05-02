@@ -37,7 +37,7 @@ class Graphe
         void kSommetsConnexite ();
         void supprimerSommet (Sommet*s);
         void comparaisonIndices (int nb);
-        void testForteConnexite();
+        void testForteConnexite(int nb);
         std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> tousLesChemins();
         void kAretesConnexe ();
         std::vector<double> intermediariteFlots();
