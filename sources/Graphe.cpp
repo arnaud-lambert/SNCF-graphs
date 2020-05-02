@@ -18,7 +18,7 @@ Graphe::Graphe(std::string& nomFichier)
         SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
         SetConsoleTextAttribute(texteConsole, 15);
-        ifs.open( nom + ".txt");
+        ifs.open( "Graphes/" + nom + ".txt");
         if(!ifs)
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -624,12 +624,12 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{ fichierSauvegarde + ".txt"};
+        std::ifstream ifs{ "Saves/" + fichierSauvegarde + ".txt"};
         if(!ifs)
             verif=true;
         occurence++;
     }
-    std::ofstream ofs{ fichierSauvegarde + ".txt"};
+    std::ofstream ofs{ "Saves/" + fichierSauvegarde + ".txt"};
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -1108,7 +1108,7 @@ void Graphe::kAretesConnexe ()
 
 
 
-void Graphe::testForteConnexite()
+void Graphe::testForteConnexite(int nb)
 {
     std::vector<bool> sommetCouleur(m_ordre, false);
     std::vector<int> ordreSommet;
@@ -1186,7 +1186,7 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string n
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{ fichierSauvegarde + ".txt"};
+        std::ifstream ifs{ "Saves/" + fichierSauvegarde + ".txt"};
         if(!ifs)
         {
             verif=true;
@@ -1196,7 +1196,7 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string n
             ++occurence;
     }
     fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-    std::ifstream ifs{ fichierSauvegarde + ".txt"};
+    std::ifstream ifs{ "Saves/" + fichierSauvegarde + ".txt"};
     if(!ifs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -1235,7 +1235,7 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
     while(!verif)
     {
         fichierSauvegarde=nom_fichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{ fichierSauvegarde + ".txt"};
+        std::ifstream ifs{ "Saves/" + fichierSauvegarde + ".txt"};
         if(!ifs)
         {
             verif=true;
@@ -1245,7 +1245,7 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
             ++occurence;
     }
     fichierSauvegarde=nom_fichier + "_save" + std::to_string(occurence);
-    std::ifstream ifs{ fichierSauvegarde + ".txt"};
+    std::ifstream ifs{"Saves/" + fichierSauvegarde + ".txt"};
     if(!ifs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
