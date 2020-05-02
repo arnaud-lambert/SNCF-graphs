@@ -1,4 +1,5 @@
 #include "Arete.h"
+
 Sommet::Sommet(int id, std::string nom, double x, double y)
     :m_id{id}, m_nom{nom}, m_x{x}, m_y{y}
 {
@@ -80,4 +81,73 @@ void Sommet::dfsReverse(std::vector<bool>& sommetCouleur, std::vector<std::vecto
             m_sommets[reverseAdjacents[m_id][i]]->dfsReverse(sommetCouleur, reverseAdjacents, composanteFortementConnexe, m_sommets);
     }
     composanteFortementConnexe.push_back(m_id);
+}
+
+bool Sommet::bfs(std::vector<std::vector<int>> grapheResiduel, int puit, std::vector<int>& parent)
+{
+    parent[m_id]=-1;
+    std::vector<bool> sommetCouleur((int)grapheResiduel.size(), false);
+    sommetCouleur[m_id]=true;
+    std::queue<int> file;
+    file.push(m_id);
+
+    while(!file.empty())
+    {
+        int sommetTop=file.front();
+        file.pop();
+        for(size_t i=0; i<grapheResiduel.size(); i++)
+        {
+            if(sommetCouleur[i]==false && grapheResiduel[sommetTop][i]>0)
+            {
+                file.push(i);
+                parent[i]=sommetTop;
+                sommetCouleur[i]=true;
+            }
+        }
+    }
+    return (sommetCouleur[puit]==true);
+}
+
+double Sommet::fordFulkerson(std::vector<std::vector<int>> matriceAdjacence, int puit, int sommetn, double& flotSommetn)
+{
+    double flotMax=0;
+    std::vector<int> parent((int)matriceAdjacence.size(), -1);
+
+    std::vector<std::vector<int>> grapheResiduel((int)matriceAdjacence.size(), std::vector<int> ((int)matriceAdjacence.size(), 0));
+    for(size_t i=0; i<matriceAdjacence.size(); i++)
+        for(size_t j=0; j<matriceAdjacence[i].size(); j++)
+            grapheResiduel[i][j]=matriceAdjacence[i][j];
+
+    while(bfs(grapheResiduel, puit, parent))
+    {
+        int cheminFlot=RAND_MAX;
+        int chercheSource=puit;
+
+        while(chercheSource!=m_id)
+        {
+            int predecesseur=parent[chercheSource];
+            cheminFlot=std::min(cheminFlot, grapheResiduel[predecesseur][chercheSource]);
+            chercheSource=predecesseur;
+        }
+        chercheSource=puit;
+        while(chercheSource!=m_id)
+        {
+            int predecesseur=parent[chercheSource];
+            grapheResiduel[predecesseur][chercheSource]-=cheminFlot;
+            grapheResiduel[chercheSource][predecesseur]+=cheminFlot;
+            chercheSource=predecesseur;
+        }
+        flotMax+=cheminFlot;
+    }
+
+    int verifPuit=0;
+    for(size_t i=0; i<grapheResiduel[sommetn].size(); i++)
+            verifPuit+=grapheResiduel[sommetn][i];
+
+
+    if(verifPuit!=0)
+        for(size_t i=0; i<grapheResiduel.size(); i++)
+            flotSommetn+=grapheResiduel[i][sommetn];
+
+    return flotMax;
 }

@@ -7,7 +7,6 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <map>
-#include <queue>
 #include <windows.h>
 
 ///Varibale globale qui permet de mettre de la couleur sur le texte de la console
@@ -39,7 +38,8 @@ class Graphe
         void testForteConnexite();
         std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> tousLesChemins();
         void kAretesConnexe ();
-
+        void intermediariteFlots();
+        std::vector<std::vector<int>> creationMatriceAdjacence();
 
     private:
         std::vector<Sommet*> m_sommets;

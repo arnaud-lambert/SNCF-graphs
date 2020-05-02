@@ -136,7 +136,7 @@ void Graphe::ponderation()
         SetConsoleTextAttribute(texteConsole, 10);
         std::getline(std::cin, nomFichier);
         SetConsoleTextAttribute(texteConsole, 15);
-        std::ifstream ifs{nomFichier};
+        std::ifstream ifs{nomFichier + ".txt"};
         if(ifs)
         {
             ifs>>taille;
@@ -1018,3 +1018,15 @@ void Graphe::testForteConnexite()
     std::cout<<std::endl;
 
 }
+
+
+
+std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
+{
+    std::vector<std::vector<int>> matriceAdjacence(m_ordre, std::vector<int>(m_ordre, 0));
+    for(size_t i=0; i<m_aretes.size(); i++)
+        matriceAdjacence[m_aretes[i]->getExtremites().first->getId()][m_aretes[i]->getExtremites().second->getId()]=m_aretes[i]->getPoids();
+
+    return matriceAdjacence;
+}
+

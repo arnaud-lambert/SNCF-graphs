@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include "svg/svgfile.h"
+#include <queue>
 
 class Arete;
 
@@ -27,6 +28,8 @@ class Sommet
         void suppAdjacent (Sommet*adjacent);
         void dfsReverse(std::vector<bool>& sommetCouleur, std::vector<std::vector<int>> reverseAdjacents, std::vector<int>& composanteFortementConnexe, std::vector<Sommet*> m_sommets);
         void dfs(std::vector<bool>& sommetCouleur, std::vector<int>& ordreSommet);
+        bool bfs(std::vector<std::vector<int>> matriceAdjacence, int puit, std::vector<int>& chemin);
+        double fordFulkerson(std::vector<std::vector<int>> matriceAdjacence, int puit, int sommetn, double& flotSommetn);
 
     private:
         int m_id;
