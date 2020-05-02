@@ -120,7 +120,7 @@ static float HueToRGB(float v1, float v2, float vH) {
 		return (v1 + (v2 - v1) * ((2.0f / 3) - vH) * 6);
 
 	return v1;
-}
+};
 
 static RGB HSLToRGB(HSL hsl) {
 	unsigned char r = 0;
@@ -145,7 +145,7 @@ static RGB HSLToRGB(HSL hsl) {
 	}
 
 	return RGB(r, g, b);
-}
+};
 
 #endif // SVGFILE_H_INCLUDED
 

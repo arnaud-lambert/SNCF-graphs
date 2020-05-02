@@ -195,18 +195,35 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 {
     bool even=true;
     std::vector<int> degres;
-    std::string couleur="black";
+    std::vector<double> indices_aretes;
+    double max_ind=0;
     Svgfile svgout1("output1.svg", 1500, 800);
     Svgfile svgout2("output2.svg", 1500, 800);
     Svgfile svgout3("output3.svg", 1500, 800);
     Svgfile svgout4("output4.svg", 1500, 800);
 
+    if(indices==true)
+    {
+        indices_aretes=chargementInterAretes(nom_fichier);
+        double min_ind=indices_aretes[std::distance(indices_aretes.begin(), std::min_element(indices_aretes.begin(), indices_aretes.end()))];
+
+        for(size_t j=0; j<indices_aretes.size(); ++j)
+            indices_aretes[j]=indices_aretes[j]-min_ind;
+
+        max_ind=indices_aretes[std::distance(indices_aretes.begin(), std::max_element(indices_aretes.begin(), indices_aretes.end()))];
+    }
+
     for(size_t j=0; j<m_aretes.size(); ++j)
     {
         m_aretes[j]->dessiner(svgout1, m_orientation, even, "black");
-        m_aretes[j]->dessiner(svgout2, m_orientation, even, "black");
-        m_aretes[j]->dessiner(svgout3, m_orientation, even, "black");
-        m_aretes[j]->dessiner(svgout4, m_orientation, even, couleur);
+        if(indices==true)
+        {
+            m_aretes[j]->dessiner(svgout2, m_orientation, even, "black");
+            m_aretes[j]->dessiner(svgout3, m_orientation, even, "black");
+            HSL couleur=HSL((indices_aretes[j]/max_ind)*300+60, 0.99f, 0.47f);
+            RGB color=HSLToRGB(couleur);
+            m_aretes[j]->dessiner(svgout4, m_orientation, even, svgout4.makeRGB((int)color.getR(),(int)color.getG(),(int)color.getB()));
+        }
 
         if(even==true)
             even=false;
@@ -1212,9 +1229,8 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
     bool verif=false;
     int occurence=0;
     std::string fichierSauvegarde;
-    double inutile1, inutile2, indice, donnees=0;
+    double indice, donnees=0;
     std::vector<double> tempo;
-    std::string ligne;
 
     while(!verif)
     {
@@ -1239,9 +1255,189 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
     }
     else
     {
-       ///en cours
+        std::string ligne;
+        do
+        {
+            std::getline(ifs, ligne);
+        }
+        while(ligne!="aretes");
+
+        for(size_t i=0; i<m_aretes.size(); ++i)
+        {
+            ifs>>indice>>donnees>>ligne;
+            std::cout<<"DONNEES : "<<donnees<<std::endl;
+            tempo.push_back(donnees);
+        }
+
 
     }
 
     return tempo;
+}
+
+
+std::vector<double> Graphe::intermediariteFlots()
+{
+    std::vector<double> flotsMax(m_sommets.size(), 0);
+    for(size_t i=0; i<m_sommets.size(); i++)
+    {
+        for(size_t j=0; j<m_sommets.size(); j++)
+        {
+            if(m_sommets[i]!=m_sommets[j])
+            {
+                Graphe b(*this);
+                b.m_sommets[j]->getAdjacents().clear();
+                for(size_t k=0; k<m_sommets.size(); k++)
+                {
+                    for(size_t m=0; m<m_sommets[k]->getAdjacents().size(); m++)
+                    {
+                        if(m_sommets[i]==m_sommets[k]->getAdjacents()[m].first)
+                            b.m_sommets[k]->suppAdjacent(b.m_sommets[i]);
+                    }
+                }
+                for(size_t n=0; n<m_sommets.size(); n++)
+                {
+                    if(m_sommets[n]!=m_sommets[i] && m_sommets[n]!=m_sommets[j])
+                    {
+                        std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
+                        double flotSommetn=0;
+                        if(b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn)!=0)
+                            flotsMax[n]+=flotSommetn/(2*b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn));
+                    }
+                }
+            }
+        }
+    }
+    return flotsMax;
+}
+
+
+void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<double>& flotApres, std::string saisie)
+{
+    char option='0';
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"Supprimer";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" des ";
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"troncons";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" pour ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"etudier";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" la ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"repartition";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" du flot ?     1 : OUI     2 : NON"<<std::endl<<std::endl;
+
+    do
+    {
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<"> ";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cin>>saisie;
+        if(saisie.length()>1)
+        {
+            option='d';
+        }
+        else
+            option=saisie.front();
+
+        if(option!='1' && option!='2')
+        {
+            std::cout<<std::endl<<"Cette option est ";
+            SetConsoleTextAttribute(texteConsole, 12);
+            std::cout<<"invalide";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<", veuillez ";
+            SetConsoleTextAttribute(texteConsole, 9);
+            std::cout<<"ressaisir";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" : ";
+        }
+    }
+    while(option!='1' && option!='2');
+
+    if(option=='1')
+    {
+        std::cout<<std::endl<<"Combien d'";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"aretes";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" voulez vous ";
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<"supprimer";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" ? ";
+
+        int nb;
+        do
+        {
+            std::cin>>nb;
+            if((nb<0)||(nb>m_taille))
+            {
+                std::cout<<std::endl<<"Vous avez saisie un nombre ";
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<"trop important";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" ou ";
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<"negatif";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<", veuillez ";
+                SetConsoleTextAttribute(texteConsole, 9);
+                std::cout<<"ressaisir";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" : ";
+            }
+        }
+        while((nb<0)||(nb>m_taille));
+
+        Graphe copie(*this);
+
+        for(int i=0; i<nb; ++i)
+            copie.supprimerArete();
+
+        flotApres=copie.intermediariteFlots();
+
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<std::endl<<"Difference";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" des ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"indices";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" de ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"centralite";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"avant";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" et ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"apres";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" la ";
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<"suppression";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" de troncon(s)"<<std::endl<<std::endl;
+    }
+
+    else
+    {
+        std::cout<<std::endl<<"Indices de ";
+        SetConsoleTextAttribute(texteConsole, 13);
+        std::cout<<"centralite intermediaire";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" avec le flot : "<<std::endl<<std::endl;
+    }
+
+    for(size_t i=0; i<m_sommets.size(); i++)
+        std::cout<<"Sommet "<<i<<" : "<<flotAvant[i]-flotApres[i]<<std::endl;
+
 }
