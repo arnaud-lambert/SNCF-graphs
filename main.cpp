@@ -1,4 +1,4 @@
-#include "Graphe.h"
+#include "sources/Graphe.h"
 #include <windows.h>
 
 bool menu(Graphe& a, std::string nomFichier);

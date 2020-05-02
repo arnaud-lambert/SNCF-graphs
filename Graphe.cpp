@@ -339,9 +339,15 @@ void Graphe::testConnexite (int nb)
     Graphe copie=*this;
     int cc=0;
 
+    cc=this->rechercheCC();
+    if(cc==1)
+        std::cout<<"Pour le moment, ce graphe est connexe"<<std::endl;
+    else
+        std::cout<<"Ce graphe est deja non connexe, il contient "<<cc<<"composantes connexes"<<std::endl;
+
+
     for(int i=0; i<nb; ++i)
         copie.supprimerArete();
-
     cc= copie.rechercheCC();
 
     std::cout<<std::endl<<"Le graphe est ";
@@ -377,8 +383,8 @@ void Graphe::testConnexite (int nb)
 
 }
 
-void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, std::pair<Sommet*,Arete*> current,
-        std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
+void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, std::pair<Sommet*,Arete*> current,
+                            std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
 {
     if (predecesseurs.find(current.first) != predecesseurs.end())
     {
@@ -396,7 +402,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
 {
     Sommet* courant;
     double longueur;
-    std::vector<std::pair<double,double>> centraliteSommets(m_ordre,{0.0,0.0});
+    std::vector<std::pair<double,double>> centraliteSommets(m_ordre, {0.0,0.0});
     std::vector<std::pair<Arete*,std::pair<double,double>>> centraliteAretes;
     std::unordered_map<Arete*,double> mapCentraliteAretes;
 
@@ -425,7 +431,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
                     if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)//ecrase
                     {
                         prio.push({i.first,longueur+i.second->getPoids()});
-                        predecesseurs[i.first] = {{{courant,i.second}} ,i.second->getPoids()+longueur};
+                        predecesseurs[i.first] = {{{courant,i.second}},i.second->getPoids()+longueur};
 
                         if(courant == j)
                             nombreChemins[i.first] = 1;
@@ -447,7 +453,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
             if(m_orientation || k.first->getId() > j->getId())
                 for(auto &z : predecesseurs[k.first].first)
                 {
-                    std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
+                    std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> compt;
 
                     recursifIntermediarite(compt,z,predecesseurs,nombreChemins);
                     for(auto &i : compt.first)
@@ -463,7 +469,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
         if(m_orientation)
             i.first /= 2.0;
 
-         i.second =i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
+        i.second =i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
         //std::cout << i.first  << " " << i.second<< std::endl;
     }
 
@@ -476,8 +482,10 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
         if(mapCentraliteAretes.find(i) == mapCentraliteAretes.end())
             centraliteAretes.push_back({i,{0.0,0.0}});
 
-     std::sort(centraliteAretes.begin(), centraliteAretes.end(), [](std::pair<Arete*,std::pair<double,double>> a1, std::pair<Arete*,std::pair<double,double>> a2)
-        { return a1.first->getId() < a2.first->getId(); });
+    std::sort(centraliteAretes.begin(), centraliteAretes.end(), [](std::pair<Arete*,std::pair<double,double>> a1, std::pair<Arete*,std::pair<double,double>> a2)
+    {
+        return a1.first->getId() < a2.first->getId();
+    });
 
     return {centraliteSommets,centraliteAretes};
 }
@@ -767,9 +775,12 @@ void Graphe::kSommetsConnexite ()
         {
             if((m_orientation && j!=i) || j->getId() > i->getId())
             {
-                chemins_p=chemins[{i,j}];
+                chemins_p=chemins[ {i,j}];
                 //std::cout<<"PAIRE"<<std::endl;
-                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b) { return a.size()<b.size();} );
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
+                {
+                    return a.size()<b.size();
+                } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
                     //std::cout<<"Comparaison"<<std::endl;
@@ -782,17 +793,17 @@ void Graphe::kSommetsConnexite ()
                             if(suivant.find(a->getId())!=suivant.end())
                             {
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
-                                        tempo.push_back(a->getExtremites().first->getId());
+                                    tempo.push_back(a->getExtremites().first->getId());
                                 if(a->getExtremites().second!=i && a->getExtremites().second!=j)
-                                        tempo.push_back(a->getExtremites().second->getId());
+                                    tempo.push_back(a->getExtremites().second->getId());
 
                             }
                             if(actuel.find(a->getId())!=actuel.end())
                             {
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
-                                        tempo2.insert(a->getExtremites().first->getId());
+                                    tempo2.insert(a->getExtremites().first->getId());
                                 if(a->getExtremites().second!=i && a->getExtremites().second!=j)
-                                        tempo2.insert(a->getExtremites().second->getId());
+                                    tempo2.insert(a->getExtremites().second->getId());
 
                             }
                         }
@@ -800,11 +811,11 @@ void Graphe::kSommetsConnexite ()
                         for(auto&l: tempo)
                         {
 //                                std::cout<<l<<"  ";
-                                if(tempo2.find(l)!=tempo2.end())
-                                    {
-                                        h=1;
-                                        chemins_p[y+1]=chemins_p[y];
-                                    }
+                            if(tempo2.find(l)!=tempo2.end())
+                            {
+                                h=1;
+                                chemins_p[y+1]=chemins_p[y];
+                            }
                         }
 //                        std::cout<<std::endl;
 //                        for(auto&l: tempo2)
@@ -966,25 +977,28 @@ void Graphe::kAretesConnexe ()
         {
             if((m_orientation && j!=i) || j->getId() > i->getId())
             {
-                chemins_p=chemins[{i,j}];
+                chemins_p=chemins[ {i,j}];
                 //std::cout<<"PAIRE"<<std::endl;
-                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b) { return a.size()<b.size();} );
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
+                {
+                    return a.size()<b.size();
+                } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
                     //std::cout<<"Comparaison"<<std::endl;
-                    tempo={chemins_p[y].begin(), chemins_p[y].end()};
+                    tempo= {chemins_p[y].begin(), chemins_p[y].end()};
                     if(y+1<chemins_p.size())
                     {
-                        suivant={chemins_p[y+1].begin(), chemins_p[y+1].end()};
+                        suivant= {chemins_p[y+1].begin(), chemins_p[y+1].end()};
                         //tempo2={chemins_p[y+1].begin(), chemins_p[y+1].end()};
                         for(auto&l: tempo)
                         {
-                                //std::cout<<l<<"  ";
-                                if(suivant.find(l)!=suivant.end())
-                                    {
-                                        h=1;
-                                        chemins_p[y+1]=chemins_p[y];
-                                    }
+                            //std::cout<<l<<"  ";
+                            if(suivant.find(l)!=suivant.end())
+                            {
+                                h=1;
+                                chemins_p[y+1]=chemins_p[y];
+                            }
                         }
 //                        std::cout<<std::endl;
 //                        for(auto&l: tempo2)
@@ -1084,3 +1098,46 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
 
     return matriceAdjacence;
 }
+
+void Graphe::chargerSauvegardeIndices (std::string nom_fichier)
+{
+    bool verif=false;
+    int occurence=0;
+    std::string fichierSauvegarde;
+    double inutile1=0, inutile2=0, inutile3=0, donnee=0;
+    std::vector tempo;
+    std::vector<std::vector<double>> indices;
+
+    while(!verif)
+    {
+        fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
+        std::ifstream ifs{fichierSauvegarde + ".txt"};
+        if(!ifs)
+            verif=true;
+        occurence++;
+    }
+
+    std::ifstream ifs{fichierSauvegarde + ".txt"};
+
+    for(auto &s: m_sommets)
+    {
+        ifs>>inutile1>>inutile2>>inutile3>>donnee;
+        tempo.push_back(donnee);
+        ifs>>inutile1>>donnee;
+        tempo.push_back(donnee);
+        ifs>>inutile1>>donnee;
+        tempo.push_back(donnee);
+        indices
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
