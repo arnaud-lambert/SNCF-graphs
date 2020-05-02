@@ -193,7 +193,7 @@ void Graphe::ponderation()
 void Graphe::dessiner ()
 {
     bool even=true;
-    Svgfile svgout;
+    Svgfile svgout("Dessin_graphe.svg", 1500, 2000);
     svgout.addGrid();
 
     for(size_t i=0; i<m_sommets.size(); ++i)
