@@ -17,7 +17,7 @@ Graphe::Graphe(std::string& nomFichier)
         SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
         SetConsoleTextAttribute(texteConsole, 15);
-        ifs.open(nom + ".txt");
+        ifs.open("Graphes/" + nom + ".txt");
         if(!ifs)
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -31,7 +31,10 @@ Graphe::Graphe(std::string& nomFichier)
         }
     }
     while(!ifs);
-    std::cout<<std::endl<<"Lecture du fichier ";
+    SetConsoleTextAttribute(texteConsole, 10);
+    std::cout<<std::endl<<"Lecture";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" du fichier ";
     SetConsoleTextAttribute(texteConsole, 10);
     std::cout<<nom;
     SetConsoleTextAttribute(texteConsole, 15);
@@ -136,7 +139,7 @@ void Graphe::ponderation()
         SetConsoleTextAttribute(texteConsole, 10);
         std::getline(std::cin, nomFichier);
         SetConsoleTextAttribute(texteConsole, 15);
-        std::ifstream ifs{nomFichier + ".txt"};
+        std::ifstream ifs{"Ponderations/" + nomFichier + ".txt"};
         if(ifs)
         {
             ifs>>taille;
@@ -256,7 +259,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurPropre()
         }
         vecSommeIndices.clear();
     }
-    while(abs(lambda1-lambda2)>0.01);
+    while((abs(lambda1-lambda2)>0.01));
 
     /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
     for(size_t i=0; i<m_sommets.size(); i++)
@@ -287,14 +290,12 @@ std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 }
 
 
-
 int Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
     std::set<Sommet*> marques;
     std::vector<Sommet*> sommets_isoles;
     int compteur=0;
-
 
     Sommet*parcours=m_sommets[0];
 
@@ -383,20 +384,21 @@ void Graphe::testConnexite (int nb)
 
 }
 
+
 void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, std::pair<Sommet*,Arete*> current,
                             std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
 {
     if (predecesseurs.find(current.first) != predecesseurs.end())
     {
-        compt.first[current.first]+=nombreChemins[current.first];
         compt.second[current.second]+=nombreChemins[current.first];
+        compt.first[current.first]+=nombreChemins[current.first];
         for(auto &j : predecesseurs[current.first].first)
             recursifIntermediarite(compt,j,predecesseurs,nombreChemins);
     }
     else
         ++compt.second[current.second];
-
 }
+
 
 std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
 {
@@ -475,7 +477,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
 
     for(auto &i : mapCentraliteAretes)
     {
-        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)/(m_taille))}});
+        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)*(m_taille))}});
         //std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
     }
     for(auto &i : m_aretes)
@@ -489,6 +491,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
 
     return {centraliteSommets,centraliteAretes};
 }
+
 
 std::vector<std::pair<double, double>> Graphe::vecteurProximite()
 {
@@ -543,6 +546,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
     return indiceSommets;
 }
 
+
 void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier)
 {
     bool verif=false;
@@ -551,12 +555,12 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{fichierSauvegarde + ".txt"};
+        std::ifstream ifs{"Saves/" + fichierSauvegarde + ".txt"};
         if(!ifs)
             verif=true;
         occurence++;
     }
-    std::ofstream ofs{fichierSauvegarde + ".txt"};
+    std::ofstream ofs{"Saves/" + fichierSauvegarde + ".txt"};
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -566,13 +570,8 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     }
     else
     {
-        std::cout<<"Sauvegarde du fichier ";
-        SetConsoleTextAttribute(texteConsole, 10);
-        std::cout<<nomFichier;
-        SetConsoleTextAttribute(texteConsole, 15);
-        std::cout<<"..."<<std::endl;
         SetConsoleTextAttribute(texteConsole, 14);
-        std::cout<<std::endl<<"Indice";
+        std::cout<<"Indice";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" de ";
         SetConsoleTextAttribute(texteConsole, 14);
@@ -615,7 +614,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             SetConsoleTextAttribute(texteConsole, 15);
         }
         std::cout << std::endl << "Indice de ";
-        SetConsoleTextAttribute(texteConsole, 14);
+        SetConsoleTextAttribute(texteConsole, 13);
         std::cout<<"centralite intermediaire";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" des ";
@@ -629,9 +628,16 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             ofs << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
             std::cout << "Arete "<<i.first->getId() << " : " << " " << i.second.first << " " << i.second.second << std::endl;
         }
+        SetConsoleTextAttribute(texteConsole, 10);
+        std::cout<<std::endl<<"Sauvegarde";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" du fichier ";
+        SetConsoleTextAttribute(texteConsole, 10);
+        std::cout<<nomFichier;
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<"..."<<std::endl;
     }
 }
-
 
 
 void Graphe::supprimerArete ()
@@ -724,8 +730,6 @@ void Graphe::supprimerSommet (Sommet*s)
             }
         }
     }
-
-
 
     int i=0;
     do
@@ -900,22 +904,22 @@ void Graphe::comparaisonIndices(int nb)
         std::cout<<std::endl<<"Sommet "<<m_sommets[i]->getId()<<" : "<<std::endl;
 
         SetConsoleTextAttribute(texteConsole, 3);
-        std::cout<<"   Degre: ";
+        std::cout<<"   Degre : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<centralite_degres1[i].first-centralite_degres2[i].first<<" ";
         std::cout<<centralite_degres1[i].second-centralite_degres2[i].second<<" ";
         SetConsoleTextAttribute(texteConsole, 12);
-        std::cout<<std::endl<<"   Vecteur Propre: ";
+        std::cout<<std::endl<<"   Vecteur Propre : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<vecteurPropre1[i].first-vecteurPropre2[i].first<<" ";
         std::cout<<vecteurPropre1[i].second-vecteurPropre2[i].second<<" ";
         SetConsoleTextAttribute(texteConsole, 11);
-        std::cout<<std::endl<<"   Proximite: ";
+        std::cout<<std::endl<<"   Proximite : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<vecteurProximite1[i].first-vecteurProximite2[i].first<<" ";
         std::cout<<vecteurProximite1[i].second-vecteurProximite2[i].second<<" ";
         SetConsoleTextAttribute(texteConsole, 13);
-        std::cout<<std::endl<<"   Intemediarite: ";
+        std::cout<<std::endl<<"   Intemediarite : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<intermediarite1.first[i].first-intermediarite2.first[i].first<<" ";
         std::cout<<intermediarite1.first[i].second-intermediarite2.first[i].second<<std::endl;
@@ -1099,6 +1103,9 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
     return matriceAdjacence;
 }
 
+
+
+
 void Graphe::chargerSauvegardeIndices (std::string nom_fichier)
 {
     bool verif=false;
@@ -1132,12 +1139,168 @@ void Graphe::chargerSauvegardeIndices (std::string nom_fichier)
 
 }
 
+std::vector<double> Graphe::intermediariteFlots()
+{
+    std::vector<double> flotsMax(m_sommets.size(), 0);
+    for(size_t i=0; i<m_sommets.size(); i++)
+    {
+        for(size_t j=0; j<m_sommets.size(); j++)
+        {
+            if(m_sommets[i]!=m_sommets[j])
+            {
+                Graphe b(*this);
+                b.m_sommets[j]->getAdjacents().clear();
+                for(size_t k=0; k<m_sommets.size(); k++)
+                {
+                    for(size_t m=0; m<m_sommets[k]->getAdjacents().size(); m++)
+                    {
+                        if(m_sommets[i]==m_sommets[k]->getAdjacents()[m].first)
+                            b.m_sommets[k]->suppAdjacent(b.m_sommets[i]);
+                    }
+                }
+                for(size_t n=0; n<m_sommets.size(); n++)
+                {
+                    if(m_sommets[n]!=m_sommets[i] && m_sommets[n]!=m_sommets[j])
+                    {
+                        std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
+                        double flotSommetn=0;
+                        if(b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn)!=0)
+                            flotsMax[n]+=flotSommetn/(2*b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn));
+                    }
+                }
+            }
+        }
+    }
+    return flotsMax;
+}
 
 
+void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<double>& flotApres, std::string saisie)
+{
+    char option='0';
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"Supprimer";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" des ";
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"troncons";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" pour ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"etudier";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" la ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"repartition";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" du flot ?     1 : OUI     2 : NON"<<std::endl<<std::endl;
 
+    do
+    {
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<"> ";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cin>>saisie;
+        if(saisie.length()>1)
+        {
+            option='d';
+        }
+        else
+            option=saisie.front();
 
+        if(option!='1' && option!='2')
+        {
+            std::cout<<std::endl<<"Cette option est ";
+            SetConsoleTextAttribute(texteConsole, 12);
+            std::cout<<"invalide";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<", veuillez ";
+            SetConsoleTextAttribute(texteConsole, 9);
+            std::cout<<"ressaisir";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" : ";
+        }
+    }
+    while(option!='1' && option!='2');
 
+    if(option=='1')
+    {
+        std::cout<<std::endl<<"Combien d'";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"aretes";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" voulez vous ";
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<"supprimer";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" ? ";
 
+        int nb;
+        do
+        {
+            std::cin>>nb;
+            if((nb<0)||(nb>m_taille))
+            {
+                std::cout<<std::endl<<"Vous avez saisie un nombre ";
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<"trop important";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" ou ";
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<"negatif";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<", veuillez ";
+                SetConsoleTextAttribute(texteConsole, 9);
+                std::cout<<"ressaisir";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" : ";
+            }
+        }
+        while((nb<0)||(nb>m_taille));
 
+    Graphe copie(*this);
 
+    for(int i=0; i<nb; ++i)
+        copie.supprimerArete();
 
+    flotApres=copie.intermediariteFlots();
+
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<std::endl<<"Difference";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" des ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"indices";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" de ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"centralite";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<", ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"avant";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" et ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"apres";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" la ";
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"suppression";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" de troncon(s)"<<std::endl<<std::endl;
+    }
+
+    else
+    {
+        std::cout<<std::endl<<"Indices de ";
+        SetConsoleTextAttribute(texteConsole, 13);
+        std::cout<<"centralite intermediaire";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" avec le flot : "<<std::endl<<std::endl;
+    }
+
+    for(size_t i=0; i<m_sommets.size(); i++)
+        std::cout<<"Sommet "<<i<<" : "<<flotAvant[i]-flotApres[i]<<std::endl;
+
+}
