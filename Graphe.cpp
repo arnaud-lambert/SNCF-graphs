@@ -370,18 +370,15 @@ void Graphe::testConnexite (int nb)
 
 }
 
-void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, Sommet* current,
+void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, std::pair<Sommet*,Arete*> current,
         std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
 {
-    if (predecesseurs.find(current) != predecesseurs.end())
+    if (predecesseurs.find(current.first) != predecesseurs.end())
     {
-        compt.first[current]+=nombreChemins[current];
-        for(auto &j : predecesseurs[current].first)
-        {
-            recursifIntermediarite(compt,j.first,predecesseurs,nombreChemins);
-            if (predecesseurs.find(j.first) != predecesseurs.end())
-                compt.second[j.second]+=nombreChemins[j.first];
-        }
+        compt.first[current.first]+=nombreChemins[current.first];
+        compt.second[current.second]+=nombreChemins[current.first];
+        for(auto &j : predecesseurs[current.first].first)
+            recursifIntermediarite(compt,j,predecesseurs,nombreChemins);
     }
 }
 
@@ -442,7 +439,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
                 {
                     std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
 
-                    recursifIntermediarite(compt,z.first,predecesseurs,nombreChemins);
+                    recursifIntermediarite(compt,z,predecesseurs,nombreChemins);
                     for(auto &i : compt.first)
                         centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
 
@@ -541,7 +538,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             verif=true;
         occurence++;
     }
-    std::ofstream ofs{fichierSauvegarde};
+    std::ofstream ofs{fichierSauvegarde + ".txt"};
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);

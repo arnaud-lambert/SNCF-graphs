@@ -128,8 +128,10 @@ bool menu (Graphe& a, std::string nomFichier)
         {
             //a.tousLesChemins();
             std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
+//            std::cout << "degre done" << std::endl;
             std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
             std::vector<std::pair<double, double>> vecteurProximite=a.vecteurProximite();
+//            std::cout << "proximite done" << std::endl;
             std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite=a.intermediarite();
             a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
         }
