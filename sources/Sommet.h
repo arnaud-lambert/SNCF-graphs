@@ -23,7 +23,7 @@ class Sommet
         void ajouterAdjacent(Sommet* adjacent, Arete* arete) { m_adjacents.push_back({adjacent,arete}); }
         double getX() const { return m_x; }
         double getY() const { return m_y; }
-        void dessiner(Svgfile&svgout);
+        void dessiner(Svgfile&svgout, HSL couleur);
         std::string getNom () const { return m_nom; }
         void suppAdjacent (Sommet*adjacent);
         void dfsReverse(std::vector<bool>& sommetCouleur, std::vector<std::vector<int>> reverseAdjacents, std::vector<int>& composanteFortementConnexe, std::vector<Sommet*> m_sommets);

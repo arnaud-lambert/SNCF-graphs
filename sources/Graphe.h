@@ -20,7 +20,7 @@ class Graphe
         virtual ~Graphe();
         void affichage()const;
         void ponderation();
-        void dessiner ();
+        void dessiner (std::string nomFichier, bool indices);
         std::vector<std::pair<double, double>> vecteurPropre();
         std::vector<Sommet*> getSommets() { return m_sommets;}
         int getTaille() {return m_taille; }
@@ -41,6 +41,7 @@ class Graphe
         void kAretesConnexe ();
         void intermediariteFlots();
         std::vector<std::vector<int>> creationMatriceAdjacence();
+        std::vector<std::vector<double>> chargementIndicesSommets( std::string nomFichier);
 
     private:
         std::vector<Sommet*> m_sommets;

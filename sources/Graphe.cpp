@@ -1,6 +1,7 @@
-#include "sources/Graphe.h"
+#include "Graphe.h"
 #include <set>
 #include <algorithm>
+#include <iterator>
 
 ///Lecture du fichier via le constructeur de Graphe
 Graphe::Graphe(std::string& nomFichier)
@@ -190,36 +191,86 @@ void Graphe::ponderation()
     }
 }
 
-void Graphe::dessiner ()
+void Graphe::dessiner (std::string nom_fichier, bool indices)
 {
     bool even=true;
-    Svgfile svgout("Dessin_graphe.svg", 1500, 2000);
-    svgout.addGrid();
-
-    for(size_t i=0; i<m_sommets.size(); ++i)
-        m_sommets[i]->dessiner(svgout);
+    std::vector<int> degres;
+    Svgfile svgout1("output1.svg", 1500, 800);
+    Svgfile svgout2("output2.svg", 1500, 800);
+    Svgfile svgout3("output3.svg", 1500, 800);
+    Svgfile svgout4("output4.svg", 1500, 800);
 
     for(size_t j=0; j<m_aretes.size(); ++j)
     {
-        m_aretes[j]->dessiner(svgout, m_orientation, even);
+        m_aretes[j]->dessiner(svgout1, m_orientation, even);
         if(even==true)
             even=false;
         else
             even=true;
     }
 
+        for(auto i:m_sommets)
+            degres.push_back((int)i->getAdjacents().size());
+        int min_degre = degres[std::distance(degres.begin(), std::min_element(degres.begin(), degres.end()))];
+
+        for(size_t i=0; i<degres.size(); ++i)
+            degres[i]=degres[i]-min_degre;
+        int max_degre = degres[std::distance(degres.begin(), std::max_element(degres.begin(), degres.end()))];
+
+        for(size_t i=0; i<m_sommets.size(); ++i)
+            m_sommets[i]->dessiner(svgout1, HSL((degres[i]/(double)max_degre)*300+60, 0.99f, 0.47f));
+
+    if(indices==true)
+    {
+    std::vector<std::vector<double>> indicesSommets=chargementIndicesSommets(nom_fichier);
+    std::vector<double> vecMax;
+    std::vector<double> proxMax;
+    std::vector<double> interMax;
+
+    for(size_t i=0; i<indicesSommets.size(); ++i)
+    {
+        vecMax.push_back(indicesSommets[i][0]);
+        proxMax.push_back(indicesSommets[i][1]);
+        interMax.push_back(indicesSommets[i][2]);
+    }
+
+    double min_vec=vecMax[std::distance(vecMax.begin(),std::min_element(vecMax.begin(), vecMax.end()))];
+    double min_prox=proxMax[std::distance(proxMax.begin(),std::min_element(proxMax.begin(), proxMax.end()))];
+    double min_inter=interMax[std::distance(interMax.begin(),std::min_element(interMax.begin(), interMax.end()))];
+
+    for(size_t i=0; i<vecMax.size(); ++i)
+    {
+        vecMax[i]=vecMax[i]-min_vec;
+        proxMax[i]=proxMax[i]-min_prox;
+        interMax[i]=interMax[i]-min_inter;
+    }
+
+    double max_vec=vecMax[std::distance(vecMax.begin(),std::max_element(vecMax.begin(), vecMax.end()))];
+    double max_prox=proxMax[std::distance(proxMax.begin(),std::max_element(proxMax.begin(), proxMax.end()))];
+    double max_inter=interMax[std::distance(interMax.begin(),std::max_element(interMax.begin(), interMax.end()))];
+
+    for(size_t i=0; i<m_sommets.size(); ++i)
+        {
+            m_sommets[i]->dessiner(svgout2, HSL((vecMax[i]/max_vec)*300+60, 0.99f, 0.47f));
+            m_sommets[i]->dessiner(svgout3, HSL((proxMax[i]/max_prox)*300+60, 0.99f, 0.47f));
+            m_sommets[i]->dessiner(svgout4, HSL((interMax[i]/max_inter)*300+60, 0.99f, 0.47f));
+        }
+    }
+
+
     ///legende
-    svgout.addRectangle(870, 600, 120, 130, 5, 5, "white");
-    svgout.addText(880, 620, "indice arete", "darkorchid");
-    svgout.addText(880, 640, "poids arete", "darkgrey");
-    svgout.addDisk(885, 655, 5, "cyan");
-    svgout.addText(895, 660, "C_degre = 1", "black");
-    svgout.addDisk(885, 675, 5, "green");
-    svgout.addText(895, 680, "C_degre = 2", "black");
-    svgout.addDisk(885, 695, 5, "blue");
-    svgout.addText(895, 700, "C_degre = 3", "black");
-    svgout.addDisk(885, 715, 5, "red");
-    svgout.addText(895, 720, "C_degre = 4", "black");
+    svgout1.addRectangle(10, 760, 30, 130, 5, 5, "white");
+    svgout2.addRectangle(10, 760, 30, 130, 5, 5, "white");
+    svgout3.addRectangle(10, 760, 30, 130, 5, 5, "white");
+    svgout4.addRectangle(10, 760, 30, 130, 5, 5, "white");
+    svgout1.addText(20, 780, "indice arete", "darkorchid");
+    svgout2.addText(20, 780, "indice arete", "darkorchid");
+    svgout3.addText(20, 780, "indice arete", "darkorchid");
+    svgout4.addText(20, 780, "indice arete", "darkorchid");
+    svgout1.addText(60, 780, "poids arete", "darkgrey");
+    svgout2.addText(60, 780, "poids arete", "darkgrey");
+    svgout3.addText(60, 780, "poids arete", "darkgrey");
+    svgout4.addText(60, 780, "poids arete", "darkgrey");
 
 }
 
@@ -1097,4 +1148,56 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
         matriceAdjacence[m_aretes[i]->getExtremites().first->getId()][m_aretes[i]->getExtremites().second->getId()]=m_aretes[i]->getPoids();
 
     return matriceAdjacence;
+}
+
+
+
+std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string nomFichier)
+{
+   std::vector<std::vector<double>> indices;
+   bool verif=false;
+    int occurence=0;
+    std::string fichierSauvegarde;
+    double inutile1, inutile2, indice, donnees=0;
+    std::vector<double> tempo;
+
+    while(!verif)
+    {
+        fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
+        std::ifstream ifs{fichierSauvegarde + ".txt"};
+        if(!ifs)
+        {
+            verif=true;
+            --occurence;
+        }
+        else
+            ++occurence;
+    }
+    fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
+    std::ifstream ifs{fichierSauvegarde + ".txt"};
+    if(!ifs)
+    {
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<std::endl<<"Ouverture impossible";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", le chargement ne peut avoir lieu"<<std::endl;
+    }
+    else
+    {
+        for(size_t i=0; i<m_sommets.size(); ++i)
+        {
+            ifs>>indice>>inutile1>>inutile2>>donnees;
+            tempo.push_back(donnees);
+            ifs>>inutile1>>donnees;
+            tempo.push_back(donnees);
+            ifs>>inutile1>>donnees>>inutile2;
+            tempo.push_back(donnees);
+            indices.push_back(tempo);
+            tempo.clear();
+        }
+
+    }
+
+   return indices;
+
 }

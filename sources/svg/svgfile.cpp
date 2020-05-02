@@ -1,6 +1,7 @@
 ﻿#include "svgfile.h"
 #include <iostream>
 #include <sstream>
+#include "couleur.h"
 
 const std::string svgHeader =
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -70,6 +71,17 @@ void Svgfile::addDisk(double x, double y, double r, std::string color)
             << attrib("cy", y)
             << attrib("r",  r)
             << attrib("fill", color )
+            << "/>\n";
+}
+
+void Svgfile::addDisk(double x, double y, double r, RGB value)
+{
+
+    m_ostrm << "<circle "
+            << attrib("cx", x)
+            << attrib("cy", y)
+            << attrib("r",  r)
+            << attrib("fill", makeRGB(value.getR(),value.getG(),value.getB()) )
             << "/>\n";
 }
 
@@ -231,4 +243,5 @@ std::string Svgfile::makeRGB(int r, int g, int b)
     oss << "rgb(" << r << "," << g << "," << b << ")";
     return oss.str();
 }
+
 

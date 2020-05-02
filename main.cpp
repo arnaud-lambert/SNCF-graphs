@@ -26,6 +26,8 @@ bool menu (Graphe& a, std::string nomFichier)
 {
     std::string saisie;
     char choix='0';
+    bool indices=false;
+
     do
     {
         SetConsoleTextAttribute(texteConsole, 3);
@@ -107,16 +109,23 @@ bool menu (Graphe& a, std::string nomFichier)
         else
             choix=saisie.front();
         std::cout<<std::endl;
+        a.dessiner(nomFichier, indices);
 
         switch(choix)
         {
         case '1':
-            a.dessiner();
+            {
+                indices=false;
+
             return true;
+            }
             break;
 
         case '2':
+            {
+               indices=false;
             a.ponderation();
+            }
             break;
 
         case '3':
@@ -134,6 +143,7 @@ bool menu (Graphe& a, std::string nomFichier)
 //            std::cout << "proximite done" << std::endl;
             std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite=a.intermediarite();
             a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
+            indices=true;
         }
         break;
 
@@ -183,7 +193,7 @@ bool menu (Graphe& a, std::string nomFichier)
             break;
         }
 
-        a.dessiner();
+        a.dessiner(nomFichier, indices);
     }
     while(choix!='8');
     return false;
