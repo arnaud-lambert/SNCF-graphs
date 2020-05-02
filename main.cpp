@@ -3,7 +3,6 @@
 
 bool menu(Graphe& a, std::string nomFichier);
 int optionVulnerabilite(int& nb, int taille, std::string saisie);
-void intermediariteFlots(Graphe a);
 
 ///Varibale globale qui permet de mettre de la couleur sur le texte de la console
 HANDLE texteConsole=GetStdHandle(STD_OUTPUT_HANDLE);
@@ -91,14 +90,35 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" du graphe"<<std::endl;
         std::cout<<std::endl<<"7. ";
-        std::cout<<"Calculer et comparer les indices de centralite intermediaire (avec et sans flots)"<<std::endl;
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"Etude";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" de ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"centralite intermediaire";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" avec ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"flots";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" (possibilite de ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"rupture";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" d'un ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"tronçon";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<")"<<std::endl;
         std::cout<<std::endl<<"8. ";
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"Quitter";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" l'application"<<std::endl<<std::endl;
 
-
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<"> ";
+        SetConsoleTextAttribute(texteConsole, 15);
         std::cin>>saisie;
         if(saisie.length()>1)
         {
@@ -128,10 +148,11 @@ bool menu (Graphe& a, std::string nomFichier)
         {
             //a.tousLesChemins();
             std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
-//            std::cout << "degre done" << std::endl;
+            std::cout << "degre done" << std::endl;
             std::vector<std::pair<double, double>> vecteurPropre=a.vecteurPropre();
+            std::cout<< "propre done"<<std::endl;
             std::vector<std::pair<double, double>> vecteurProximite=a.vecteurProximite();
-//            std::cout << "proximite done" << std::endl;
+            std::cout << "proximite done" << std::endl;
             std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite=a.intermediarite();
             a.sauvegarder(centralite_degres, vecteurPropre, vecteurProximite, intermediarite, nomFichier);
         }
@@ -152,7 +173,7 @@ bool menu (Graphe& a, std::string nomFichier)
             break;
 
         case '7':
-            intermediariteFlots(a);
+            a.intermediariteFlots();
             break;
 
 
@@ -244,6 +265,9 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie)
 
     do
     {
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<"> ";
+        SetConsoleTextAttribute(texteConsole, 15);
         std::cin>>saisie;
         if(saisie.length()>1)
         {
@@ -300,43 +324,4 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie)
     while((nb<0)||(nb>taille));
 
     return option;
-}
-
-
-void intermediariteFlots(Graphe a)
-{
-    std::vector<double> flotsMax(a.getSommets().size(), 0);
-    std::vector<std::vector<int>> matriceAdjacence=a.creationMatriceAdjacence();
-    for(size_t i=0; i<a.getSommets().size(); i++)
-    {
-        for(size_t j=0; j<a.getSommets().size(); j++)
-        {
-            if(a.getSommets()[i]!=a.getSommets()[j])
-            {
-                Graphe b(a);
-                b.getSommets()[j]->getAdjacents().clear();
-                for(size_t k=0; k<a.getSommets().size(); k++)
-                {
-                    for(size_t m=0; m<a.getSommets()[k]->getAdjacents().size(); m++)
-                    {
-                        if(a.getSommets()[i]==a.getSommets()[k]->getAdjacents()[m].first)
-                            b.getSommets()[k]->suppAdjacent(b.getSommets()[i]);
-                    }
-                }
-                for(size_t n=0; n<a.getSommets().size(); n++)
-                {
-                    if(a.getSommets()[n]!=a.getSommets()[i] && a.getSommets()[n]!=a.getSommets()[j])
-                    {
-                        std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
-                        double flotSommetn=0;
-                        if(b.getSommets()[i]->fordFulkerson(matriceAdjacence, b.getSommets()[j]->getId(), a.getSommets()[n]->getId(), flotSommetn)!=0)
-                            flotsMax[n]+=flotSommetn/(2*b.getSommets()[i]->fordFulkerson(matriceAdjacence, b.getSommets()[j]->getId(), a.getSommets()[n]->getId(), flotSommetn));
-                    }
-                }
-            }
-        }
-    }
-
-    for(auto &i: flotsMax)
-        std::cout<<std::endl<<i;
 }

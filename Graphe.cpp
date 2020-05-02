@@ -249,7 +249,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurPropre()
         }
         vecSommeIndices.clear();
     }
-    while(abs(lambda1-lambda2)>0.01);
+    while((abs(lambda1-lambda2)>0.01));
 
     /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
     for(size_t i=0; i<m_sommets.size(); i++)
@@ -1076,4 +1076,40 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
         matriceAdjacence[m_aretes[i]->getExtremites().first->getId()][m_aretes[i]->getExtremites().second->getId()]=m_aretes[i]->getPoids();
 
     return matriceAdjacence;
+}
+
+void Graphe::intermediariteFlots()
+{
+    std::vector<double> flotsMax(m_sommets.size(), 0);
+    for(size_t i=0; i<m_sommets.size(); i++)
+    {
+        for(size_t j=0; j<m_sommets.size(); j++)
+        {
+            if(m_sommets[i]!=m_sommets[j])
+            {
+                Graphe b(*this);
+                b.m_sommets[j]->getAdjacents().clear();
+                for(size_t k=0; k<m_sommets.size(); k++)
+                {
+                    for(size_t m=0; m<m_sommets[k]->getAdjacents().size(); m++)
+                    {
+                        if(m_sommets[i]==m_sommets[k]->getAdjacents()[m].first)
+                            b.m_sommets[k]->suppAdjacent(b.m_sommets[i]);
+                    }
+                }
+                for(size_t n=0; n<m_sommets.size(); n++)
+                {
+                    if(m_sommets[n]!=m_sommets[i] && m_sommets[n]!=m_sommets[j])
+                    {
+                        std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
+                        double flotSommetn=0;
+                        if(b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn)!=0)
+                            flotsMax[n]+=flotSommetn/(2*b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn));
+                    }
+                }
+            }
+        }
+    }
+    for(auto &i: flotsMax)
+        std::cout<<std::endl<<i;
 }
