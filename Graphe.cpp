@@ -375,14 +375,13 @@ void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int> ,
 {
     if (predecesseurs.find(current.first) != predecesseurs.end())
     {
-        compt.first[current.first]+=nombreChemins[current.first];
         compt.second[current.second]+=nombreChemins[current.first];
+        compt.first[current.first]+=nombreChemins[current.first];
         for(auto &j : predecesseurs[current.first].first)
             recursifIntermediarite(compt,j,predecesseurs,nombreChemins);
     }
     else
         ++compt.second[current.second];
-
 }
 
 std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
