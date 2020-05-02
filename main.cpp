@@ -3,6 +3,7 @@
 
 bool menu(Graphe& a, std::string nomFichier);
 int optionVulnerabilite(int& nb, int taille, std::string saisie);
+void intermediariteFlots(Graphe a);
 
 ///Varibale globale qui permet de mettre de la couleur sur le texte de la console
 HANDLE texteConsole=GetStdHandle(STD_OUTPUT_HANDLE);
@@ -56,7 +57,7 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"de la ";
         SetConsoleTextAttribute(texteConsole, 14);
-        std::cout<<"k-arete(s)-connexite ";
+        std::cout<<"k-connexite ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"du graphe"<<std::endl;
         std::cout<<std::endl<<"4. ";
@@ -90,6 +91,8 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" du graphe"<<std::endl;
         std::cout<<std::endl<<"7. ";
+        std::cout<<"Calculer et comparer les indices de centralite intermediaire (avec et sans flots)"<<std::endl;
+        std::cout<<std::endl<<"8. ";
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"Quitter";
         SetConsoleTextAttribute(texteConsole, 15);
@@ -118,6 +121,7 @@ bool menu (Graphe& a, std::string nomFichier)
 
         case '3':
             a.kAretesConnexe();
+            a.kSommetsConnexite();
             break;
 
         case '4':
@@ -147,8 +151,12 @@ bool menu (Graphe& a, std::string nomFichier)
             a.testForteConnexite();
             break;
 
-
         case '7':
+            intermediariteFlots(a);
+            break;
+
+
+        case '8':
             SetConsoleTextAttribute(texteConsole, 3);
             std::cout<<" _________    ____     ____    __________ "<<std::endl
                      <<"/    _    \\   \\   \\   /   /   |   _______|"<<std::endl
@@ -177,7 +185,7 @@ bool menu (Graphe& a, std::string nomFichier)
 
         a.dessiner();
     }
-    while(choix!='7');
+    while(choix!='8');
     return false;
 }
 
@@ -292,4 +300,43 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie)
     while((nb<0)||(nb>taille));
 
     return option;
+}
+
+
+void intermediariteFlots(Graphe a)
+{
+    std::vector<double> flotsMax(a.getSommets().size(), 0);
+    std::vector<std::vector<int>> matriceAdjacence=a.creationMatriceAdjacence();
+    for(size_t i=0; i<a.getSommets().size(); i++)
+    {
+        for(size_t j=0; j<a.getSommets().size(); j++)
+        {
+            if(a.getSommets()[i]!=a.getSommets()[j])
+            {
+                Graphe b(a);
+                b.getSommets()[j]->getAdjacents().clear();
+                for(size_t k=0; k<a.getSommets().size(); k++)
+                {
+                    for(size_t m=0; m<a.getSommets()[k]->getAdjacents().size(); m++)
+                    {
+                        if(a.getSommets()[i]==a.getSommets()[k]->getAdjacents()[m].first)
+                            b.getSommets()[k]->suppAdjacent(b.getSommets()[i]);
+                    }
+                }
+                for(size_t n=0; n<a.getSommets().size(); n++)
+                {
+                    if(a.getSommets()[n]!=a.getSommets()[i] && a.getSommets()[n]!=a.getSommets()[j])
+                    {
+                        std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
+                        double flotSommetn=0;
+                        if(b.getSommets()[i]->fordFulkerson(matriceAdjacence, b.getSommets()[j]->getId(), a.getSommets()[n]->getId(), flotSommetn)!=0)
+                            flotsMax[n]+=flotSommetn/(2*b.getSommets()[i]->fordFulkerson(matriceAdjacence, b.getSommets()[j]->getId(), a.getSommets()[n]->getId(), flotSommetn));
+                    }
+                }
+            }
+        }
+    }
+
+    for(auto &i: flotsMax)
+        std::cout<<std::endl<<i;
 }
