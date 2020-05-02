@@ -35,15 +35,15 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="Arete.cpp" />
-		<Unit filename="Arete.h" />
-		<Unit filename="Graphe.cpp" />
-		<Unit filename="Graphe.h" />
-		<Unit filename="Sommet.cpp" />
-		<Unit filename="Sommet.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="svg/svgfile.cpp" />
-		<Unit filename="svg/svgfile.h" />
+		<Unit filename="sources/Arete.cpp" />
+		<Unit filename="sources/Arete.h" />
+		<Unit filename="sources/Graphe.cpp" />
+		<Unit filename="sources/Graphe.h" />
+		<Unit filename="sources/Sommet.cpp" />
+		<Unit filename="sources/Sommet.h" />
+		<Unit filename="sources/svg/svgfile.cpp" />
+		<Unit filename="sources/svg/svgfile.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

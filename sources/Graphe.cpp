@@ -1206,3 +1206,42 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string n
     return indices;
 
 }
+
+std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
+{
+    bool verif=false;
+    int occurence=0;
+    std::string fichierSauvegarde;
+    double inutile1, inutile2, indice, donnees=0;
+    std::vector<double> tempo;
+    std::string ligne;
+
+    while(!verif)
+    {
+        fichierSauvegarde=nom_fichier + "_save" + std::to_string(occurence);
+        std::ifstream ifs{ fichierSauvegarde + ".txt"};
+        if(!ifs)
+        {
+            verif=true;
+            --occurence;
+        }
+        else
+            ++occurence;
+    }
+    fichierSauvegarde=nom_fichier + "_save" + std::to_string(occurence);
+    std::ifstream ifs{ fichierSauvegarde + ".txt"};
+    if(!ifs)
+    {
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<std::endl<<"Ouverture impossible";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", le chargement ne peut avoir lieu"<<std::endl;
+    }
+    else
+    {
+       ///en cours
+
+    }
+
+    return tempo;
+}

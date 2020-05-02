@@ -42,6 +42,7 @@ class Graphe
         void intermediariteFlots();
         std::vector<std::vector<int>> creationMatriceAdjacence();
         std::vector<std::vector<double>> chargementIndicesSommets( std::string nomFichier);
+        std::vector<double> chargementInterAretes (std::string nom_fichier);
 
     private:
         std::vector<Sommet*> m_sommets;
