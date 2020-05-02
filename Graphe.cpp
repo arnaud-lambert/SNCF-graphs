@@ -17,7 +17,7 @@ Graphe::Graphe(std::string& nomFichier)
         SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
         SetConsoleTextAttribute(texteConsole, 15);
-        ifs.open(nom + ".txt");
+        ifs.open("Graphes/" + nom + ".txt");
         if(!ifs)
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -31,7 +31,10 @@ Graphe::Graphe(std::string& nomFichier)
         }
     }
     while(!ifs);
-    std::cout<<std::endl<<"Lecture du fichier ";
+    SetConsoleTextAttribute(texteConsole, 10);
+    std::cout<<std::endl<<"Lecture";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" du fichier ";
     SetConsoleTextAttribute(texteConsole, 10);
     std::cout<<nom;
     SetConsoleTextAttribute(texteConsole, 15);
@@ -136,7 +139,7 @@ void Graphe::ponderation()
         SetConsoleTextAttribute(texteConsole, 10);
         std::getline(std::cin, nomFichier);
         SetConsoleTextAttribute(texteConsole, 15);
-        std::ifstream ifs{nomFichier + ".txt"};
+        std::ifstream ifs{"Ponderations/" + nomFichier + ".txt"};
         if(ifs)
         {
             ifs>>taille;
@@ -461,7 +464,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
 
     for(auto &i : mapCentraliteAretes)
     {
-        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)/(m_taille))}});
+        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)*(m_taille))}});
         //std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
     }
     for(auto &i : m_aretes)
@@ -535,12 +538,12 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{fichierSauvegarde + ".txt"};
+        std::ifstream ifs{"Saves/" + fichierSauvegarde + ".txt"};
         if(!ifs)
             verif=true;
         occurence++;
     }
-    std::ofstream ofs{fichierSauvegarde + ".txt"};
+    std::ofstream ofs{"Saves/" + fichierSauvegarde + ".txt"};
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -550,13 +553,8 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     }
     else
     {
-        std::cout<<"Sauvegarde du fichier ";
-        SetConsoleTextAttribute(texteConsole, 10);
-        std::cout<<nomFichier;
-        SetConsoleTextAttribute(texteConsole, 15);
-        std::cout<<"..."<<std::endl;
         SetConsoleTextAttribute(texteConsole, 14);
-        std::cout<<std::endl<<"Indice";
+        std::cout<<"Indice";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" de ";
         SetConsoleTextAttribute(texteConsole, 14);
@@ -613,6 +611,14 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             ofs << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
             std::cout << "Arete "<<i.first->getId() << " : " << " " << i.second.first << " " << i.second.second << std::endl;
         }
+        SetConsoleTextAttribute(texteConsole, 10);
+        std::cout<<std::endl<<"Sauvegarde";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" du fichier ";
+        SetConsoleTextAttribute(texteConsole, 10);
+        std::cout<<nomFichier;
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<"..."<<std::endl;
     }
 }
 
