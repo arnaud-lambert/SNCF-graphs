@@ -192,6 +192,7 @@ void Graphe::ponderation()
 
 void Graphe::dessiner ()
 {
+    bool even=true;
     Svgfile svgout;
     svgout.addGrid();
 
@@ -199,7 +200,13 @@ void Graphe::dessiner ()
         m_sommets[i]->dessiner(svgout);
 
     for(size_t j=0; j<m_aretes.size(); ++j)
-        m_aretes[j]->dessiner(svgout);
+    {
+        m_aretes[j]->dessiner(svgout, m_orientation, even);
+        if(even==true)
+            even=false;
+        else
+            even=true;
+    }
 
     ///legende
     svgout.addRectangle(870, 600, 120, 130, 5, 5, "white");
