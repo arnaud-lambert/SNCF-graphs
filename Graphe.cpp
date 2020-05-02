@@ -283,14 +283,12 @@ std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 }
 
 
-
 int Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
     std::set<Sommet*> marques;
     std::vector<Sommet*> sommets_isoles;
     int compteur=0;
-
 
     Sommet*parcours=m_sommets[0];
 
@@ -373,8 +371,9 @@ void Graphe::testConnexite (int nb)
 
 }
 
-void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> &compt, std::pair<Sommet*,Arete*> current,
-        std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
+
+void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, std::pair<Sommet*,Arete*> current,
+                            std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
 {
     if (predecesseurs.find(current.first) != predecesseurs.end())
     {
@@ -387,11 +386,12 @@ void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int> ,
         ++compt.second[current.second];
 }
 
+
 std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
 {
     Sommet* courant;
     double longueur;
-    std::vector<std::pair<double,double>> centraliteSommets(m_ordre,{0.0,0.0});
+    std::vector<std::pair<double,double>> centraliteSommets(m_ordre, {0.0,0.0});
     std::vector<std::pair<Arete*,std::pair<double,double>>> centraliteAretes;
     std::unordered_map<Arete*,double> mapCentraliteAretes;
 
@@ -420,7 +420,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
                     if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)//ecrase
                     {
                         prio.push({i.first,longueur+i.second->getPoids()});
-                        predecesseurs[i.first] = {{{courant,i.second}} ,i.second->getPoids()+longueur};
+                        predecesseurs[i.first] = {{{courant,i.second}},i.second->getPoids()+longueur};
 
                         if(courant == j)
                             nombreChemins[i.first] = 1;
@@ -442,7 +442,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
             if(m_orientation || k.first->getId() > j->getId())
                 for(auto &z : predecesseurs[k.first].first)
                 {
-                    std::pair<std::unordered_map<Sommet*,unsigned int> ,std::unordered_map<Arete*,unsigned int>> compt;
+                    std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> compt;
 
                     recursifIntermediarite(compt,z,predecesseurs,nombreChemins);
                     for(auto &i : compt.first)
@@ -458,7 +458,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
         if(m_orientation)
             i.first /= 2.0;
 
-         i.second =i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
+        i.second =i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
         //std::cout << i.first  << " " << i.second<< std::endl;
     }
 
@@ -471,11 +471,14 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
         if(mapCentraliteAretes.find(i) == mapCentraliteAretes.end())
             centraliteAretes.push_back({i,{0.0,0.0}});
 
-     std::sort(centraliteAretes.begin(), centraliteAretes.end(), [](std::pair<Arete*,std::pair<double,double>> a1, std::pair<Arete*,std::pair<double,double>> a2)
-        { return a1.first->getId() < a2.first->getId(); });
+    std::sort(centraliteAretes.begin(), centraliteAretes.end(), [](std::pair<Arete*,std::pair<double,double>> a1, std::pair<Arete*,std::pair<double,double>> a2)
+    {
+        return a1.first->getId() < a2.first->getId();
+    });
 
     return {centraliteSommets,centraliteAretes};
 }
+
 
 std::vector<std::pair<double, double>> Graphe::vecteurProximite()
 {
@@ -529,6 +532,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
         std::cout<<m_sommets[i]->getId()<<" "<<indiceSommets[i].first<<" "<<indiceSommets[i].second<<std::endl;*/
     return indiceSommets;
 }
+
 
 void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier)
 {
@@ -597,7 +601,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             SetConsoleTextAttribute(texteConsole, 15);
         }
         std::cout << std::endl << "Indice de ";
-        SetConsoleTextAttribute(texteConsole, 14);
+        SetConsoleTextAttribute(texteConsole, 13);
         std::cout<<"centralite intermediaire";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" des ";
@@ -621,7 +625,6 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
         std::cout<<"..."<<std::endl;
     }
 }
-
 
 
 void Graphe::supprimerArete ()
@@ -715,8 +718,6 @@ void Graphe::supprimerSommet (Sommet*s)
         }
     }
 
-
-
     int i=0;
     do
     {
@@ -765,9 +766,12 @@ void Graphe::kSommetsConnexite ()
         {
             if((m_orientation && j!=i) || j->getId() > i->getId())
             {
-                chemins_p=chemins[{i,j}];
+                chemins_p=chemins[ {i,j}];
                 //std::cout<<"PAIRE"<<std::endl;
-                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b) { return a.size()<b.size();} );
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
+                {
+                    return a.size()<b.size();
+                } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
                     //std::cout<<"Comparaison"<<std::endl;
@@ -780,17 +784,17 @@ void Graphe::kSommetsConnexite ()
                             if(suivant.find(a->getId())!=suivant.end())
                             {
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
-                                        tempo.push_back(a->getExtremites().first->getId());
+                                    tempo.push_back(a->getExtremites().first->getId());
                                 if(a->getExtremites().second!=i && a->getExtremites().second!=j)
-                                        tempo.push_back(a->getExtremites().second->getId());
+                                    tempo.push_back(a->getExtremites().second->getId());
 
                             }
                             if(actuel.find(a->getId())!=actuel.end())
                             {
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
-                                        tempo2.insert(a->getExtremites().first->getId());
+                                    tempo2.insert(a->getExtremites().first->getId());
                                 if(a->getExtremites().second!=i && a->getExtremites().second!=j)
-                                        tempo2.insert(a->getExtremites().second->getId());
+                                    tempo2.insert(a->getExtremites().second->getId());
 
                             }
                         }
@@ -798,11 +802,11 @@ void Graphe::kSommetsConnexite ()
                         for(auto&l: tempo)
                         {
 //                                std::cout<<l<<"  ";
-                                if(tempo2.find(l)!=tempo2.end())
-                                    {
-                                        h=1;
-                                        chemins_p[y+1]=chemins_p[y];
-                                    }
+                            if(tempo2.find(l)!=tempo2.end())
+                            {
+                                h=1;
+                                chemins_p[y+1]=chemins_p[y];
+                            }
                         }
 //                        std::cout<<std::endl;
 //                        for(auto&l: tempo2)
@@ -887,22 +891,22 @@ void Graphe::comparaisonIndices(int nb)
         std::cout<<std::endl<<"Sommet "<<m_sommets[i]->getId()<<" : "<<std::endl;
 
         SetConsoleTextAttribute(texteConsole, 3);
-        std::cout<<"   Degre: ";
+        std::cout<<"   Degre : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<centralite_degres1[i].first-centralite_degres2[i].first<<" ";
         std::cout<<centralite_degres1[i].second-centralite_degres2[i].second<<" ";
         SetConsoleTextAttribute(texteConsole, 12);
-        std::cout<<std::endl<<"   Vecteur Propre: ";
+        std::cout<<std::endl<<"   Vecteur Propre : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<vecteurPropre1[i].first-vecteurPropre2[i].first<<" ";
         std::cout<<vecteurPropre1[i].second-vecteurPropre2[i].second<<" ";
         SetConsoleTextAttribute(texteConsole, 11);
-        std::cout<<std::endl<<"   Proximite: ";
+        std::cout<<std::endl<<"   Proximite : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<vecteurProximite1[i].first-vecteurProximite2[i].first<<" ";
         std::cout<<vecteurProximite1[i].second-vecteurProximite2[i].second<<" ";
         SetConsoleTextAttribute(texteConsole, 13);
-        std::cout<<std::endl<<"   Intemediarite: ";
+        std::cout<<std::endl<<"   Intemediarite : ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<intermediarite1.first[i].first-intermediarite2.first[i].first<<" ";
         std::cout<<intermediarite1.first[i].second-intermediarite2.first[i].second<<std::endl;
@@ -964,25 +968,28 @@ void Graphe::kAretesConnexe ()
         {
             if((m_orientation && j!=i) || j->getId() > i->getId())
             {
-                chemins_p=chemins[{i,j}];
+                chemins_p=chemins[ {i,j}];
                 //std::cout<<"PAIRE"<<std::endl;
-                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b) { return a.size()<b.size();} );
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
+                {
+                    return a.size()<b.size();
+                } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
                     //std::cout<<"Comparaison"<<std::endl;
-                    tempo={chemins_p[y].begin(), chemins_p[y].end()};
+                    tempo= {chemins_p[y].begin(), chemins_p[y].end()};
                     if(y+1<chemins_p.size())
                     {
-                        suivant={chemins_p[y+1].begin(), chemins_p[y+1].end()};
+                        suivant= {chemins_p[y+1].begin(), chemins_p[y+1].end()};
                         //tempo2={chemins_p[y+1].begin(), chemins_p[y+1].end()};
                         for(auto&l: tempo)
                         {
-                                //std::cout<<l<<"  ";
-                                if(suivant.find(l)!=suivant.end())
-                                    {
-                                        h=1;
-                                        chemins_p[y+1]=chemins_p[y];
-                                    }
+                            //std::cout<<l<<"  ";
+                            if(suivant.find(l)!=suivant.end())
+                            {
+                                h=1;
+                                chemins_p[y+1]=chemins_p[y];
+                            }
                         }
 //                        std::cout<<std::endl;
 //                        for(auto&l: tempo2)
@@ -1083,7 +1090,7 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
     return matriceAdjacence;
 }
 
-void Graphe::intermediariteFlots()
+std::vector<double> Graphe::intermediariteFlots()
 {
     std::vector<double> flotsMax(m_sommets.size(), 0);
     for(size_t i=0; i<m_sommets.size(); i++)
@@ -1115,6 +1122,136 @@ void Graphe::intermediariteFlots()
             }
         }
     }
-    for(auto &i: flotsMax)
-        std::cout<<std::endl<<i;
+    return flotsMax;
+}
+
+
+void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<double>& flotApres, std::string saisie)
+{
+    char option='0';
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"Supprimer";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" des ";
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"troncons";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" pour ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"etudier";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" la ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"repartition";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" du flot ?     1 : OUI     2 : NON"<<std::endl<<std::endl;
+
+    do
+    {
+        SetConsoleTextAttribute(texteConsole, 3);
+        std::cout<<"> ";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cin>>saisie;
+        if(saisie.length()>1)
+        {
+            option='d';
+        }
+        else
+            option=saisie.front();
+
+        if(option!='1' && option!='2')
+        {
+            std::cout<<std::endl<<"Cette option est ";
+            SetConsoleTextAttribute(texteConsole, 12);
+            std::cout<<"invalide";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<", veuillez ";
+            SetConsoleTextAttribute(texteConsole, 9);
+            std::cout<<"ressaisir";
+            SetConsoleTextAttribute(texteConsole, 15);
+            std::cout<<" : ";
+        }
+    }
+    while(option!='1' && option!='2');
+
+    if(option=='1')
+    {
+        std::cout<<std::endl<<"Combien d'";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"aretes";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" voulez vous ";
+        SetConsoleTextAttribute(texteConsole, 12);
+        std::cout<<"supprimer";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" ? ";
+
+        int nb;
+        do
+        {
+            std::cin>>nb;
+            if((nb<0)||(nb>m_taille))
+            {
+                std::cout<<std::endl<<"Vous avez saisie un nombre ";
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<"trop important";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" ou ";
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<"negatif";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<", veuillez ";
+                SetConsoleTextAttribute(texteConsole, 9);
+                std::cout<<"ressaisir";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" : ";
+            }
+        }
+        while((nb<0)||(nb>m_taille));
+
+    Graphe copie(*this);
+
+    for(int i=0; i<nb; ++i)
+        copie.supprimerArete();
+
+    flotApres=copie.intermediariteFlots();
+
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<std::endl<<"Difference";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" des ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"indices";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" de ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"centralite";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<", ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"avant";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" et ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<"apres";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" la ";
+    SetConsoleTextAttribute(texteConsole, 12);
+    std::cout<<"suppression";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" de troncon(s)"<<std::endl<<std::endl;
+    }
+
+    else
+    {
+        std::cout<<std::endl<<"Indices de ";
+        SetConsoleTextAttribute(texteConsole, 13);
+        std::cout<<"centralite intermediaire";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" avec le flot : "<<std::endl<<std::endl;
+    }
+
+    for(size_t i=0; i<m_sommets.size(); i++)
+        std::cout<<"Sommet "<<i<<" : "<<flotAvant[i]-flotApres[i]<<std::endl;
+
 }

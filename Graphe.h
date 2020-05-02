@@ -25,6 +25,7 @@ class Graphe
         std::vector<Sommet*> getSommets() { return m_sommets;}
         int getTaille() {return m_taille; }
         int getOrdre() { return m_ordre; }
+        bool getOrientation() { return m_orientation; }
         std::vector<std::pair<int, double>> centraliteDegre ();
         int rechercheCC ();
         void SuppAreteI (int indice);
@@ -39,8 +40,9 @@ class Graphe
         void testForteConnexite();
         std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> tousLesChemins();
         void kAretesConnexe ();
-        void intermediariteFlots();
+        std::vector<double> intermediariteFlots();
         std::vector<std::vector<int>> creationMatriceAdjacence();
+        void comparaisonICIFlots(std::vector<double> flotAvant, std::vector<double>& flotApres, std::string saisie);
 
     private:
         std::vector<Sommet*> m_sommets;
