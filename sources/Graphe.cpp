@@ -18,7 +18,7 @@ Graphe::Graphe(std::string& nomFichier)
         SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
         SetConsoleTextAttribute(texteConsole, 15);
-        ifs.open(nom + ".txt");
+        ifs.open( nom + ".txt");
         if(!ifs)
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -137,7 +137,7 @@ void Graphe::ponderation()
         SetConsoleTextAttribute(texteConsole, 10);
         std::getline(std::cin, nomFichier);
         SetConsoleTextAttribute(texteConsole, 15);
-        std::ifstream ifs{nomFichier + ".txt"};
+        std::ifstream ifs{ nomFichier + ".txt"};
         if(ifs)
         {
             ifs>>taille;
@@ -607,12 +607,12 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{fichierSauvegarde + ".txt"};
+        std::ifstream ifs{ fichierSauvegarde + ".txt"};
         if(!ifs)
             verif=true;
         occurence++;
     }
-    std::ofstream ofs{fichierSauvegarde + ".txt"};
+    std::ofstream ofs{ fichierSauvegarde + ".txt"};
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -1169,7 +1169,7 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string n
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{fichierSauvegarde + ".txt"};
+        std::ifstream ifs{ fichierSauvegarde + ".txt"};
         if(!ifs)
         {
             verif=true;
@@ -1179,7 +1179,7 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string n
             ++occurence;
     }
     fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-    std::ifstream ifs{fichierSauvegarde + ".txt"};
+    std::ifstream ifs{ fichierSauvegarde + ".txt"};
     if(!ifs)
     {
         SetConsoleTextAttribute(texteConsole, 12);

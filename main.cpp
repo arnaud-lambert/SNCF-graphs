@@ -109,7 +109,6 @@ bool menu (Graphe& a, std::string nomFichier)
         else
             choix=saisie.front();
         std::cout<<std::endl;
-        a.dessiner(nomFichier, indices);
 
         switch(choix)
         {
