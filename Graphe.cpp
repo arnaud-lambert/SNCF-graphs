@@ -381,8 +381,7 @@ void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int> ,
             recursifIntermediarite(compt,j,predecesseurs,nombreChemins);
     }
     else
-        compt.second[current.second]++;
-
+        ++compt.second[current.second];
 }
 
 std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
@@ -462,7 +461,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
 
     for(auto &i : mapCentraliteAretes)
     {
-        centraliteAretes.push_back({i.first,{i.second,i.second/(2.0*(double)((m_taille-2)*(m_taille-1)))}});
+        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)/(m_taille))}});
         //std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
     }
     for(auto &i : m_aretes)
@@ -1077,4 +1076,3 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
 
     return matriceAdjacence;
 }
-
