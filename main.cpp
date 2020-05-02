@@ -2,7 +2,7 @@
 #include <windows.h>
 
 bool menu(Graphe& a, std::string nomFichier);
-int optionVulnerabilite(int& nb, int taille, std::string saisie);
+int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientation);
 
 ///Varibale globale qui permet de mettre de la couleur sur le texte de la console
 HANDLE texteConsole=GetStdHandle(STD_OUTPUT_HANDLE);
@@ -89,12 +89,7 @@ bool menu (Graphe& a, std::string nomFichier)
         std::cout<<"k-connexite ";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<"du graphe"<<std::endl;
-        std::cout<<std::endl<<"6. Etude ";
-        SetConsoleTextAttribute(texteConsole, 14);
-        std::cout<<"forte connexite";
-        SetConsoleTextAttribute(texteConsole, 15);
-        std::cout<<" du graphe"<<std::endl;
-        std::cout<<std::endl<<"7. Etude de ";
+        std::cout<<std::endl<<"6. Etude de ";
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"centralite intermediaire";
         SetConsoleTextAttribute(texteConsole, 15);
@@ -111,7 +106,7 @@ bool menu (Graphe& a, std::string nomFichier)
         std::cout<<"troncon";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<")"<<std::endl;
-        std::cout<<std::endl<<"8. ";
+        std::cout<<std::endl<<"7. ";
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"Quitter";
         SetConsoleTextAttribute(texteConsole, 15);
@@ -152,23 +147,37 @@ bool menu (Graphe& a, std::string nomFichier)
         case '4':
         {
             int nb=0;
-            if(optionVulnerabilite(nb, a.getTaille(), saisie)=='1')
-                a.testConnexite(nb);
+            if(optionVulnerabilite(nb, a.getTaille(), saisie, a.getOrientation())=='1')
+                if(!a.getOrientation())
+                    a.testConnexite(nb);
+                else
+                    a.testForteConnexite(nb);
+
             else
                 a.comparaisonIndices(nb);
         }
         break;
 
         case '5':
-            a.kAretesConnexe();
-            a.kSommetsConnexite();
+            if(!a.getOrientation())
+            {
+                a.kAretesConnexe();
+                a.kSommetsConnexite();
+            }
+            else
+            {
+                std::cout<<"Le graphe est ";
+                SetConsoleTextAttribute(texteConsole, 3);
+                std::cout<<"oriente";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<", cette option est ";
+                SetConsoleTextAttribute(texteConsole, 12);
+                std::cout<<"invalide"<<std::endl;
+                SetConsoleTextAttribute(texteConsole, 15);
+            }
             break;
 
         case '6':
-            a.testForteConnexite();
-            break;
-
-        case '7':
         {
             std::vector<double> flotAvant=a.intermediariteFlots();
             std::vector<double> flotApres(a.getOrdre(), 0);
@@ -177,7 +186,7 @@ bool menu (Graphe& a, std::string nomFichier)
         break;
 
 
-        case '8':
+        case '7':
             SetConsoleTextAttribute(texteConsole, 3);
             std::cout<<" _________    ____     ____    __________ "<<std::endl
                      <<"/    _    \\   \\   \\   /   /   |   _______|"<<std::endl
@@ -205,12 +214,12 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         a.dessiner();
     }
-    while(choix!='8');
+    while(choix!='7');
     return false;
 }
 
 
-int optionVulnerabilite(int& nb, int taille, std::string saisie)
+int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientation)
 {
     char option='0';
     std::cout<<"Comment voulez vous ";
@@ -235,7 +244,10 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie)
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" la ";
     SetConsoleTextAttribute(texteConsole, 14);
-    std::cout<<"connexite";
+    if(!orientation)
+        std::cout<<"connexite";
+    else
+        std::cout<<"forte connexite";
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" du graphe"<<std::endl<<std::endl<<"    2. ";
     SetConsoleTextAttribute(texteConsole, 12);
@@ -261,12 +273,12 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie)
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<"centralite"<<std::endl<<std::endl;
     SetConsoleTextAttribute(texteConsole, 15);
+    SetConsoleTextAttribute(texteConsole, 3);
+    std::cout<<"> ";
+    SetConsoleTextAttribute(texteConsole, 15);
 
     do
     {
-        SetConsoleTextAttribute(texteConsole, 3);
-        std::cout<<"> ";
-        SetConsoleTextAttribute(texteConsole, 15);
         std::cin>>saisie;
         if(saisie.length()>1)
         {
