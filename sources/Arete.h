@@ -13,7 +13,7 @@ class Arete
         void setExtremites (Sommet*s1, Sommet*s2);
         void setPoids(double poids) { m_poids = poids; }
         double getPoids() { return m_poids; }
-        void dessiner (Svgfile&svgout, int orientation, bool even);
+        void dessiner (Svgfile&svgout, int orientation, bool even, std::string couleur);
         int getId () const { return m_id; }
 
     private:

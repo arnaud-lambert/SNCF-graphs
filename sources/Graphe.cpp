@@ -195,6 +195,7 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 {
     bool even=true;
     std::vector<int> degres;
+    std::string couleur="black";
     Svgfile svgout1("output1.svg", 1500, 800);
     Svgfile svgout2("output2.svg", 1500, 800);
     Svgfile svgout3("output3.svg", 1500, 800);
@@ -202,54 +203,58 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 
     for(size_t j=0; j<m_aretes.size(); ++j)
     {
-        m_aretes[j]->dessiner(svgout1, m_orientation, even);
+        m_aretes[j]->dessiner(svgout1, m_orientation, even, "black");
+        m_aretes[j]->dessiner(svgout2, m_orientation, even, "black");
+        m_aretes[j]->dessiner(svgout3, m_orientation, even, "black");
+        m_aretes[j]->dessiner(svgout4, m_orientation, even, couleur);
+
         if(even==true)
             even=false;
         else
             even=true;
     }
 
-        for(auto i:m_sommets)
-            degres.push_back((int)i->getAdjacents().size());
-        int min_degre = degres[std::distance(degres.begin(), std::min_element(degres.begin(), degres.end()))];
+    for(auto i:m_sommets)
+        degres.push_back((int)i->getAdjacents().size());
+    int min_degre = degres[std::distance(degres.begin(), std::min_element(degres.begin(), degres.end()))];
 
-        for(size_t i=0; i<degres.size(); ++i)
-            degres[i]=degres[i]-min_degre;
-        int max_degre = degres[std::distance(degres.begin(), std::max_element(degres.begin(), degres.end()))];
+    for(size_t i=0; i<degres.size(); ++i)
+        degres[i]=degres[i]-min_degre;
+    int max_degre = degres[std::distance(degres.begin(), std::max_element(degres.begin(), degres.end()))];
 
-        for(size_t i=0; i<m_sommets.size(); ++i)
-            m_sommets[i]->dessiner(svgout1, HSL((degres[i]/(double)max_degre)*300+60, 0.99f, 0.47f));
+    for(size_t i=0; i<m_sommets.size(); ++i)
+        m_sommets[i]->dessiner(svgout1, HSL((degres[i]/(double)max_degre)*300+60, 0.99f, 0.47f));
 
     if(indices==true)
     {
-    std::vector<std::vector<double>> indicesSommets=chargementIndicesSommets(nom_fichier);
-    std::vector<double> vecMax;
-    std::vector<double> proxMax;
-    std::vector<double> interMax;
+        std::vector<std::vector<double>> indicesSommets=chargementIndicesSommets(nom_fichier);
+        std::vector<double> vecMax;
+        std::vector<double> proxMax;
+        std::vector<double> interMax;
 
-    for(size_t i=0; i<indicesSommets.size(); ++i)
-    {
-        vecMax.push_back(indicesSommets[i][0]);
-        proxMax.push_back(indicesSommets[i][1]);
-        interMax.push_back(indicesSommets[i][2]);
-    }
+        for(size_t i=0; i<indicesSommets.size(); ++i)
+        {
+            vecMax.push_back(indicesSommets[i][0]);
+            proxMax.push_back(indicesSommets[i][1]);
+            interMax.push_back(indicesSommets[i][2]);
+        }
 
-    double min_vec=vecMax[std::distance(vecMax.begin(),std::min_element(vecMax.begin(), vecMax.end()))];
-    double min_prox=proxMax[std::distance(proxMax.begin(),std::min_element(proxMax.begin(), proxMax.end()))];
-    double min_inter=interMax[std::distance(interMax.begin(),std::min_element(interMax.begin(), interMax.end()))];
+        double min_vec=vecMax[std::distance(vecMax.begin(),std::min_element(vecMax.begin(), vecMax.end()))];
+        double min_prox=proxMax[std::distance(proxMax.begin(),std::min_element(proxMax.begin(), proxMax.end()))];
+        double min_inter=interMax[std::distance(interMax.begin(),std::min_element(interMax.begin(), interMax.end()))];
 
-    for(size_t i=0; i<vecMax.size(); ++i)
-    {
-        vecMax[i]=vecMax[i]-min_vec;
-        proxMax[i]=proxMax[i]-min_prox;
-        interMax[i]=interMax[i]-min_inter;
-    }
+        for(size_t i=0; i<vecMax.size(); ++i)
+        {
+            vecMax[i]=vecMax[i]-min_vec;
+            proxMax[i]=proxMax[i]-min_prox;
+            interMax[i]=interMax[i]-min_inter;
+        }
 
-    double max_vec=vecMax[std::distance(vecMax.begin(),std::max_element(vecMax.begin(), vecMax.end()))];
-    double max_prox=proxMax[std::distance(proxMax.begin(),std::max_element(proxMax.begin(), proxMax.end()))];
-    double max_inter=interMax[std::distance(interMax.begin(),std::max_element(interMax.begin(), interMax.end()))];
+        double max_vec=vecMax[std::distance(vecMax.begin(),std::max_element(vecMax.begin(), vecMax.end()))];
+        double max_prox=proxMax[std::distance(proxMax.begin(),std::max_element(proxMax.begin(), proxMax.end()))];
+        double max_inter=interMax[std::distance(interMax.begin(),std::max_element(interMax.begin(), interMax.end()))];
 
-    for(size_t i=0; i<m_sommets.size(); ++i)
+        for(size_t i=0; i<m_sommets.size(); ++i)
         {
             m_sommets[i]->dessiner(svgout2, HSL((vecMax[i]/max_vec)*300+60, 0.99f, 0.47f));
             m_sommets[i]->dessiner(svgout3, HSL((proxMax[i]/max_prox)*300+60, 0.99f, 0.47f));
@@ -259,18 +264,18 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 
 
     ///legende
-    svgout1.addRectangle(10, 760, 30, 130, 5, 5, "white");
-    svgout2.addRectangle(10, 760, 30, 130, 5, 5, "white");
-    svgout3.addRectangle(10, 760, 30, 130, 5, 5, "white");
-    svgout4.addRectangle(10, 760, 30, 130, 5, 5, "white");
+    svgout1.addRectangle(10, 760, 200, 30, 5, 5, "white");
+    svgout2.addRectangle(10, 760, 200, 30, 5, 5, "white");
+    svgout3.addRectangle(10, 760, 200, 30, 5, 5, "white");
+    svgout4.addRectangle(10, 760, 200, 30, 5, 5, "white");
     svgout1.addText(20, 780, "indice arete", "darkorchid");
     svgout2.addText(20, 780, "indice arete", "darkorchid");
     svgout3.addText(20, 780, "indice arete", "darkorchid");
     svgout4.addText(20, 780, "indice arete", "darkorchid");
-    svgout1.addText(60, 780, "poids arete", "darkgrey");
-    svgout2.addText(60, 780, "poids arete", "darkgrey");
-    svgout3.addText(60, 780, "poids arete", "darkgrey");
-    svgout4.addText(60, 780, "poids arete", "darkgrey");
+    svgout1.addText(110, 780, "poids arete", "darkgrey");
+    svgout2.addText(110, 780, "poids arete", "darkgrey");
+    svgout3.addText(110, 780, "poids arete", "darkgrey");
+    svgout4.addText(110, 780, "poids arete", "darkgrey");
 
 }
 
@@ -1154,8 +1159,8 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
 
 std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string nomFichier)
 {
-   std::vector<std::vector<double>> indices;
-   bool verif=false;
+    std::vector<std::vector<double>> indices;
+    bool verif=false;
     int occurence=0;
     std::string fichierSauvegarde;
     double inutile1, inutile2, indice, donnees=0;
@@ -1198,6 +1203,6 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string n
 
     }
 
-   return indices;
+    return indices;
 
 }

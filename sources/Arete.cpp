@@ -27,7 +27,7 @@ void Arete::setExtremites (Sommet*s1, Sommet*s2)
     m_extremites.second=s2;
 }
 
-void Arete::dessiner(Svgfile&svgout, int orientation, bool even)
+void Arete::dessiner(Svgfile&svgout, int orientation, bool even, std::string couleur)
 {
     std::string nom = m_extremites.first->getNom()+"-"+ m_extremites.second->getNom();
     if(orientation ==1)
@@ -37,11 +37,11 @@ void Arete::dessiner(Svgfile&svgout, int orientation, bool even)
             else
                 svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50-10, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)-30, nom, "darkorchid");
         }
-    svgout.addLine( (m_extremites.first)->getX()*100, (m_extremites.first)->getY()*100, (m_extremites.second)->getX()*100, (m_extremites.second)->getY()*100, "black");
+    svgout.addLine( (m_extremites.first)->getX()*100, (m_extremites.first)->getY()*100, (m_extremites.second)->getX()*100, (m_extremites.second)->getY()*100, couleur);
     if(even)
         svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)+15, m_id, "darkorchid");
     else
         svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)-15, m_id, "darkorchid");
-    if(m_poids!=1)//si fichier avec pond�ration
+    if(m_poids!=1)//si fichier avec ponderation
         svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)-5, m_poids, "grey" );
 }
