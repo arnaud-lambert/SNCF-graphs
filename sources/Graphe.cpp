@@ -229,15 +229,15 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 
     for(size_t j=0; j<m_aretes.size(); ++j)
     {
-        m_aretes[j]->dessiner(svgout1, m_orientation, even, "black");
+        m_aretes[j]->dessiner(svgout1, m_orientation, even, m_ponderation, "black");
         //si indices calcules, on affiche les aretes sur tous les svg
         if(indices==true)
         {
-            m_aretes[j]->dessiner(svgout2, m_orientation, even, "black");
-            m_aretes[j]->dessiner(svgout3, m_orientation, even, "black");
+            m_aretes[j]->dessiner(svgout2, m_orientation, even, m_ponderation, "black");
+            m_aretes[j]->dessiner(svgout3, m_orientation, even, m_ponderation, "black");
             HSL couleur=HSL((indices_aretes[j]/max_ind)*300+60, 0.99f, 0.47f);//calcul couleur en fonction des indices min et max
             RGB color=HSLToRGB(couleur);
-            m_aretes[j]->dessiner(svgout4, m_orientation, even, svgout4.makeRGB((int)color.getR(),(int)color.getG(),(int)color.getB()));
+            m_aretes[j]->dessiner(svgout4, m_orientation, even, m_ponderation, svgout4.makeRGB((int)color.getR(),(int)color.getG(),(int)color.getB()));
         }
 
         //even true un tour sur deux(pour eviter superposition indices en oriente)
