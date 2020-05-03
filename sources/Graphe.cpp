@@ -226,7 +226,6 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
     Svgfile svgout2("SVG/output2.svg", 1400, 650);
     Svgfile svgout3("SVG/output3.svg", 1400, 650);
     Svgfile svgout4("SVG/output4.svg", 1400, 650);
-    svgout1.addGrid();
 
     //si les indices pour ce graphe ont deja ete calcules et sauvegardes
     if(indices==true)
@@ -239,6 +238,35 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
             indices_aretes[j]=indices_aretes[j]-min_ind;
         //on recupere l'indice max parmis les "nouveaux" indices
         max_ind=indices_aretes[std::distance(indices_aretes.begin(), std::max_element(indices_aretes.begin(), indices_aretes.end()))];
+    }
+    double minX = (double)INT_MAX, minY = (double)INT_MAX;
+    for(auto &i : m_sommets)
+    {
+        minX = std::min(minX,i->getX());
+        minY = std::min(minY,i->getY());
+    }
+
+    double maxX = 0.0, maxY = 0.0; // coordonnées max pour calculer coef d'affichage
+    for(auto &i : m_sommets)
+    {
+        i->setX((i->getX() - minX) + 4.0);
+        i->setY((i->getY() - minY) + 8.0);
+        maxX = std::max(maxX,i->getX());
+        maxY = std::max(maxY,i->getY());
+    }
+    maxX/=(double)LARGEUR;
+    maxY/=(double)HAUTEUR;
+    double coef;
+
+    if(std::max(maxX,maxY) == maxX)
+        coef = 1/maxX;
+    else
+        coef = 1/maxY;
+
+    for(auto &i : m_sommets)
+    {
+        i->setX(i->getX()*coef);
+        i->setY(i->getY()*coef);
     }
 
     for(size_t j=0; j<m_aretes.size(); ++j)
@@ -263,7 +291,7 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 
     ///pour chaque indice (centralite degre, intermediarite, vecteur propre et proximite):
     //on recupere valeurs puis on stocke l'indice min, on soustrait à toutes les valeurs puis recherche indice max (comme pour aretes) et dessin
-    for(auto i:m_sommets)
+    for(auto &i:m_sommets)
         degres.push_back((int)i->getAdjacents().size());
     int min_degre = degres[std::distance(degres.begin(), std::min_element(degres.begin(), degres.end()))];
 
@@ -306,6 +334,8 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
         double max_vec=vecMax[std::distance(vecMax.begin(),std::max_element(vecMax.begin(), vecMax.end()))];
         double max_prox=proxMax[std::distance(proxMax.begin(),std::max_element(proxMax.begin(), proxMax.end()))];
         double max_inter=interMax[std::distance(interMax.begin(),std::max_element(interMax.begin(), interMax.end()))];
+        if (max_inter==0.0)
+            max_inter=1.0;
 
         //dessin avec couleur adequat pour chaque sommet
         for(size_t i=0; i<m_sommets.size(); ++i)
@@ -459,10 +489,11 @@ int Graphe::rechercheCC ()
 //test de la connexite du graphe apres suppression d'une ou plusieurs aretes
 void Graphe::testConnexite (int nb)
 {
-    Graphe copie=*this;
+    Graphe copie=*this;//copie en profondeur du graphe pour ne pas le modifier
     int cc=0;
 
     cc=this->rechercheCC();
+    //si graphe connexe (1 composante connexe)
     if(cc==1)
     {
         std::cout<<std::endl<<"Pour ";
@@ -486,6 +517,7 @@ void Graphe::testConnexite (int nb)
         SetConsoleTextAttribute(texteConsole, 15);
     }
 
+    //on supprime le nombre d'aretes demandé par l'utilisateur et on regarde à nouveau nbre composantes connexes
     for(int i=0; i<nb; ++i)
         copie.supprimerArete();
     cc= copie.rechercheCC();
@@ -507,6 +539,7 @@ void Graphe::testConnexite (int nb)
 
     SetConsoleTextAttribute(texteConsole, 15);
 
+    //affichage en console des sommets qui sont isolés du reste du graphe (qui n'ont aucun adjacent)
     for(auto s: copie.m_sommets)
     {
         if((s->getAdjacents()).size()==0)
@@ -811,12 +844,13 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     }
 }
 
-
+///suppresion d'une arete avec demande indice à l'utilisateur
 void Graphe::supprimerArete ()
 {
     int indice=0;
     std::set<int> indices;
 
+    //on met tous les idées dans un set pour pouvoir blinder saisie
     for(auto a: m_aretes)
     {
         indices.insert(a->getId());
@@ -839,7 +873,7 @@ void Graphe::supprimerArete ()
     do
     {
         std::cin>>indice;
-        if(indices.find(indice)==indices.end())
+        if(indices.find(indice)==indices.end())//si on ne trouve pas l'indice saisi (arete inexistante)
         {
             std::cout<<std::endl<<"Cet ";
             SetConsoleTextAttribute(texteConsole, 14);
@@ -856,42 +890,44 @@ void Graphe::supprimerArete ()
             std::cout<<" : ";
         }
     }
-    while(indices.find(indice)==indices.end());
+    while(indices.find(indice)==indices.end());//on redemande saisie tant qu'un indice valide n'est pa entré
 
-    this->SuppAreteI(indice);
+    this->SuppAreteI(indice);//appel fonction suppresion d'une arete avec identification par son indice
 
 }
 
+///suppression d'une arete par indice
 void Graphe::SuppAreteI (int indice)
 {
     std::pair<Sommet*, Sommet*> extremites;
 
     for(auto i: m_aretes)
     {
-        if(i->getId()==indice)
+        if(i->getId()==indice)//si on trouve arete demande, on recupere ses extremites (sommets)
             extremites = i->getExtremites();
     }
 
-    extremites.first->suppAdjacent(extremites.second);
+    extremites.first->suppAdjacent(extremites.second);//on supprime le sommet à la deuxieme extremite des adjacents du premier
 
-    if(!m_orientation)
+    if(!m_orientation)//si cas d'un graphe non oriente, arete à double sens, on supprime aussi autre adjacent
         extremites.second->suppAdjacent(extremites.first);
 
     for(size_t i=0; i<m_aretes.size(); ++i)
     {
         if(m_aretes[i]->getId()==indice)
         {
-            delete m_aretes[i];
-            m_aretes.erase(m_aretes.begin()+i);
+            delete m_aretes[i];//suppression du pointeur
+            m_aretes.erase(m_aretes.begin()+i);//on efface la case
         }
 
     }
-    --m_taille;
+    --m_taille;//on enleve une arete donc taille du graphe diminue
 }
 
+///fonction suppression d'un sommet d'un graphe à partir de son adresse
 void Graphe::supprimerSommet (Sommet*s)
 {
-
+    //on cherche dans ses adjacents, si on trouve le sommet à supp, on supprime ce sommet des adjacents
     for(auto i: s->getAdjacents())
     {
         for(auto j: m_sommets)
@@ -908,23 +944,23 @@ void Graphe::supprimerSommet (Sommet*s)
     {
         for(size_t j=0; j<m_aretes.size(); ++j)
         {
-            ///
+            //si on trouve une arete reliee à ce sommet
             if((m_aretes[j]->getExtremites().first->getId()==s->getId())||(m_aretes[j]->getExtremites().second->getId()==s->getId()))
             {
-                m_aretes.erase(m_aretes.begin()+j);
+                m_aretes.erase(m_aretes.begin()+j);//on supprime cette arete
                 --m_taille;
                 ++i;
-                break;
+                break;//pour recommencer recherche complete
             }
         }
 
     }
-    while(i<(int)s->getAdjacents().size());
+    while(i<(int)s->getAdjacents().size());//tant qu'on a supprimé moins d'aretes que le nombre relié à ce sommet
 
 
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
-        ///
+        //on supp sommet desire et ordre du graphe diminue
         if(m_sommets[i]->getId()==s->getId())
         {
             m_sommets.erase(m_sommets.begin()+i);
@@ -933,48 +969,51 @@ void Graphe::supprimerSommet (Sommet*s)
     }
 }
 
+
+///fonction k-connexite pour les sommets
 void Graphe::kSommetsConnexite ()
 {
     std::vector<int>nb;
-    std::vector<std::unordered_set<int>> chemins_p;
+    std::vector<std::unordered_set<int>> chemins_p;//tous les chemins possibles entre 2 sommets precis
     int compteur=1, h=0;
     std::vector <int> tempo;
-    std::unordered_set<int>actuel;
+    std::unordered_set<int>actuel;//set actuel
     std::unordered_set<int> tempo2;
-    std::unordered_set<int> suivant;
+    std::unordered_set<int> suivant;//set suivant
     std::vector<int> reference_s;
 
-    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();
+    std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();//on recupère tous les chemins
     for(auto&i: m_sommets)
     {
         for(auto&j: m_sommets)
         {
-            if((m_orientation && j!=i) || j->getId() > i->getId())
+            if((m_orientation && j!=i) || j->getId() > i->getId())//blindage graphe oriente oriente
             {
-                chemins_p=chemins[ {i,j}];
-                //std::cout<<"PAIRE"<<std::endl;
-                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
+                chemins_p=chemins[ {i,j}];//recuperation des chemins entre i et j
+
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)//tri croissant
                 {
                     return a.size()<b.size();
                 } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
-                    //std::cout<<"Comparaison"<<std::endl;
-                    actuel=chemins_p[y];
+
+                    actuel=chemins_p[y];//on regarde le chemin au rang y
                     if(y+1<chemins_p.size())
                     {
-                        suivant=chemins_p[y+1];
+                        suivant=chemins_p[y+1];//chemin y+1
                         for(auto a: m_aretes)
                         {
-                            if(suivant.find(a->getId())!=suivant.end())
+                            if(suivant.find(a->getId())!=suivant.end())//si on trouve l'arete dans suivant
                             {
+                                //stocke les sommets trouves
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
                                     tempo.push_back(a->getExtremites().first->getId());
                                 if(a->getExtremites().second!=i && a->getExtremites().second!=j)
                                     tempo.push_back(a->getExtremites().second->getId());
 
                             }
-                            if(actuel.find(a->getId())!=actuel.end())
+                            if(actuel.find(a->getId())!=actuel.end())//si on trouve l'arete dans actuel, on stocke dans autre vecteur les sommets
                             {
                                 if(a->getExtremites().first!=i && a->getExtremites().first!=j)
                                     tempo2.insert(a->getExtremites().first->getId());
@@ -986,45 +1025,41 @@ void Graphe::kSommetsConnexite ()
 
                         for(auto&l: tempo)
                         {
-//                                std::cout<<l<<"  ";
-                            if(tempo2.find(l)!=tempo2.end())
+                            if(tempo2.find(l)!=tempo2.end())//si sommet present dans les deux vecteurs (sur les deux chemins)
                             {
                                 h=1;
                                 chemins_p[y+1]=chemins_p[y];
                             }
                         }
-//                        std::cout<<std::endl;
-//                        for(auto&l: tempo2)
-//                        {
-//                                std::cout<<l<<"  ";
-//                        }
-//                        std::cout<<std::endl;
 
+                        //si aucun sommet en commun sur les deux chemins compares, on compte un chemin de plus
                         if(h==0)
                         {
                             ++compteur;
                             //tempo2.insert(tempo.begin(),tempo.end());
                         }
 
+                        //on réinitialise
                         h=0;
                         tempo.clear();
                         tempo2.clear();
                     }
 
                 }
-                //std::cout<<"cpt: "<<compteur<<std::endl;
-                nb.push_back(compteur);
+                nb.push_back(compteur);//on ajoute nombre de chemins existant avec des sommets disjoints
                 compteur=1;
-                chemins_p.clear();
+                chemins_p.clear();//réinitialise et on passe à paire de sommets suivante
             }
 
         }
     }
 
+    //on trie par ordre croissant les nombres de chemins sommets disjoints par paire de sommets
     std::sort(nb.begin(), nb.end(), [](int a, int b)
     {
         return a < b;
     });
+    //le nombre de sommets à supprimer pour que graphe soit non connexe est le plus petit nbre de chemins dans nb
     std::cout<<std::endl<<"Ce graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<nb[0]<<"-sommet(s)";
@@ -1033,18 +1068,21 @@ void Graphe::kSommetsConnexite ()
 }
 
 
+///methode pour comparer les indices de centralite
 void Graphe::comparaisonIndices(int nb)
 {
-    Graphe copie=*this;
+    Graphe copie=*this;//on copie le graphe
 
+    //recuperation des indices pour tous les sommets
     std::vector<std::pair<int, double>> centralite_degres1 = centraliteDegre ();
     std::vector<std::pair<double, double>> vecteurPropre1=vecteurPropre();
     std::vector<std::pair<double, double>> vecteurProximite1=vecteurProximite();
     std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite1=intermediarite();
 
-    for(int i=0; i<nb; ++i)
+    for(int i=0; i<nb; ++i)//on supprime nombre d'aretes recquis par utilisateur
         copie.supprimerArete();
 
+    //on recalcule les indices
     std::vector<std::pair<int, double>> centralite_degres2 = copie.centraliteDegre ();
     std::vector<std::pair<double, double>> vecteurPropre2=copie.vecteurPropre();
     std::vector<std::pair<double, double>> vecteurProximite2=copie.vecteurProximite();
@@ -1075,6 +1113,7 @@ void Graphe::comparaisonIndices(int nb)
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" d'arete(s)"<<std::endl;
 
+    //pour chaque sommet, on affiche la difference de chacun de ses indices avant et après suppression
     for(size_t i=0; i<copie.m_sommets.size(); ++i)
     {
         std::cout<<std::endl<<"Sommet "<<m_sommets[i]->getId()<<" : "<<std::endl;
@@ -1102,6 +1141,7 @@ void Graphe::comparaisonIndices(int nb)
     }
 }
 
+
 void recursifTousLesChemins (std::vector<std::unordered_set<int>> &commun,std::pair<std::unordered_set<Sommet*>,std::unordered_set<int>> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
 {
     if(current.first != debFin.first && cheminUnique.first.find(current.first) == cheminUnique.first.end() && cheminUnique.second.find(current.second->getId()) == cheminUnique.second.end() )
@@ -1117,12 +1157,13 @@ void recursifTousLesChemins (std::vector<std::unordered_set<int>> &commun,std::p
     }
 }
 
+
 std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe::tousLesChemins()
 {
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
-            if((m_orientation && j!=i)|| (m_orientation && j->getId() > i->getId()))
+            if((m_orientation && j!=i)|| j->getId() > i->getId())
             {
                 std::pair<Sommet*,Sommet*> debFin = {i,j};
                 std::vector<std::unordered_set<int>> commun;
@@ -1139,81 +1180,75 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe
     return chemins;
 }
 
-
+///calcul k connexite pour les aretes
 void Graphe::kAretesConnexe ()
 {
     std::vector<int>nb;
     std::vector<std::unordered_set<int>> chemins_p;
     int compteur=1, h=0;
     std::vector <int> tempo;
-    //std::vector <int> tempo2;
     std::unordered_set<int> suivant;
 
+    //on recupere tous les chemins qui existent entre deux sommets quelconques du graphe
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();
     for(auto&i: m_sommets)
     {
         for(auto&j: m_sommets)
         {
-            if((m_orientation && j!=i)|| (m_orientation && j->getId() > i->getId()))
+            if((m_orientation && j!=i)|| j->getId() > i->getId())
             {
+                //pour une paire de sommets, on recupere tous les chemins les joignant
                 chemins_p=chemins[ {i,j}];
-                //std::cout<<"PAIRE"<<std::endl;
-                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)//tri croissant de la taille des chemins
                 {
                     return a.size()<b.size();
                 } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
-                    //std::cout<<"Comparaison"<<std::endl;
-                    tempo= {chemins_p[y].begin(), chemins_p[y].end()};
+                    tempo= {chemins_p[y].begin(), chemins_p[y].end()};//premier chemin recupere
                     if(y+1<chemins_p.size())
                     {
-                        suivant= {chemins_p[y+1].begin(), chemins_p[y+1].end()};
-                        //tempo2={chemins_p[y+1].begin(), chemins_p[y+1].end()};
+                        suivant= {chemins_p[y+1].begin(), chemins_p[y+1].end()};//chemin suivant dans l'ordre
+
                         for(auto&l: tempo)
                         {
-                            //std::cout<<l<<"  ";
-                            if(suivant.find(l)!=suivant.end())
+                            if(suivant.find(l)!=suivant.end())//si on trouve des aretes en commun entre les deux chemins
                             {
                                 h=1;
                                 chemins_p[y+1]=chemins_p[y];
                             }
                         }
-//                        std::cout<<std::endl;
-//                        for(auto&l: tempo2)
-//                        {
-//                                std::cout<<l<<"  ";
-//                        }
-//                        std::cout<<std::endl;
 
-                        if(h==0)
+                        if(h==0)//sinon, si les deux chemins n'ont aucune arete en commun
                         {
-                            ++compteur;
-                            chemins_p[y+1].insert(chemins_p[y].begin(),chemins_p[y].end());
+                            ++compteur;//on compte un chemin different de plus
+                            chemins_p[y+1].insert(chemins_p[y].begin(),chemins_p[y].end());//chemin suivant recupere aretes du chemin precedent
                         }
-                        h=0;
+                        h=0;//reinitialise
                     }
 
                 }
-                //std::cout<<"cpt: "<<compteur<<std::endl;
-                nb.push_back(compteur);
+                nb.push_back(compteur);//on ajoute nombre de chemins a aretes differetes pour cette paire dans vecteur
                 compteur=1;
-                chemins_p.clear();
+                chemins_p.clear();//reinitialise pour passer à paire suivante
             }
 
         }
     }
 
+    //on trie par ordre croissant les nombres de chemins avec des aretes différentes pour chaque paire de sommets
     std::sort(nb.begin(), nb.end(), [](int a, int b)
     {
         return a < b;
     });
+    //k correspond au nombre le plus petit de chemins avec des aretes differentes
     std::cout<<std::endl<<"Ce graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<nb[0]<<"-arete(s)";
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" connexe"<<std::endl;
 }
+
 
 ///On test la forte connexité d'un graphe orienté
 void Graphe::testForteConnexite(int nb)
@@ -1306,7 +1341,7 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
     return matriceAdjacence;
 }
 
-
+///chargements des indics de centralite des sommets à partir d'une sauvegarde
 std::vector<std::vector<double>> Graphe::chargementIndicesSommets(std::string nomFichier)
 {
     std::vector<std::vector<double>> indices;
@@ -1316,6 +1351,7 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets(std::string no
     double inutile1, inutile2, indice, donnees=0;
     std::vector<double> tempo;
 
+    //on cherche fichier adequat (comme pour sauvegarde)
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
@@ -1328,9 +1364,9 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets(std::string no
         else
             ++occurence;
     }
-    fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-    std::ifstream ifs{ "Saves/" + fichierSauvegarde + ".txt"};
-    if(!ifs)
+    fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);//on recupere le nom du fichier correspondant
+    std::ifstream ifs{ "Saves/" + fichierSauvegarde + ".txt"};//flux pour lire fichier
+    if(!ifs)//si prb
     {
         SetConsoleTextAttribute(texteConsole, 12);
         std::cout<<std::endl<<"Ouverture impossible";
@@ -1339,6 +1375,7 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets(std::string no
     }
     else
     {
+        //on recupere les indices non normalises de chaque sommet
         for(size_t i=0; i<m_sommets.size(); ++i)
         {
             ifs>>indice>>inutile1>>inutile2>>donnees;
@@ -1357,6 +1394,7 @@ std::vector<std::vector<double>> Graphe::chargementIndicesSommets(std::string no
 
 }
 
+///chargement indices intermediarite des aretes à partir d'une sauvegarde
 std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
 {
     bool verif=false;
@@ -1365,6 +1403,7 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
     double indice, donnees=0;
     std::vector<double> tempo;
 
+    //comme pour sauvegarde, on cherche le fichier sauvegarde correspondant au graphe actuel
     while(!verif)
     {
         fichierSauvegarde=nom_fichier + "_save" + std::to_string(occurence);
@@ -1377,8 +1416,8 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
         else
             ++occurence;
     }
-    fichierSauvegarde=nom_fichier + "_save" + std::to_string(occurence);
-    std::ifstream ifs{"Saves/" + fichierSauvegarde + ".txt"};
+    fichierSauvegarde=nom_fichier + "_save" + std::to_string(occurence);//on le charge
+    std::ifstream ifs{"Saves/" + fichierSauvegarde + ".txt"};//flux pr lire fichier
     if(!ifs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -1389,12 +1428,14 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
     else
     {
         std::string ligne;
+        //on parcourt fichier jusqu'à la partie concernant les aretes
         do
         {
             std::getline(ifs, ligne);
         }
         while(ligne!="aretes");
 
+        //on recupere les indices d'intermediarite non normalises des aretes
         for(size_t i=0; i<m_aretes.size(); ++i)
         {
             ifs>>indice>>donnees>>ligne;
