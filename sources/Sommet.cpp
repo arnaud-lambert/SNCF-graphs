@@ -118,8 +118,14 @@ bool Sommet::bfs(std::vector<std::vector<int>> grapheResiduel, int puit, std::ve
     return (sommetCouleur[puit]==true);
 }
 
+///On surpprime tous les adjacents d'un sommet
+void Sommet::supprAllAdjacents()
+{
+    m_adjacents.clear();
+}
+
 ///Ford-Fulkerson
-double Sommet::fordFulkerson(std::vector<std::vector<int>> matriceAdjacence, int puit, int sommetn, double& flotSommetn)
+double Sommet::fordFulkerson(std::vector<std::vector<int>> matriceAdjacence, int puit, int sommetn, double& flotSommetn, std::vector<Sommet*> m_sommets)
 {
     ///On déclare le flot max
     double flotMax=0;
@@ -168,16 +174,48 @@ double Sommet::fordFulkerson(std::vector<std::vector<int>> matriceAdjacence, int
         flotMax+=cheminFlot;
     }
 
+    ///On test si le sommet est isolé
+    std::vector<int> verifIsole((int)matriceAdjacence.size(), 0);
+    ///On parcourt tous les sommets, et si un n'est parent de personne, alors il est isolé
+    for(size_t j=0; j<m_sommets.size(); j++)
+            for(size_t k=0; k<parent.size(); k++)
+                if(m_sommets[j]->getId()==parent[k])
+                    verifIsole[j]+=1;
+
+
+    ///On vérifie si le sommet a un lien de parenté (même très éloigné) avec la source
+    std::vector<bool> verifChemin((int)matriceAdjacence.size(), false);
+    ///On parcourt tous les sommets et on remonte l'arbre généalogie tant qu'on est pas arrivé au tout premier
+    for(size_t i=0; i<m_sommets.size(); i++)
+    {
+        int actuel=m_sommets[i]->getId();
+        while(parent[actuel]!=-1)
+        {
+            ///Si dans son arbre il possède la source, qu'il n'est pas isolé et son parent le plus proche n'est pas le sommet en cours d'étude
+            if(parent[actuel]==m_id && verifIsole[m_sommets[i]->getId()]>=1 && sommetn!=parent[m_sommets[i]->getId()])
+                ///Alors on considère qu'il est un vecteur de transmission de flot pour notre sommet étudié
+                verifChemin[m_sommets[i]->getId()]=true;
+            ///On remonte l'arbre généalogique
+            actuel=parent[actuel];
+        }
+    }
+    ///On dit que la source est un vecteur de transmission de flot
+    verifChemin[m_id]=true;
+
     ///On vérifie si notre sommet intermédiaire est un puit
     int verifPuit=0;
     for(size_t i=0; i<grapheResiduel[sommetn].size(); i++)
-            verifPuit+=grapheResiduel[sommetn][i];
+        verifPuit+=grapheResiduel[sommetn][i];
 
 
     ///Si ca ne l'est pas, on incrémente son flot par le flot qui lui transite
     if(verifPuit!=0)
-        for(size_t i=0; i<grapheResiduel.size(); i++)
-            flotSommetn+=grapheResiduel[i][sommetn];
-
+        for(size_t i=0; i<grapheResiduel[sommetn].size(); i++)
+        {
+            ///On regarde également si le sommet de transmission de flot est validé
+            if(verifChemin[i])
+                ///On fait la différence entre le graphe résiduel et la matrice d'adjacence
+                flotSommetn+=grapheResiduel[sommetn][i]-matriceAdjacence[sommetn][i];
+        }
     return flotMax;
 }

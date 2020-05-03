@@ -1294,8 +1294,14 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
     ///On cree une matrice
     std::vector<std::vector<int>> matriceAdjacence(m_ordre, std::vector<int>(m_ordre, 0));
     ///On le poids de chaque arête dans la case qui lui est propre
-    for(size_t i=0; i<m_aretes.size(); i++)
-        matriceAdjacence[m_aretes[i]->getExtremites().first->getId()][m_aretes[i]->getExtremites().second->getId()]=m_aretes[i]->getPoids();
+    //for(size_t i=0; i<m_aretes.size(); i++)
+    //matriceAdjacence[m_aretes[i]->getExtremites().first->getId()][m_aretes[i]->getExtremites().second->getId()]=m_aretes[i]->getPoids();
+
+    for(size_t i=0; i<m_sommets.size(); i++)
+        for(size_t j=0; j<m_sommets[i]->getAdjacents().size(); j++)
+            matriceAdjacence[m_sommets[i]->getId()]
+            [m_sommets[i]->getAdjacents()[j].first->getId()]
+                =m_sommets[i]->getAdjacents()[j].second->getPoids();
 
     return matriceAdjacence;
 }
@@ -1413,34 +1419,48 @@ std::vector<double> Graphe::intermediariteFlots()
         ///On parcourt tous les futurs puits
         for(size_t j=0; j<m_sommets.size(); j++)
         {
-            ///
-            if((m_orientation && m_sommets[i]!=m_sommets[j]) || (!m_orientation && m_sommets[i]->getId() < m_sommets[j]->getId()))
+            ///Si le graphe est non orienté, on parcourt une seule fois chaque chemin
+            if((m_orientation && m_sommets[i]!=m_sommets[j]) || m_sommets[i]->getId() < m_sommets[j]->getId())
             {
+                ///Copie profonde
                 Graphe b(*this);
-                b.m_sommets[j]->getAdjacents().clear();
+                ///On crée un puit (ne possède aucun adjacent)
+                b.m_sommets[j]->supprAllAdjacents();
+                ///On reparcourt tous les sommets
                 for(size_t k=0; k<m_sommets.size(); k++)
                 {
+                    ///Ses adjacents
                     for(size_t m=0; m<m_sommets[k]->getAdjacents().size(); m++)
                     {
+                        ///Pour créer une source (il n'est l'adjacent de personne !)
                         if(m_sommets[i]==m_sommets[k]->getAdjacents()[m].first)
                             b.m_sommets[k]->suppAdjacent(b.m_sommets[i]);
                     }
                 }
+                ///On parcourt les sommets à étudier (flot transitant par eux)
                 for(size_t n=0; n<m_sommets.size(); n++)
                 {
+                    ///Si il ne s'agit ni de la source, ni du puit
                     if(m_sommets[n]->getId()!=m_sommets[i]->getId() && m_sommets[n]->getId()!=m_sommets[j]->getId())
                     {
+                        ///On crée une matrice d'adjacence
                         std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
+
+                        ///Variable qui stocke le flot transitant par un sommet
                         double flotSommetn=0;
-                        double flotMax=b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn);
-                        if(flotMax!=0)
+                        ///On lance Ford-Fulkerson pour trouver le flot MAX du graphe
+                        double flotMax=b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn, b.m_sommets);
+                        ///Si le graphe est non orienté, on calcul l'indice de centralité intermédiaire du sommet n
+                        if(flotMax!=0 && !m_orientation)
+                            flotsMax[n]+=flotSommetn/flotMax;
+                        ///Sinon, on le calcul en le divisant par 2
+                        else if(flotMax!=0)
                             flotsMax[n]+=flotSommetn/(2*flotMax);
                     }
                 }
             }
         }
     }
-
     return flotsMax;
 }
 

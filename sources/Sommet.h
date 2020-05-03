@@ -29,7 +29,8 @@ class Sommet
         void dfsReverse(std::vector<bool>& sommetCouleur, std::vector<std::vector<int>> reverseAdjacents, std::vector<int>& composanteFortementConnexe, std::vector<Sommet*> m_sommets);
         void dfs(std::vector<bool>& sommetCouleur, std::vector<int>& ordreSommet);
         bool bfs(std::vector<std::vector<int>> matriceAdjacence, int puit, std::vector<int>& chemin);
-        double fordFulkerson(std::vector<std::vector<int>> matriceAdjacence, int puit, int sommetn, double& flotSommetn);
+        double fordFulkerson(std::vector<std::vector<int>> matriceAdjacence, int puit, int sommetn, double& flotSommetn, std::vector<Sommet*> m_sommets);
+        void supprAllAdjacents();
 
     private:
         int m_id;
