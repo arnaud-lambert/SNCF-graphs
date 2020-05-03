@@ -27,9 +27,9 @@ void Sommet::affichage()const
 
 void Sommet::dessiner(Svgfile&svgout, HSL couleur)
 {
-    RGB color=HSLToRGB(couleur);
+    RGB color = HSLToRGB(couleur);
     std::string cooouleur= svgout.makeRGB((int)color.getR(),(int)color.getG(),(int)color.getB());
-    std::cout<<"COULEUR : "<<cooouleur<<std::endl;
+    //std::cout<<"COULEUR : "<<cooouleur<<std::endl;
     svgout.addDisk( m_x*100, m_y*100, 5, cooouleur);
     svgout.addText( m_x*100 - 5, m_y*100 - 10, m_nom, "black" );
 }

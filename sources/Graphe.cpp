@@ -18,7 +18,7 @@ Graphe::Graphe(std::string& nomFichier)
         SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
         SetConsoleTextAttribute(texteConsole, 15);
-        ifs.open( "Graphes/" + nom + ".txt");
+        ifs.open("Graphes/" + nom + ".txt");
         if(!ifs)
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -32,7 +32,10 @@ Graphe::Graphe(std::string& nomFichier)
         }
     }
     while(!ifs);
-    std::cout<<std::endl<<"Lecture du fichier ";
+    SetConsoleTextAttribute(texteConsole, 10);
+    std::cout<<std::endl<<"Lecture";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" du fichier ";
     SetConsoleTextAttribute(texteConsole, 10);
     std::cout<<nom;
     SetConsoleTextAttribute(texteConsole, 15);
@@ -137,14 +140,17 @@ void Graphe::ponderation()
         SetConsoleTextAttribute(texteConsole, 10);
         std::getline(std::cin, nomFichier);
         SetConsoleTextAttribute(texteConsole, 15);
-        std::ifstream ifs{ nomFichier + ".txt"};
+        std::ifstream ifs{"Ponderations/" + nomFichier + ".txt"};
         if(ifs)
         {
             ifs>>taille;
             if(taille==m_taille)
             {
                 verif=true;
-                std::cout<<std::endl<<"Lecture du fichier ";
+                SetConsoleTextAttribute(texteConsole, 10);
+                std::cout<<std::endl<<"Lecture";
+                SetConsoleTextAttribute(texteConsole, 15);
+                std::cout<<" du fichier ";
                 SetConsoleTextAttribute(texteConsole, 10);
                 std::cout<<nomFichier;
                 SetConsoleTextAttribute(texteConsole, 15);
@@ -197,10 +203,10 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
     std::vector<int> degres;
     std::vector<double> indices_aretes;
     double max_ind=0;
-    Svgfile svgout1("output1.svg", 1500, 800);
-    Svgfile svgout2("output2.svg", 1500, 800);
-    Svgfile svgout3("output3.svg", 1500, 800);
-    Svgfile svgout4("output4.svg", 1500, 800);
+    Svgfile svgout1("SVG/output1.svg", 1500, 800);
+    Svgfile svgout2("SVG/output2.svg", 1500, 800);
+    Svgfile svgout3("SVG/output3.svg", 1500, 800);
+    Svgfile svgout4("SVG/output4.svg", 1500, 800);
 
     if(indices==true)
     {
@@ -360,14 +366,12 @@ std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 }
 
 
-
 int Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
     std::set<Sommet*> marques;
     std::vector<Sommet*> sommets_isoles;
     int compteur=0;
-
 
     Sommet*parcours=m_sommets[0];
 
@@ -461,14 +465,13 @@ void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int>,s
 {
     if (predecesseurs.find(current.first) != predecesseurs.end())
     {
-        compt.first[current.first]+=nombreChemins[current.first];
         compt.second[current.second]+=nombreChemins[current.first];
+        compt.first[current.first]+=nombreChemins[current.first];
         for(auto &j : predecesseurs[current.first].first)
             recursifIntermediarite(compt,j,predecesseurs,nombreChemins);
     }
     else
         ++compt.second[current.second];
-
 }
 
 std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
@@ -548,7 +551,7 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
 
     for(auto &i : mapCentraliteAretes)
     {
-        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)/(m_taille))}});
+        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)*(m_taille))}});
         //std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
     }
     for(auto &i : m_aretes)
@@ -624,12 +627,12 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     while(!verif)
     {
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
-        std::ifstream ifs{ "Saves/" + fichierSauvegarde + ".txt"};
+        std::ifstream ifs{"Saves/" + fichierSauvegarde + ".txt"};
         if(!ifs)
             verif=true;
         occurence++;
     }
-    std::ofstream ofs{ "Saves/" + fichierSauvegarde + ".txt"};
+    std::ofstream ofs{"Saves/" + fichierSauvegarde + ".txt"};
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -639,13 +642,8 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     }
     else
     {
-        std::cout<<"Sauvegarde du fichier ";
-        SetConsoleTextAttribute(texteConsole, 10);
-        std::cout<<nomFichier;
-        SetConsoleTextAttribute(texteConsole, 15);
-        std::cout<<"..."<<std::endl;
         SetConsoleTextAttribute(texteConsole, 14);
-        std::cout<<std::endl<<"Indice";
+        std::cout<<"Indice";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" de ";
         SetConsoleTextAttribute(texteConsole, 14);
@@ -688,7 +686,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             SetConsoleTextAttribute(texteConsole, 15);
         }
         std::cout << std::endl << "Indice de ";
-        SetConsoleTextAttribute(texteConsole, 14);
+        SetConsoleTextAttribute(texteConsole, 13);
         std::cout<<"centralite intermediaire";
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" des ";
@@ -702,9 +700,16 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             ofs << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
             std::cout << "Arete "<<i.first->getId() << " : " << " " << i.second.first << " " << i.second.second << std::endl;
         }
+        SetConsoleTextAttribute(texteConsole, 10);
+        std::cout<<std::endl<<"Sauvegarde";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<" du fichier ";
+        SetConsoleTextAttribute(texteConsole, 10);
+        std::cout<<nomFichier;
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<"..."<<std::endl;
     }
 }
-
 
 
 void Graphe::supprimerArete ()
@@ -797,8 +802,6 @@ void Graphe::supprimerSommet (Sommet*s)
             }
         }
     }
-
-
 
     int i=0;
     do
@@ -922,7 +925,11 @@ void Graphe::kSommetsConnexite ()
     {
         return a < b;
     });
-    std::cout<<std::endl<<"Ce graphe est "<<nb[0]<<"-sommet(s) connexe"<<std::endl;
+    std::cout<<std::endl<<"Ce graphe est ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<nb[0]<<"-sommet(s)";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" connexe"<<std::endl;
 }
 
 
@@ -1102,21 +1109,28 @@ void Graphe::kAretesConnexe ()
     {
         return a < b;
     });
-    std::cout<<std::endl<<"Ce graphe est "<<nb[0]<<"-arete(s) connexe"<<std::endl;
+    std::cout<<std::endl<<"Ce graphe est ";
+    SetConsoleTextAttribute(texteConsole, 14);
+    std::cout<<nb[0]<<"-arete(s)";
+    SetConsoleTextAttribute(texteConsole, 15);
+    std::cout<<" connexe"<<std::endl;
 }
-
-
 
 
 void Graphe::testForteConnexite(int nb)
 {
+    Graphe copie=*this;
+
+    for(int i=0; i<nb; ++i)
+        copie.supprimerArete();
+
     std::vector<bool> sommetCouleur(m_ordre, false);
     std::vector<int> ordreSommet;
 
-    for(size_t i=0; i<m_sommets.size(); i++)
+    for(size_t i=0; i<copie.m_sommets.size(); i++)
     {
         if(sommetCouleur[i]==false)
-            m_sommets[i]->dfs(sommetCouleur, ordreSommet);
+            copie.m_sommets[i]->dfs(sommetCouleur, ordreSommet);
     }
 
     std::reverse(ordreSommet.begin(), ordreSommet.end());
@@ -1125,10 +1139,10 @@ void Graphe::testForteConnexite(int nb)
 
     std::vector<std::vector<int>> reverseAdjacents(m_ordre);
 
-    for(size_t i=0; i<m_sommets.size(); i++)
+    for(size_t i=0; i<copie.m_sommets.size(); i++)
     {
-        for(size_t j=0; j<m_sommets[i]->getAdjacents().size(); j++)
-            reverseAdjacents[m_sommets[i]->getAdjacents()[j].first->getId()].push_back(m_sommets[i]->getId());
+        for(size_t j=0; j<copie.m_sommets[i]->getAdjacents().size(); j++)
+            reverseAdjacents[copie.m_sommets[i]->getAdjacents()[j].first->getId()].push_back(copie.m_sommets[i]->getId());
     }
 
     std::vector<int> composanteFortementConnexe;
@@ -1138,13 +1152,13 @@ void Graphe::testForteConnexite(int nb)
     {
         if(sommetCouleur[ordreSommet[i]]==false)
         {
-            m_sommets[ordreSommet[i]]->dfsReverse(sommetCouleur, reverseAdjacents, composanteFortementConnexe, getSommets());
+            copie.m_sommets[ordreSommet[i]]->dfsReverse(sommetCouleur, reverseAdjacents, composanteFortementConnexe, getSommets());
             composantesFortementConnexes.push_back(composanteFortementConnexe);
             composanteFortementConnexe.clear();
         }
     }
 
-    std::cout<<"Il y a ";
+    std::cout<<std::endl<<"Il y a ";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<(int)composantesFortementConnexes.size()<<" composante(s) fortement connexe(s)";
     SetConsoleTextAttribute(texteConsole, 15);
@@ -1158,7 +1172,6 @@ void Graphe::testForteConnexite(int nb)
             std::cout<<composantesFortementConnexes[i][j]<<" ";
     }
     std::cout<<std::endl;
-
 }
 
 
@@ -1174,7 +1187,7 @@ std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
 
 
 
-std::vector<std::vector<double>> Graphe::chargementIndicesSommets( std::string nomFichier)
+std::vector<std::vector<double>> Graphe::chargementIndicesSommets(std::string nomFichier)
 {
     std::vector<std::vector<double>> indices;
     bool verif=false;
@@ -1265,7 +1278,7 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
         for(size_t i=0; i<m_aretes.size(); ++i)
         {
             ifs>>indice>>donnees>>ligne;
-            std::cout<<"DONNEES : "<<donnees<<std::endl;
+            //std::cout<<"DONNEES : "<<donnees<<std::endl;
             tempo.push_back(donnees);
         }
 
@@ -1274,7 +1287,6 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
 
     return tempo;
 }
-
 
 std::vector<double> Graphe::intermediariteFlots()
 {
@@ -1297,12 +1309,13 @@ std::vector<double> Graphe::intermediariteFlots()
                 }
                 for(size_t n=0; n<m_sommets.size(); n++)
                 {
-                    if(m_sommets[n]!=m_sommets[i] && m_sommets[n]!=m_sommets[j])
+                    if(m_sommets[n]->getId()!=m_sommets[i]->getId() && m_sommets[n]->getId()!=m_sommets[j]->getId())
                     {
                         std::vector<std::vector<int>> matriceAdjacence=b.creationMatriceAdjacence();
                         double flotSommetn=0;
-                        if(b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn)!=0)
-                            flotsMax[n]+=flotSommetn/(2*b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn));
+                        double flotMax=b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn);
+                        if(flotMax!=0)
+                            flotsMax[n]+=flotSommetn/flotMax;
                     }
                 }
             }

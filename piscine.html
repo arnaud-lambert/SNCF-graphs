@@ -1,0 +1,40 @@
+<html>
+<div id="selection">
+    <a href="piscine.html"><button>centralité de degré</button></a>
+    <button onClick="choose('vec')">centralité de vecteur propre</button>
+    <button onClick="choose('prox')">centralité de proximité</button>
+    <button onClick="choose('int')">centralité d'intermédiarité</button>
+    <a href="SNCF.html"><button>SNCF</button></a>
+
+</div>
+<p></p>
+<div>
+  <img id="choix" src="SVG/output1.svg">
+</div>
+<div>
+  <img src="echelle-HSL.png" alt="echelle">
+</div>
+
+<script>
+var user;
+function choose(choice){
+  switch(choice) {
+
+case 'vec':
+  user = "output2.svg";
+  break;
+case 'prox':
+  user = "output3.svg";
+  break;
+  case 'int':
+    user = "output4.svg";
+    break;
+default:
+  user = "output1.svg";
+}
+
+document.getElementById("choix").src = "SVG/" + user;
+}
+</script>
+
+</html>
