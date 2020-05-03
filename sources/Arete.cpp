@@ -37,15 +37,15 @@ void Arete::dessiner(Svgfile&svgout, bool orientation, bool even, bool poids, st
     if(orientation ==true)
         {
             if(even)
-                svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50-10, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)+30, nom, color);
+                svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*0.5-10, ((m_extremites.first->getY()+ m_extremites.second->getY())*0.5)+30, nom, color);
             else
-                svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50-10, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)-30, nom, color);
+                svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*0.5-10, ((m_extremites.first->getY()+ m_extremites.second->getY())*0.5)-30, nom, color);
         }
-    svgout.addLine( (m_extremites.first)->getX()*100, (m_extremites.first)->getY()*100, (m_extremites.second)->getX()*100, (m_extremites.second)->getY()*100, couleur);
+    svgout.addLine( (m_extremites.first)->getX(), (m_extremites.first)->getY(), (m_extremites.second)->getX(), (m_extremites.second)->getY(), couleur);
     if(even)
-        svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)+15, m_id, color);
+        svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*0.5, ((m_extremites.first->getY()+ m_extremites.second->getY())*0.5)+15, m_id, color);
     else
-        svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)-17, m_id, color);
+        svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*0.5, ((m_extremites.first->getY()+ m_extremites.second->getY())*0.5)-17, m_id, color);
     if(poids==true)//si fichier avec ponderation
-        svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*50, ((m_extremites.first->getY()+ m_extremites.second->getY())*50)-5, m_poids, "grey" );
+        svgout.addText( (m_extremites.first->getX() + m_extremites.second->getX())*0.5, ((m_extremites.first->getY()+ m_extremites.second->getY())*0.5)-5, m_poids, "grey" );
 }

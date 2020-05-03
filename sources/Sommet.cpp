@@ -31,8 +31,8 @@ void Sommet::dessiner(Svgfile&svgout, HSL couleur)
 {
     RGB color = HSLToRGB(couleur);//on crée une couleur de type rgb à partir de l'hsl
     std::string cooouleur= svgout.makeRGB((int)color.getR(),(int)color.getG(),(int)color.getB());
-    svgout.addDisk( m_x*100, m_y*100, 5, cooouleur);
-    svgout.addText( m_x*100 - 5, m_y*100 - 10, m_nom, "black" );
+    svgout.addDisk( m_x, m_y, 5, cooouleur);
+    svgout.addText( m_x - 5, m_y - 10, m_nom, "black" );
 }
 
 ///fonction suppression d'un adjacent envoye en parametre

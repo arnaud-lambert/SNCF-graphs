@@ -226,7 +226,6 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
     Svgfile svgout2("SVG/output2.svg", 1400, 650);
     Svgfile svgout3("SVG/output3.svg", 1400, 650);
     Svgfile svgout4("SVG/output4.svg", 1400, 650);
-    svgout1.addGrid();
 
     //si les indices pour ce graphe ont deja ete calcules et sauvegardes
     if(indices==true)
@@ -239,6 +238,35 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
             indices_aretes[j]=indices_aretes[j]-min_ind;
         //on recupere l'indice max parmis les "nouveaux" indices
         max_ind=indices_aretes[std::distance(indices_aretes.begin(), std::max_element(indices_aretes.begin(), indices_aretes.end()))];
+    }
+    double minX = (double)INT_MAX, minY = (double)INT_MAX;
+    for(auto &i : m_sommets)
+    {
+        minX = std::min(minX,i->getX());
+        minY = std::min(minY,i->getY());
+    }
+
+    double maxX = 0.0, maxY = 0.0; // coordonnées max pour calculer coef d'affichage
+    for(auto &i : m_sommets)
+    {
+        i->setX((i->getX() - minX) + 4.0);
+        i->setY((i->getY() - minY) + 8.0);
+        maxX = std::max(maxX,i->getX());
+        maxY = std::max(maxY,i->getY());
+    }
+    maxX/=(double)LARGEUR;
+    maxY/=(double)HAUTEUR;
+    double coef;
+
+    if(std::max(maxX,maxY) == maxX)
+        coef = 1/maxX;
+    else
+        coef = 1/maxY;
+
+    for(auto &i : m_sommets)
+    {
+        i->setX(i->getX()*coef);
+        i->setY(i->getY()*coef);
     }
 
     for(size_t j=0; j<m_aretes.size(); ++j)
@@ -263,7 +291,7 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 
     ///pour chaque indice (centralite degre, intermediarite, vecteur propre et proximite):
     //on recupere valeurs puis on stocke l'indice min, on soustrait à toutes les valeurs puis recherche indice max (comme pour aretes) et dessin
-    for(auto i:m_sommets)
+    for(auto &i:m_sommets)
         degres.push_back((int)i->getAdjacents().size());
     int min_degre = degres[std::distance(degres.begin(), std::min_element(degres.begin(), degres.end()))];
 
@@ -1154,7 +1182,7 @@ void Graphe::kAretesConnexe ()
     {
         for(auto&j: m_sommets)
         {
-            if((m_orientation && j!=i)|| (m_orientation && j->getId() > i->getId()))
+            if((m_orientation && j!=i)||  j->getId() > i->getId())
             {
                 chemins_p=chemins[ {i,j}];
                 //std::cout<<"PAIRE"<<std::endl;
@@ -1414,7 +1442,7 @@ std::vector<double> Graphe::intermediariteFlots()
         for(size_t j=0; j<m_sommets.size(); j++)
         {
             ///
-            if((m_orientation && m_sommets[i]!=m_sommets[j]) || (!m_orientation && m_sommets[i]->getId() < m_sommets[j]->getId()))
+            if((m_orientation && m_sommets[i]!=m_sommets[j]) || m_sommets[i]->getId() < m_sommets[j]->getId())
             {
                 Graphe b(*this);
                 b.m_sommets[j]->getAdjacents().clear();

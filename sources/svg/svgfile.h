@@ -1,6 +1,7 @@
 ﻿#ifndef SVGFILE_H_INCLUDED
 #define SVGFILE_H_INCLUDED
-
+#define HAUTEUR 600
+#define LARGEUR 1380
 #include <string>
 #include <fstream>
 #include <set>

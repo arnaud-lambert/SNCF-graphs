@@ -23,6 +23,8 @@ class Sommet
         void ajouterAdjacent(Sommet* adjacent, Arete* arete) { m_adjacents.push_back({adjacent,arete}); }
         double getX() const { return m_x; }
         double getY() const { return m_y; }
+        void setX(double x) { m_x = x; }
+        void setY(double y) { m_y = y; }
         void dessiner(Svgfile&svgout, HSL couleur);
         std::string getNom () const { return m_nom; }
         void suppAdjacent (Sommet*adjacent);
