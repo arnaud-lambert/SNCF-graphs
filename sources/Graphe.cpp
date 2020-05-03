@@ -200,7 +200,7 @@ void Graphe::ponderation()
     }
 }
 
-//fonction dessin svg du graphe
+///fonction dessin svg du graphe
 void Graphe::dessiner (std::string nom_fichier, bool indices)
 {
     bool even=true;
@@ -208,10 +208,11 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
     std::vector<double> indices_aretes;
     double max_ind=0;
     //affichage sur differents svg suivant les informations
-    Svgfile svgout1("SVG/output1.svg", 1500, 800);
-    Svgfile svgout2("SVG/output2.svg", 1500, 800);
-    Svgfile svgout3("SVG/output3.svg", 1500, 800);
-    Svgfile svgout4("SVG/output4.svg", 1500, 800);
+    Svgfile svgout1("SVG/output1.svg", 1400, 650);
+    Svgfile svgout2("SVG/output2.svg", 1400, 650);
+    Svgfile svgout3("SVG/output3.svg", 1400, 650);
+    Svgfile svgout4("SVG/output4.svg", 1400, 650);
+    svgout1.addGrid();
 
     //si les indices pour ce graphe ont deja ete calcules et sauvegardes
     if(indices==true)
@@ -303,18 +304,18 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 
 
     ///legende
-    svgout1.addRectangle(10, 760, 200, 30, 5, 5, "white");
-    svgout2.addRectangle(10, 760, 200, 30, 5, 5, "white");
-    svgout3.addRectangle(10, 760, 200, 30, 5, 5, "white");
-    svgout4.addRectangle(10, 760, 200, 30, 5, 5, "white");
-    svgout1.addText(20, 780, "indice arete", "darkorchid");
-    svgout2.addText(20, 780, "indice arete", "darkorchid");
-    svgout3.addText(20, 780, "indice arete", "darkorchid");
-    svgout4.addText(20, 780, "indice arete", "darkorchid");
-    svgout1.addText(110, 780, "poids arete", "darkgrey");
-    svgout2.addText(110, 780, "poids arete", "darkgrey");
-    svgout3.addText(110, 780, "poids arete", "darkgrey");
-    svgout4.addText(110, 780, "poids arete", "darkgrey");
+    svgout1.addRectangle(10, 610, 190, 30, 5, 5, "white");
+    svgout2.addRectangle(10, 610, 190, 30, 5, 5, "white");
+    svgout3.addRectangle(10, 610, 190, 30, 5, 5, "white");
+    svgout4.addRectangle(10, 610, 190, 30, 5, 5, "white");
+    svgout1.addText(20, 630, "indice arete", "darkorchid");
+    svgout2.addText(20, 630, "indice arete", "darkorchid");
+    svgout3.addText(20, 630, "indice arete", "darkorchid");
+    svgout4.addText(20, 630, "indice arete", "darkorchid");
+    svgout1.addText(110, 630, "poids arete", "darkgrey");
+    svgout2.addText(110, 630, "poids arete", "darkgrey");
+    svgout3.addText(110, 630, "poids arete", "darkgrey");
+    svgout4.addText(110, 630, "poids arete", "darkgrey");
 
 }
 
