@@ -247,10 +247,11 @@ bool menu (Graphe& a, std::string nomFichier)
     return false;
 }
 
-
+///On test les vulnérabilités du graphe (suppression de d'arête(s))
 int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientation)
 {
     char option='0';
+    ///On demande comment tester la vulnérabilité
     std::cout<<"Comment voulez vous ";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<"tester";
@@ -273,6 +274,7 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientatio
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" la ";
     SetConsoleTextAttribute(texteConsole, 14);
+    ///En fonction de l'orientation du graphe, on propose différentes options
     if(!orientation)
         std::cout<<"connexite";
     else
@@ -305,7 +307,7 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientatio
     SetConsoleTextAttribute(texteConsole, 3);
     std::cout<<"> ";
     SetConsoleTextAttribute(texteConsole, 15);
-
+    ///Blindage de la saisie
     do
     {
         std::cin>>saisie;
@@ -315,7 +317,7 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientatio
         }
         else
             option=saisie.front();//le choix correspond au premier caractère de la chaine
-
+        ///On indique si la saisie de l'utilisateur est invalide
         if(option!='1' && option!='2')
         {
             std::cout<<std::endl<<"Cette option est ";
@@ -331,6 +333,7 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientatio
     }
     while(option!='1' && option!='2');
 
+    ///On demande le nombre d'arête à supprimer
     std::cout<<std::endl<<"Combien d'";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<"aretes";
@@ -341,8 +344,10 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientatio
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" ? ";
 
+    ///On blinde la saisie
     do
     {
+        ///On indique si la saisie est invalide, et on demande de ressaisir
         std::cin>>nb;
         if((nb<0)||(nb>taille))
         {

@@ -172,6 +172,7 @@ void Graphe::ponderation()
                 m_ponderation=true;
                 int id;
                 double poids;
+                ///On charge la pondération
                 for(int i=0; i<taille; ++i)
                 {
                     ifs>>id>>poids;
@@ -511,6 +512,7 @@ void Graphe::testConnexite (int nb)
     }
     else
     {
+        ///On indique que le graphe n'est pas connexe à la base
         std::cout<<"Ce graphe est ";
         SetConsoleTextAttribute(texteConsole, 14);
         std::cout<<"deja non connexe";
@@ -526,12 +528,14 @@ void Graphe::testConnexite (int nb)
         copie.supprimerArete();
     cc= copie.rechercheCC();
 
+    ///On informe si le graphe est connexe ou non
     std::cout<<std::endl<<"Le graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
 
     if(cc==1)
         std::cout<<"connexe"<<std::endl;
 
+    ///On indique le nombre de composante connexe
     else
     {
         std::cout<<"non connexe";
@@ -863,6 +867,7 @@ void Graphe::supprimerArete ()
         indices.insert(a->getId());
     }
 
+    ///On demande de saisir l'indice de l'arête à supprimer
     std::cout<<std::endl<<"Saisissez l'";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<"indice";
@@ -877,11 +882,13 @@ void Graphe::supprimerArete ()
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" : ";
 
+    ///Blindage de la saisie de l'indice
     do
     {
         std::cin>>indice;
         if(indices.find(indice)==indices.end())//si on ne trouve pas l'indice saisi (arete inexistante)
         {
+            ///On informe s'il n'est pas valide
             std::cout<<std::endl<<"Cet ";
             SetConsoleTextAttribute(texteConsole, 14);
             std::cout<<"indice";
