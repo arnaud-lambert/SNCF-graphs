@@ -67,26 +67,29 @@ Graphe::Graphe(std::string& nomFichier)
     }
 }
 
-//constructeur copie
+//constructeur par copie
 Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{source.m_aretes}, m_orientation{source.m_orientation},
     m_ponderation{source.m_ponderation}, m_ordre{source.m_ordre}, m_taille{source.m_taille}
 {
+    //maps pour faire correspondre adresse de la source avec adresse de la copie (pour copier valeurs)
     std::map<Sommet*,Sommet*>transpose;
     std::map<Arete*, Arete*>trans_aretes;
 
     for(size_t i=0; i<source.m_sommets.size(); ++i)
     {
-        m_sommets[i]=new Sommet(*source.m_sommets[i]);
+        m_sommets[i]=new Sommet(*source.m_sommets[i]);//on crée copie sommet à partir de son double source (copie en profondeur)
         transpose[source.m_sommets[i]]=m_sommets[i];//associe nvelle adresse de chaque sommet à l'ancienne
     }
 
+    //creations nouvelles aretes avec donnees identiques mais nvx pointeurs
     for(size_t i=0; i<source.m_aretes.size(); ++i)
     {
-        m_aretes[i]=new Arete(*source.m_aretes[i]);
+        m_aretes[i]=new Arete(*source.m_aretes[i]);//construction arete a partir de la source
         trans_aretes[source.m_aretes[i]]=m_aretes[i];
         m_aretes[i]->setExtremites(transpose[source.m_aretes[i]->getExtremites().first], transpose[source.m_aretes[i]->getExtremites().second]);
     }
 
+    //on attribue les adjacents correspondant à partir de la map
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
         for(auto j: source.m_sommets[i]->getAdjacents())
@@ -197,46 +200,54 @@ void Graphe::ponderation()
     }
 }
 
+//fonction dessin svg du graphe
 void Graphe::dessiner (std::string nom_fichier, bool indices)
 {
     bool even=true;
     std::vector<int> degres;
     std::vector<double> indices_aretes;
     double max_ind=0;
+    //affichage sur differents svg suivant les informations
     Svgfile svgout1("SVG/output1.svg", 1500, 800);
     Svgfile svgout2("SVG/output2.svg", 1500, 800);
     Svgfile svgout3("SVG/output3.svg", 1500, 800);
     Svgfile svgout4("SVG/output4.svg", 1500, 800);
 
+    //si les indices pour ce graphe ont deja ete calcules et sauvegardes
     if(indices==true)
     {
-        indices_aretes=chargementInterAretes(nom_fichier);
+        indices_aretes=chargementInterAretes(nom_fichier);//charge les indices d'intermediarite des aretes à partir de sauvegarde
+        //on recupere le plus petit indice
         double min_ind=indices_aretes[std::distance(indices_aretes.begin(), std::min_element(indices_aretes.begin(), indices_aretes.end()))];
-
+        //on soustrait l'indice minimal de chaque indice (permet affichage couleurs aretes suivant min et max)
         for(size_t j=0; j<indices_aretes.size(); ++j)
             indices_aretes[j]=indices_aretes[j]-min_ind;
-
+        //on recupere l'indice max parmis les "nouveaux" indices
         max_ind=indices_aretes[std::distance(indices_aretes.begin(), std::max_element(indices_aretes.begin(), indices_aretes.end()))];
     }
 
     for(size_t j=0; j<m_aretes.size(); ++j)
     {
         m_aretes[j]->dessiner(svgout1, m_orientation, even, "black");
+        //si indices calcules, on affiche les aretes sur tous les svg
         if(indices==true)
         {
             m_aretes[j]->dessiner(svgout2, m_orientation, even, "black");
             m_aretes[j]->dessiner(svgout3, m_orientation, even, "black");
-            HSL couleur=HSL((indices_aretes[j]/max_ind)*300+60, 0.99f, 0.47f);
+            HSL couleur=HSL((indices_aretes[j]/max_ind)*300+60, 0.99f, 0.47f);//calcul couleur en fonction des indices min et max
             RGB color=HSLToRGB(couleur);
             m_aretes[j]->dessiner(svgout4, m_orientation, even, svgout4.makeRGB((int)color.getR(),(int)color.getG(),(int)color.getB()));
         }
 
+        //even true un tour sur deux(pour eviter superposition indices en oriente)
         if(even==true)
             even=false;
         else
             even=true;
     }
 
+    ///pour chaque indice (centralite degre, intermediarite, vecteur propre et proximite):
+    //on recupere valeurs puis on stocke l'indice min, on soustrait à toutes les valeurs puis recherche indice max (comme pour aretes) et dessin
     for(auto i:m_sommets)
         degres.push_back((int)i->getAdjacents().size());
     int min_degre = degres[std::distance(degres.begin(), std::min_element(degres.begin(), degres.end()))];
@@ -248,9 +259,10 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
     for(size_t i=0; i<m_sommets.size(); ++i)
         m_sommets[i]->dessiner(svgout1, HSL((degres[i]/(double)max_degre)*300+60, 0.99f, 0.47f));
 
+    //affichage dans les autres svg seulement quand indices calcules
     if(indices==true)
     {
-        std::vector<std::vector<double>> indicesSommets=chargementIndicesSommets(nom_fichier);
+        std::vector<std::vector<double>> indicesSommets=chargementIndicesSommets(nom_fichier);//chargement des indicse a partir d'une sauvegarde
         std::vector<double> vecMax;
         std::vector<double> proxMax;
         std::vector<double> interMax;
@@ -262,10 +274,12 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
             interMax.push_back(indicesSommets[i][2]);
         }
 
+        //trouve min
         double min_vec=vecMax[std::distance(vecMax.begin(),std::min_element(vecMax.begin(), vecMax.end()))];
         double min_prox=proxMax[std::distance(proxMax.begin(),std::min_element(proxMax.begin(), proxMax.end()))];
         double min_inter=interMax[std::distance(interMax.begin(),std::min_element(interMax.begin(), interMax.end()))];
 
+        //recalcul des indices avec min
         for(size_t i=0; i<vecMax.size(); ++i)
         {
             vecMax[i]=vecMax[i]-min_vec;
@@ -273,10 +287,12 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
             interMax[i]=interMax[i]-min_inter;
         }
 
+        //trouve max
         double max_vec=vecMax[std::distance(vecMax.begin(),std::max_element(vecMax.begin(), vecMax.end()))];
         double max_prox=proxMax[std::distance(proxMax.begin(),std::max_element(proxMax.begin(), proxMax.end()))];
         double max_inter=interMax[std::distance(interMax.begin(),std::max_element(interMax.begin(), interMax.end()))];
 
+        //dessin avec couleur adequat pour chaque sommet
         for(size_t i=0; i<m_sommets.size(); ++i)
         {
             m_sommets[i]->dessiner(svgout2, HSL((vecMax[i]/max_vec)*300+60, 0.99f, 0.47f));
@@ -344,28 +360,24 @@ std::vector<std::pair<double, double>> Graphe::vecteurPropre()
 }
 
 
+///calcul indice centralite degre
 std::vector<std::pair<int, double>> Graphe::centraliteDegre ()
 {
     std::vector<std::pair<int, double>> centralite_degres;
     std::pair<int, double> degres;//first est degre non normalisé et second est degré normalisé
 
+    //on recupere le degre de chaque sommet puis on retourne valeur non normalisee et normalisee
     for(auto i: m_sommets)
     {
-        degres.first = i->getAdjacents().size();
+        degres.first = i->getAdjacents().size();//degre est nbre d'adjacents
         degres.second = ((double)i->getAdjacents().size())/((double)m_ordre-1);
         centralite_degres.push_back(degres);
     }
 
-//   std::cout<<std::endl<<"Indices de centralite de degre: "<<std::endl;
-//   for(auto j: centralite_degres)
-//   {
-//       std::cout<<"Non normalise: "<<j.first<<"  Normalise: "<<j.second<<std::endl;
-//   }
-
     return centralite_degres;
 }
 
-
+///recherche des composantes connexes (graphes non orientes)
 int Graphe::rechercheCC ()
 {
     std::queue<Sommet*> file;
@@ -373,18 +385,23 @@ int Graphe::rechercheCC ()
     std::vector<Sommet*> sommets_isoles;
     int compteur=0;
 
-    Sommet*parcours=m_sommets[0];
+    Sommet*parcours=m_sommets[0];//sommet de depart
 
+    //parcours bfs en marquant sommets decouverts comme appartenant a la meme composante connexe
+    //on recommence tant qu'il reste des sommets non decouverts et on compte le nbre de composantes
     do
     {
+        //on ajoute sommet parcouru a la file et on l'ajoute aux sommets marques
         file.push(parcours);
         marques.insert(parcours);
-        ++compteur;
+        ++compteur;//nvelle composante en cours de decouverte
 
+        //tant qu'il reste des sommets decouverts mais non parcourus dans la file
         while(!file.empty())
         {
-            file.pop();
+            file.pop();//on supprime tete de file
 
+            //on decouvre sommets adjacents que l'on marque
             for(auto i: parcours->getAdjacents())
             {
                 if(marques.find(i.first)==marques.end())
@@ -393,12 +410,15 @@ int Graphe::rechercheCC ()
                     file.push(i.first);
                 }
             }
+            //si il y a encore des sommets dans la file, on recommence avec sommet en tete de file
             if(!file.empty())
                 parcours=file.front();
         }
 
+        //si l'on a pas marque tous les sommets du graphe
         if((int)marques.size()<m_ordre)
         {
+            //on cherche un sommet qui n'a pas ete marque et on recommence le parcours bfs a partir de lui
             for(auto s: m_sommets)
             {
                 if(marques.find(s)==marques.end())
@@ -406,11 +426,12 @@ int Graphe::rechercheCC ()
             }
         }
     }
-    while((int)marques.size()<m_ordre);
+    while((int)marques.size()<m_ordre);//tant qu'on a pas marque tous les sommets
 
-    return compteur;
+    return compteur;//on retourne nbre composantes connexes
 }
 
+//test de la connexite du graphe apres suppression d'une ou plusieurs aretes
 void Graphe::testConnexite (int nb)
 {
     Graphe copie=*this;

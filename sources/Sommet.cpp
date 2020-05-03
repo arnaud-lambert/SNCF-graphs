@@ -7,6 +7,7 @@ Sommet::Sommet(int id, std::string nom, double x, double y)
 
 }
 
+///constructeur par copie de sommet
 Sommet::Sommet(Sommet&source): m_id{source.m_id}, m_nom{source.m_nom}, m_x{source.m_x}, m_y{source.m_y}
 {
 
@@ -25,16 +26,16 @@ void Sommet::affichage()const
         std::cout << i.first->getId() << "=" << i.second->getPoids() << " ";
 }
 
+///fonction dessin svg: affiche nom et sommet avec couleur generee en fonction des indices
 void Sommet::dessiner(Svgfile&svgout, HSL couleur)
 {
-    RGB color = HSLToRGB(couleur);
+    RGB color = HSLToRGB(couleur);//on crée une couleur de type rgb à partir de l'hsl
     std::string cooouleur= svgout.makeRGB((int)color.getR(),(int)color.getG(),(int)color.getB());
-    //std::cout<<"COULEUR : "<<cooouleur<<std::endl;
     svgout.addDisk( m_x*100, m_y*100, 5, cooouleur);
     svgout.addText( m_x*100 - 5, m_y*100 - 10, m_nom, "black" );
 }
 
-
+///fonction suppression d'un adjacent envoye en parametre
 void Sommet::suppAdjacent(Sommet*adjacent)
 {
     for(size_t i=0; i<m_adjacents.size(); ++i)
