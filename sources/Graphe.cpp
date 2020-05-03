@@ -239,6 +239,8 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
         //on recupere l'indice max parmis les "nouveaux" indices
         max_ind=indices_aretes[std::distance(indices_aretes.begin(), std::max_element(indices_aretes.begin(), indices_aretes.end()))];
     }
+
+    //détermination des coordonnées minimum
     double minX = (double)INT_MAX, minY = (double)INT_MAX;
     for(auto &i : m_sommets)
     {
@@ -246,27 +248,28 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
         minY = std::min(minY,i->getY());
     }
 
-    double maxX = 0.0, maxY = 0.0; // coordonnées max pour calculer coef d'affichage
+    //détermination des coordonnées maximum
+    double maxX = 0.0, maxY = 0.0;
     for(auto &i : m_sommets)
     {
-        i->setX((i->getX() - minX) + 4.0);
-        i->setY((i->getY() - minY) + 8.0);
+        i->setX((i->getX() - minX) + 4.0);//retrait du minimum en X
+        i->setY((i->getY() - minY) + 8.0);//retrait du minimum en Y
         maxX = std::max(maxX,i->getX());
         maxY = std::max(maxY,i->getY());
     }
-    maxX/=(double)LARGEUR;
-    maxY/=(double)HAUTEUR;
-    double coef;
+    maxX/=(double)LARGEUR; //x max / largeur du svg
+    maxY/=(double)HAUTEUR; //y max / hauteur du svg
 
-    if(std::max(maxX,maxY) == maxX)
+    double coef; //coef multiplicateur pour les coordonnées
+    if(std::max(maxX,maxY) == maxX) //le coef dépend du max le plus proche du bord correspondant du svg
         coef = 1/maxX;
     else
         coef = 1/maxY;
 
     for(auto &i : m_sommets)
     {
-        i->setX(i->getX()*coef);
-        i->setY(i->getY()*coef);
+        i->setX(i->getX()*coef);//scaling des coordonnées
+        i->setY(i->getY()*coef);//scaling des coordonnées
     }
 
     for(size_t j=0; j<m_aretes.size(); ++j)
@@ -559,15 +562,16 @@ void Graphe::testConnexite (int nb)
 void recursifIntermediarite(std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> &compt, std::pair<Sommet*,Arete*> current,
                             std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> &predecesseurs, std::unordered_map<Sommet*, int> &nombreChemins)
 {
-    if (predecesseurs.find(current.first) != predecesseurs.end())
+    if (predecesseurs.find(current.first) != predecesseurs.end())//si n'est pas le sommet j (initial)
     {
-        compt.second[current.second]+=nombreChemins[current.first];
-        compt.first[current.first]+=nombreChemins[current.first];
-        for(auto &j : predecesseurs[current.first].first)
-            recursifIntermediarite(compt,j,predecesseurs,nombreChemins);
+        compt.first[current.first]+=nombreChemins[current.first];//incrémentation sommet croisé par son nombre de chemins
+        compt.second[current.second]+=nombreChemins[current.first];//incrémentation arête croisée par le nombre de chemins du sommet
+
+        for(auto &j : predecesseurs[current.first].first) //pour tous les prédecesseurs
+            recursifIntermediarite(compt,j,predecesseurs,nombreChemins);//appel récursif,on envoie le prédecesseur
     }
     else
-        ++compt.second[current.second];
+        ++compt.second[current.second];//si c'est le sommet j, on incrémente de 1 le compteur de l'arête
 }
 
 std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> Graphe::intermediarite()
@@ -578,86 +582,88 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
     std::vector<std::pair<Arete*,std::pair<double,double>>> centraliteAretes;
     std::unordered_map<Arete*,double> mapCentraliteAretes;
 
+    //delta de comparaison
     auto compare = [](const std::pair<Sommet*,double> s1, const std::pair<Sommet*,double> s2)
-    {
-        return s1.second > s2.second;
-    };
+    { return s1.second > s2.second; };
 
+    //queue de priorité selon les longueurs totales croissantes
     std::priority_queue<std::pair<Sommet*,double>, std::vector<std::pair<Sommet*,double>>, decltype(compare)> prio(compare);
+
+    //dijkstra depuis tous les sommets
     for(auto &j : m_sommets)
     {
-        std::unordered_map<Sommet*, int> nombreChemins;
-        std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> predecesseurs;
+        std::unordered_map<Sommet*, int> nombreChemins; //map pour le nombre de chemins vers chaque sommet depuis l'initial
+        std::unordered_map<Sommet*, std::pair<std::vector<std::pair<Sommet*,Arete*>>,double>> predecesseurs; //map des prédecesseurs et des longueurs totales
         prio.push({j,0.0});
 
         while(!prio.empty())
         {
-            courant = prio.top().first;
-            longueur = prio.top().second;
+            courant = prio.top().first; //sommet* du top
+            longueur = prio.top().second; //longueur totale du top
             prio.pop();
 
-            for(auto &i : courant->getAdjacents())
+            for(auto &i : courant->getAdjacents())//pour tous les adjacents du top
             {
-                if(i.first != j)
+                if(i.first != j)//adjacent différent de l'initial
                 {
-                    if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)//ecrase
+                    //découverte d'un sommet OU longueur totale inférieure à celle précédemment trouvée
+                    if(nombreChemins.find(i.first) == nombreChemins.end() || (longueur+i.second->getPoids()) < predecesseurs[i.first].second)
                     {
-                        prio.push({i.first,longueur+i.second->getPoids()});
+                        prio.push({i.first,longueur+i.second->getPoids()}); //ajout à la queue
                         predecesseurs[i.first] = {{{courant,i.second}},i.second->getPoids()+longueur};
 
-                        if(courant == j)
+                        if(courant == j) //courant est le sommet initial
                             nombreChemins[i.first] = 1;
-                        else
-                            nombreChemins[i.first] = nombreChemins[courant];
+                        else //sinon
+                            nombreChemins[i.first] = nombreChemins[courant]; //nombre de chemins = nombre de chemins précesseur
                     }
-                    else if (longueur+i.second->getPoids() == predecesseurs[i.first].second)//autre chemin court
+
+                    //autre chemin le plus court
+                    else if (longueur+i.second->getPoids() == predecesseurs[i.first].second)
                     {
-                        predecesseurs[i.first].second = i.second->getPoids()+longueur;
-                        predecesseurs[i.first].first.push_back({courant,i.second});
-                        nombreChemins[i.first] += nombreChemins[courant];
+                        predecesseurs[i.first].first.push_back({courant,i.second}); //ajout d'un prédecesseur
+                        nombreChemins[i.first] += nombreChemins[courant]; //ajout du nombre de chemin du nouveau prédecesseur
                     }
                 }
             }
         }
 
-
+        //pour tous les sommets trouvés
         for(auto &k : predecesseurs)
-            if(m_orientation || k.first->getId() > j->getId())
-                for(auto &z : predecesseurs[k.first].first)
+            if(m_orientation || k.first->getId() > j->getId()) //toutes les paires (j,k) si orienté, sinon toutes les paires sans doublons
+                for(auto &z : predecesseurs[k.first].first) //pour chaque prédecesseur de k
                 {
-                    std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> compt;
+                    std::pair<std::unordered_map<Sommet*,unsigned int>,std::unordered_map<Arete*,unsigned int>> compt;//conteneur pour compter arêtes/sommets croisés
+                    recursifIntermediarite(compt,z,predecesseurs,nombreChemins);//parcours récursif du chemin jusqu'à j
 
-                    recursifIntermediarite(compt,z,predecesseurs,nombreChemins);
                     for(auto &i : compt.first)
-                        centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];
+                        centraliteSommets[i.first->getId()].first += (double) i.second/nombreChemins[k.first];//ajout des incrémentations de chaque sommet croisé dans sa case
 
                     for(auto &i : compt.second)
-                        mapCentraliteAretes[i.first] += (double) i.second/nombreChemins[k.first];
+                        mapCentraliteAretes[i.first] += (double) i.second/nombreChemins[k.first];//ajout des incrémentations de chaque arête croisée dans une case respective
                 }
     }
 
     for(auto &i : centraliteSommets)
     {
-        if(m_orientation)
-            i.first /= 2.0;
+        if(m_orientation)//si orienté
+            i.first /= 2.0; //on divise par 2 pour faire la moyenne
 
-        i.second =i.first *2.0/(double)((m_ordre-1)*(m_ordre-2));
+        i.second =i.first *2.0/(double)((m_ordre-1)*(m_ordre-2)); //normalisation
         //std::cout << i.first  << " " << i.second<< std::endl;
     }
 
     for(auto &i : mapCentraliteAretes)
     {
-        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)*(m_taille))}});
+        centraliteAretes.push_back({i.first,{i.second,i.second/(double)((m_taille - 1)*(m_taille))}}); //normalisation
         //std::cout << "ID " << i.first->getId() << ": " << i.second <<" "<< i.second*(double)2.0/((m_taille-1)*(m_taille-2)) << std::endl;
     }
     for(auto &i : m_aretes)
         if(mapCentraliteAretes.find(i) == mapCentraliteAretes.end())
-            centraliteAretes.push_back({i,{0.0,0.0}});
+            centraliteAretes.push_back({i,{0.0,0.0}}); //ajout arêtes non croisées
 
     std::sort(centraliteAretes.begin(), centraliteAretes.end(), [](std::pair<Arete*,std::pair<double,double>> a1, std::pair<Arete*,std::pair<double,double>> a2)
-    {
-        return a1.first->getId() < a2.first->getId();
-    });
+    { return a1.first->getId() < a2.first->getId();} ); //tri arêtes par id
 
     return {centraliteSommets,centraliteAretes};
 }
@@ -1144,37 +1150,37 @@ void Graphe::comparaisonIndices(int nb)
 
 void recursifTousLesChemins (std::vector<std::unordered_set<int>> &commun,std::pair<std::unordered_set<Sommet*>,std::unordered_set<int>> cheminUnique, std::pair<Sommet*,Arete*> current, std::pair<Sommet*,Sommet*> &debFin)
 {
+    //si le sommet est différent de l'initial et du final, arête et sommet jamais croisés sur le chemin unique
     if(current.first != debFin.first && cheminUnique.first.find(current.first) == cheminUnique.first.end() && cheminUnique.second.find(current.second->getId()) == cheminUnique.second.end() )
     {
-        cheminUnique.second.insert(current.second->getId());
-        cheminUnique.first.insert(current.first);
-        if (current.first == debFin.second)
-            commun.push_back(cheminUnique.second);
-        else
+        cheminUnique.second.insert(current.second->getId()); //ajout de l'id de l'arête au chemin unique
+        cheminUnique.first.insert(current.first); //ajout du sommet chemin unique
 
-            for (auto i : current.first->getAdjacents())
-                recursifTousLesChemins(commun, cheminUnique,i,debFin);
+        if (current.first == debFin.second) //si sommet final atteint
+            commun.push_back(cheminUnique.second); //ajout du chemin unique au vecteur commun de chemins uniques
+        else //sinon
+            for (auto i : current.first->getAdjacents())//pour tous les adjacents
+                recursifTousLesChemins(commun, cheminUnique,i,debFin);//parcours récursif
     }
 }
 
-
+///tous les chemins possibles entre deux sommets, sans passer deux fois par le meme sommet ou la meme arête
 std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe::tousLesChemins()
 {
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
-            if((m_orientation && j!=i)|| j->getId() > i->getId())
+            if((m_orientation && j!=i)|| j->getId() > i->getId())//toutes les paires (i,j) si orienté, sinon toutes les paires sans doublons
             {
                 std::pair<Sommet*,Sommet*> debFin = {i,j};
                 std::vector<std::unordered_set<int>> commun;
 
-                for(auto &l : i->getAdjacents())
+                for(auto &l : i->getAdjacents())//pour tous les adjacents
                 {
                     std::pair<std::unordered_set<Sommet*>,std::unordered_set<int>> cheminUnique;
-                    recursifTousLesChemins(commun,cheminUnique,l,debFin);
+                    recursifTousLesChemins(commun,cheminUnique,l,debFin);//récursif pour tous les chemins possibles
                 }
-                chemins[ {i,j}] = commun;
-                //std::cout << "(" << i->getNom() << "," << j->getNom() << ") " << chemins[ {i,j}].size() << " chemins" << std::endl;
+                chemins[ {i,j}] = commun;//ajout du vecteur de chemins uniques
             }
 
     return chemins;
