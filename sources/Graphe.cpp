@@ -1044,7 +1044,7 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
-            if((m_orientation && j!=i)|| j->getId() > i->getId())
+            if((m_orientation && j!=i)|| (!m_orientation && j->getId() > i->getId()))
             {
                 std::pair<Sommet*,Sommet*> debFin = {i,j};
                 std::vector<std::unordered_set<int>> commun;
