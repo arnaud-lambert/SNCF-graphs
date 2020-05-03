@@ -309,12 +309,12 @@ int optionVulnerabilite(int& nb, int taille, std::string saisie, bool orientatio
     do
     {
         std::cin>>saisie;
-        if(saisie.length()>1)
+        if(saisie.length()>1)//si on saisit plus d'un caractère
         {
-            option='d';
+            option='d';//on attribut au choix une valeur default
         }
         else
-            option=saisie.front();
+            option=saisie.front();//le choix correspond au premier caractère de la chaine
 
         if(option!='1' && option!='2')
         {
