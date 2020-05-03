@@ -1030,7 +1030,6 @@ void Graphe::kSommetsConnexite ()
     {
         return a < b;
     });
-    std::cout<<"good"<<std::endl;
     //le nombre de sommets à supprimer pour que graphe soit non connexe est le plus petit nbre de chemins dans nb
     std::cout<<std::endl<<"Ce graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
@@ -1213,7 +1212,6 @@ void Graphe::kAretesConnexe ()
     {
         return a < b;
     });
-    std::cout<<"HEY"<<std::endl;
     //k correspond au nombre le plus petit de chemins avec des aretes differentes
     std::cout<<std::endl<<"Ce graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
