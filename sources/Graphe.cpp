@@ -238,6 +238,8 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
             indices_aretes[j]=indices_aretes[j]-min_ind;
         //on recupere l'indice max parmis les "nouveaux" indices
         max_ind=indices_aretes[std::distance(indices_aretes.begin(), std::max_element(indices_aretes.begin(), indices_aretes.end()))];
+        if(max_ind == 0.0)
+            max_ind = 1.0;
     }
 
     //détermination des coordonnées minimum
@@ -337,8 +339,7 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
         double max_vec=vecMax[std::distance(vecMax.begin(),std::max_element(vecMax.begin(), vecMax.end()))];
         double max_prox=proxMax[std::distance(proxMax.begin(),std::max_element(proxMax.begin(), proxMax.end()))];
         double max_inter=interMax[std::distance(interMax.begin(),std::max_element(interMax.begin(), interMax.end()))];
-        if (max_inter==0.0)
-            max_inter=1.0;
+
 
         //dessin avec couleur adequat pour chaque sommet
         for(size_t i=0; i<m_sommets.size(); ++i)
