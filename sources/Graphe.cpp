@@ -222,11 +222,10 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
     std::vector<double> indices_aretes;
     double max_ind=0;
     //affichage sur differents svg suivant les informations
-    Svgfile svgout1("SVG/output1.svg", 1400, 650);
-    Svgfile svgout2("SVG/output2.svg", 1400, 650);
-    Svgfile svgout3("SVG/output3.svg", 1400, 650);
-    Svgfile svgout4("SVG/output4.svg", 1400, 650);
-    svgout1.addGrid();
+    Svgfile svgout1("SVG/output1.svg", 600, 650);
+    Svgfile svgout2("SVG/output2.svg", 600, 650);
+    Svgfile svgout3("SVG/output3.svg", 600, 650);
+    Svgfile svgout4("SVG/output4.svg", 600, 650);
 
     //si les indices pour ce graphe ont deja ete calcules et sauvegardes
     if(indices==true)
@@ -891,12 +890,13 @@ void Graphe::SuppAreteI (int indice)
         }
 
     }
-    --m_taille;//on enleve une arete don taille du graphe diminue
+    --m_taille;//on enleve une arete donc taille du graphe diminue
 }
 
+///fonction suppression d'un sommet d'un graphe à partir de son adresse
 void Graphe::supprimerSommet (Sommet*s)
 {
-
+    //on cherche dans ses adjacents, si on trouve le sommet à supp, on supprime ce sommet des adjacents
     for(auto i: s->getAdjacents())
     {
         for(auto j: m_sommets)
@@ -913,23 +913,23 @@ void Graphe::supprimerSommet (Sommet*s)
     {
         for(size_t j=0; j<m_aretes.size(); ++j)
         {
-            ///
+            //si on trouve une arete reliee à ce sommet
             if((m_aretes[j]->getExtremites().first->getId()==s->getId())||(m_aretes[j]->getExtremites().second->getId()==s->getId()))
             {
-                m_aretes.erase(m_aretes.begin()+j);
+                m_aretes.erase(m_aretes.begin()+j);//on supprime cette arete
                 --m_taille;
                 ++i;
-                break;
+                break;//pour recommencer recherche complete
             }
         }
 
     }
-    while(i<(int)s->getAdjacents().size());
+    while(i<(int)s->getAdjacents().size());//tant qu'on a supprimé moins d'aretes que le nombre relié à ce sommet
 
 
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
-        ///
+        //on supp sommet desire et ordre du graphe diminue
         if(m_sommets[i]->getId()==s->getId())
         {
             m_sommets.erase(m_sommets.begin()+i);
@@ -938,6 +938,8 @@ void Graphe::supprimerSommet (Sommet*s)
     }
 }
 
+
+///fonction k-connexite pour les sommets
 void Graphe::kSommetsConnexite ()
 {
     std::vector<int>nb;
@@ -957,14 +959,14 @@ void Graphe::kSommetsConnexite ()
             if((m_orientation && j!=i) || j->getId() > i->getId())
             {
                 chemins_p=chemins[ {i,j}];
-                //std::cout<<"PAIRE"<<std::endl;
+
                 std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
                 {
                     return a.size()<b.size();
                 } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
-                    //std::cout<<"Comparaison"<<std::endl;
+
                     actuel=chemins_p[y];
                     if(y+1<chemins_p.size())
                     {
@@ -991,19 +993,13 @@ void Graphe::kSommetsConnexite ()
 
                         for(auto&l: tempo)
                         {
-//                                std::cout<<l<<"  ";
                             if(tempo2.find(l)!=tempo2.end())
                             {
                                 h=1;
                                 chemins_p[y+1]=chemins_p[y];
                             }
                         }
-//                        std::cout<<std::endl;
-//                        for(auto&l: tempo2)
-//                        {
-//                                std::cout<<l<<"  ";
-//                        }
-//                        std::cout<<std::endl;
+
 
                         if(h==0)
                         {
@@ -1017,7 +1013,6 @@ void Graphe::kSommetsConnexite ()
                     }
 
                 }
-                //std::cout<<"cpt: "<<compteur<<std::endl;
                 nb.push_back(compteur);
                 compteur=1;
                 chemins_p.clear();
@@ -1151,7 +1146,6 @@ void Graphe::kAretesConnexe ()
     std::vector<std::unordered_set<int>> chemins_p;
     int compteur=1, h=0;
     std::vector <int> tempo;
-    //std::vector <int> tempo2;
     std::unordered_set<int> suivant;
 
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();
@@ -1162,34 +1156,25 @@ void Graphe::kAretesConnexe ()
             if((m_orientation && j!=i)|| (m_orientation && j->getId() > i->getId()))
             {
                 chemins_p=chemins[ {i,j}];
-                //std::cout<<"PAIRE"<<std::endl;
                 std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
                 {
                     return a.size()<b.size();
                 } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
-                    //std::cout<<"Comparaison"<<std::endl;
                     tempo= {chemins_p[y].begin(), chemins_p[y].end()};
                     if(y+1<chemins_p.size())
                     {
                         suivant= {chemins_p[y+1].begin(), chemins_p[y+1].end()};
-                        //tempo2={chemins_p[y+1].begin(), chemins_p[y+1].end()};
+
                         for(auto&l: tempo)
                         {
-                            //std::cout<<l<<"  ";
                             if(suivant.find(l)!=suivant.end())
                             {
                                 h=1;
                                 chemins_p[y+1]=chemins_p[y];
                             }
                         }
-//                        std::cout<<std::endl;
-//                        for(auto&l: tempo2)
-//                        {
-//                                std::cout<<l<<"  ";
-//                        }
-//                        std::cout<<std::endl;
 
                         if(h==0)
                         {
@@ -1200,7 +1185,6 @@ void Graphe::kAretesConnexe ()
                     }
 
                 }
-                //std::cout<<"cpt: "<<compteur<<std::endl;
                 nb.push_back(compteur);
                 compteur=1;
                 chemins_p.clear();
