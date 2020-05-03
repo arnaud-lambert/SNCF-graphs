@@ -435,16 +435,18 @@ int Graphe::rechercheCC ()
 //test de la connexite du graphe apres suppression d'une ou plusieurs aretes
 void Graphe::testConnexite (int nb)
 {
-    Graphe copie=*this;
+    Graphe copie=*this;//copie en profondeur du graphe pour ne pas le modifier
     int cc=0;
 
     cc=this->rechercheCC();
+    //si graphe connexe (1 composante connexe)
     if(cc==1)
         std::cout<<"Pour le moment, ce graphe est connexe"<<std::endl;
     else
         std::cout<<"Ce graphe est deja non connexe, il contient "<<cc<<"composantes connexes"<<std::endl;
 
 
+    //on supprime le nombre d'aretes demandé par l'utilisateur et on regarde à nouveau nbre composantes connexes
     for(int i=0; i<nb; ++i)
         copie.supprimerArete();
     cc= copie.rechercheCC();
@@ -466,6 +468,7 @@ void Graphe::testConnexite (int nb)
 
     SetConsoleTextAttribute(texteConsole, 15);
 
+    //affichage en console des sommets qui sont isolés du reste du graphe (qui n'ont aucun adjacent)
     for(auto s: copie.m_sommets)
     {
         if((s->getAdjacents()).size()==0)
@@ -733,12 +736,13 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
     }
 }
 
-
+///suppresion d'une arete avec demande indice à l'utilisateur
 void Graphe::supprimerArete ()
 {
     int indice=0;
     std::set<int> indices;
 
+    //on met tous les idées dans un set pour pouvoir blinder saisie
     for(auto a: m_aretes)
     {
         indices.insert(a->getId());
@@ -761,7 +765,7 @@ void Graphe::supprimerArete ()
     do
     {
         std::cin>>indice;
-        if(indices.find(indice)==indices.end())
+        if(indices.find(indice)==indices.end())//si on ne trouve pas l'indice saisi (arete inexistante)
         {
             std::cout<<std::endl<<"Cet ";
             SetConsoleTextAttribute(texteConsole, 14);
@@ -778,37 +782,38 @@ void Graphe::supprimerArete ()
             std::cout<<" : ";
         }
     }
-    while(indices.find(indice)==indices.end());
+    while(indices.find(indice)==indices.end());//on redemande saisie tant qu'un indice valide n'est pa entré
 
-    this->SuppAreteI(indice);
+    this->SuppAreteI(indice);//appel fonction suppresion d'une arete avec identification par son indice
 
 }
 
+///suppression d'une arete par indice
 void Graphe::SuppAreteI (int indice)
 {
     std::pair<Sommet*, Sommet*> extremites;
 
     for(auto i: m_aretes)
     {
-        if(i->getId()==indice)
+        if(i->getId()==indice)//si on trouve arete demande, on recupere ses extremites (sommets)
             extremites = i->getExtremites();
     }
 
-    extremites.first->suppAdjacent(extremites.second);
+    extremites.first->suppAdjacent(extremites.second);//on supprime le sommet à la deuxieme extremite des adjacents du premier
 
-    if(!m_orientation)
+    if(!m_orientation)//si cas d'un graphe non oriente, arete à double sens, on supprime aussi autre adjacent
         extremites.second->suppAdjacent(extremites.first);
 
     for(size_t i=0; i<m_aretes.size(); ++i)
     {
         if(m_aretes[i]->getId()==indice)
         {
-            delete m_aretes[i];
-            m_aretes.erase(m_aretes.begin()+i);
+            delete m_aretes[i];//suppression du pointeur
+            m_aretes.erase(m_aretes.begin()+i);//on efface la case
         }
 
     }
-    --m_taille;
+    --m_taille;//on enleve une arete don taille du graphe diminue
 }
 
 void Graphe::supprimerSommet (Sommet*s)
