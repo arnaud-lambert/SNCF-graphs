@@ -20,15 +20,21 @@ int main()
     return 0;
 }
 
-
+///Menu d'options
 bool menu (Graphe& a, std::string nomFichier)
 {
+    ///Variable de saisie, de choix et d'indice (pour afficher les indices dans le Svgfile)
     std::string saisie;
     char choix='0';
     bool indices=false;
 
+    ///Tant qu'on ne quitte pas
     do
     {
+        ///On dessine le graphe chargé
+        a.dessiner(nomFichier, indices);
+
+        ///Magnifique dessin de menu écrit en majuscule
         SetConsoleTextAttribute(texteConsole, 3);
         std::cout<<std::endl<<"  ____    _____     ___________     ____    ____     ____     ____ "<<std::endl
                  <<"/      \\/      \\   |    _______|   |    \\  |    |   |    |   |    |"<<std::endl
@@ -39,6 +45,7 @@ bool menu (Graphe& a, std::string nomFichier)
                  <<"|   |      |   |   |   |_______    |    | \\     |   |             |"<<std::endl
                  <<"|___|      |___|   |___________|   |____|  \\____|   |_____________|"<<std::endl;
 
+        ///On informe sur l'orientation du graphe
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<std::endl<<std::endl<<"Le graphe est ";
         SetConsoleTextAttribute(texteConsole, 3);
@@ -47,6 +54,7 @@ bool menu (Graphe& a, std::string nomFichier)
         else
             std::cout<<"non oriente";
         std::cout<<std::endl;
+        ///On affiche les différentes options
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<std::endl<<std::endl<<"1. ";
         SetConsoleTextAttribute(texteConsole, 14);
@@ -116,6 +124,7 @@ bool menu (Graphe& a, std::string nomFichier)
         SetConsoleTextAttribute(texteConsole, 3);
         std::cout<<"> ";
         SetConsoleTextAttribute(texteConsole, 15);
+        ///Blindage de la saisie
         std::cin>>saisie;
         if(saisie.length()>1)
         {
@@ -127,21 +136,25 @@ bool menu (Graphe& a, std::string nomFichier)
 
         switch(choix)
         {
+
+        ///On change de graphe
         case '1':
-            {
-                indices=false;
+        {
+            indices=false;
 
             return true;
-            }
-            break;
+        }
+        break;
 
+        ///On charge un nouveau fichier de pondération
         case '2':
-            {
-               indices=false;
+        {
+            indices=false;
             a.ponderation();
-            }
-            break;
+        }
+        break;
 
+        ///On calcule, affiche et sauvegarde les différents indices de centralité
         case '3':
         {
             std::vector<std::pair<int, double>> centralite_degres = a.centraliteDegre ();
@@ -153,26 +166,31 @@ bool menu (Graphe& a, std::string nomFichier)
         }
         break;
 
+        ///On test la vulnérabilité du graphe après la suppression d'arête(s)
         case '4':
         {
             int nb=0;
             if(optionVulnerabilite(nb, a.getTaille(), saisie, a.getOrientation())=='1')
+                ///Connexité
                 if(!a.getOrientation())
                     a.testConnexite(nb);
+                ///Forte connexité
                 else
                     a.testForteConnexite(nb);
-
+            ///Comparaison des indices avant et après suppression
             else
                 a.comparaisonIndices(nb);
         }
         break;
 
+        ///On test la k_connexité
         case '5':
             if(!a.getOrientation())
             {
                 a.kAretesConnexe();
                 a.kSommetsConnexite();
             }
+            ///Si le graphe est orienté, on indique que cette option est impossible
             else
             {
                 std::cout<<"Le graphe est ";
@@ -186,6 +204,7 @@ bool menu (Graphe& a, std::string nomFichier)
             }
             break;
 
+        ///On compare les indices intermédiaires avec la méthode de flot
         case '6':
         {
             std::vector<double> flotAvant=a.intermediariteFlots();
@@ -195,6 +214,7 @@ bool menu (Graphe& a, std::string nomFichier)
         break;
 
 
+        ///Magnifique dessin pour vous dire "A très bientot !"
         case '7':
             SetConsoleTextAttribute(texteConsole, 3);
             std::cout<<" _________    ____     ____    __________ "<<std::endl
@@ -208,7 +228,7 @@ bool menu (Graphe& a, std::string nomFichier)
             SetConsoleTextAttribute(texteConsole, 15);
             break;
 
-
+        ///On indique que la saisie de l'utilisateur est invalide, et on lui demande de ressaisir
         default :
             std::cout<<"Saisie ";
             SetConsoleTextAttribute(texteConsole, 12);
@@ -222,7 +242,6 @@ bool menu (Graphe& a, std::string nomFichier)
             break;
         }
 
-        a.dessiner(nomFichier, indices);
     }
     while(choix!='7');
     return false;
