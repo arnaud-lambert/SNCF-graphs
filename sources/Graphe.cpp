@@ -305,6 +305,8 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
         double max_vec=vecMax[std::distance(vecMax.begin(),std::max_element(vecMax.begin(), vecMax.end()))];
         double max_prox=proxMax[std::distance(proxMax.begin(),std::max_element(proxMax.begin(), proxMax.end()))];
         double max_inter=interMax[std::distance(interMax.begin(),std::max_element(interMax.begin(), interMax.end()))];
+        if (max_inter==0.0)
+            max_inter=1.0;
 
         //dessin avec couleur adequat pour chaque sommet
         for(size_t i=0; i<m_sommets.size(); ++i)
@@ -1028,6 +1030,7 @@ void Graphe::kSommetsConnexite ()
     {
         return a < b;
     });
+    std::cout<<"good"<<std::endl;
     //le nombre de sommets à supprimer pour que graphe soit non connexe est le plus petit nbre de chemins dans nb
     std::cout<<std::endl<<"Ce graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
@@ -1132,7 +1135,7 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins;
     for(auto &i : m_sommets)
         for(auto &j : m_sommets)
-            if((m_orientation && j!=i)|| (m_orientation && j->getId() > i->getId()))
+            if((m_orientation && j!=i)|| j->getId() > i->getId())
             {
                 std::pair<Sommet*,Sommet*> debFin = {i,j};
                 std::vector<std::unordered_set<int>> commun;
@@ -1149,7 +1152,7 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe
     return chemins;
 }
 
-
+///calcul k connexite pour les aretes
 void Graphe::kAretesConnexe ()
 {
     std::vector<int>nb;
@@ -1158,55 +1161,60 @@ void Graphe::kAretesConnexe ()
     std::vector <int> tempo;
     std::unordered_set<int> suivant;
 
+    //on recupere tous les chemins qui existent entre deux sommets quelconques du graphe
     std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> chemins = tousLesChemins();
     for(auto&i: m_sommets)
     {
         for(auto&j: m_sommets)
         {
-            if((m_orientation && j!=i)|| (m_orientation && j->getId() > i->getId()))
+            if((m_orientation && j!=i)|| j->getId() > i->getId())
             {
+                //pour une paire de sommets, on recupere tous les chemins les joignant
                 chemins_p=chemins[ {i,j}];
-                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)
+                std::sort(chemins_p.begin(), chemins_p.end(), [](std::unordered_set<int> a, std::unordered_set<int> b)//tri croissant de la taille des chemins
                 {
                     return a.size()<b.size();
                 } );
                 for(size_t y=0; y<chemins_p.size(); ++y)
                 {
-                    tempo= {chemins_p[y].begin(), chemins_p[y].end()};
+                    tempo= {chemins_p[y].begin(), chemins_p[y].end()};//premier chemin recupere
                     if(y+1<chemins_p.size())
                     {
-                        suivant= {chemins_p[y+1].begin(), chemins_p[y+1].end()};
+                        suivant= {chemins_p[y+1].begin(), chemins_p[y+1].end()};//chemin suivant dans l'ordre
 
                         for(auto&l: tempo)
                         {
-                            if(suivant.find(l)!=suivant.end())
+                            if(suivant.find(l)!=suivant.end())//si on trouve des aretes en commun entre les deux chemins
                             {
                                 h=1;
                                 chemins_p[y+1]=chemins_p[y];
                             }
                         }
 
-                        if(h==0)
+                        if(h==0)//sinon, si les deux chemins n'ont aucune arete en commun
                         {
-                            ++compteur;
-                            chemins_p[y+1].insert(chemins_p[y].begin(),chemins_p[y].end());
+                            ++compteur;//on compte un chemin different de plus
+                            chemins_p[y+1].insert(chemins_p[y].begin(),chemins_p[y].end());//chemin suivant recupere aretes du chemin precedent
                         }
-                        h=0;
+                        h=0;//reinitialise
                     }
 
                 }
-                nb.push_back(compteur);
+                nb.push_back(compteur);//on ajoute nombre de chemins a aretes differetes pour cette paire dans vecteur
                 compteur=1;
-                chemins_p.clear();
+                chemins_p.clear();//reinitialise pour passer à paire suivante
             }
 
         }
     }
 
+    //on trie par ordre croissant les nombres de chemins avec des aretes différentes pour chaque paire de sommets
     std::sort(nb.begin(), nb.end(), [](int a, int b)
     {
         return a < b;
     });
+    std::cout<<"HEY"<<std::endl;
+    //k correspond au nombre le plus petit de chemins avec des aretes differentes
     std::cout<<std::endl<<"Ce graphe est ";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<nb[0]<<"-arete(s)";
