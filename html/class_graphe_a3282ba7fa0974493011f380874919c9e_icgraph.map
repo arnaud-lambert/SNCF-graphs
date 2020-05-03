@@ -1,0 +1,10 @@
+<map id="Graphe::SuppAreteI" name="Graphe::SuppAreteI">
+<area shape="rect" id="node1" title="suppression d&#39;une arete par indice" alt="" coords="653,81,789,108"/>
+<area shape="rect" id="node2" href="$class_graphe.html#a10ded8373f0bee40b8da28425dd63786" title="suppresion d&#39;une arete avec demande indice à l&#39;utilisateur" alt="" coords="445,81,605,108"/>
+<area shape="rect" id="node3" href="$class_graphe.html#a947ed5f687043f0d0a1f72cc0ff7d40e" title="On compare les indices de centralité intermédiaire avant et après la suppression d&#39;un ou plusieurs tr..." alt="" coords="207,5,397,32"/>
+<area shape="rect" id="node6" href="$class_graphe.html#a6d00d8cd4a682f20eabe22c3a80881cf" title="methode pour comparer les indices de centralite" alt="" coords="209,56,395,83"/>
+<area shape="rect" id="node7" href="$class_graphe.html#aa66adad80337df41882514af0e52888b" title=" " alt="" coords="226,107,378,133"/>
+<area shape="rect" id="node8" href="$class_graphe.html#a812e5e78bd9663cf200e0449112870ce" title="On test la forte connexité d&#39;un graphe orienté" alt="" coords="211,157,393,184"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#a1c0720a86667223a707820397a05d6da" title="Menu d&#39;options." alt="" coords="104,81,159,108"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,81,56,108"/>
+</map>

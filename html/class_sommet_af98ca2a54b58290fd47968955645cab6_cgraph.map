@@ -1,0 +1,12 @@
+<map id="Sommet::dessiner" name="Sommet::dessiner">
+<area shape="rect" id="node1" title="fonction dessin svg: affiche nom et sommet avec couleur generee en fonction des indices" alt="" coords="5,157,133,184"/>
+<area shape="rect" id="node2" href="$class_svgfile.html#a8492d16e7f55e7b54f3f839861659489" title=" " alt="" coords="187,5,302,32"/>
+<area shape="rect" id="node4" href="$class_svgfile.html#a92ef6fea11c4d720213e5ccb22190705" title=" " alt="" coords="188,56,301,83"/>
+<area shape="rect" id="node5" href="$class_r_g_b.html#a6f1cad203c15bbf0af931f66b84e01e3" title=" " alt="" coords="202,107,287,133"/>
+<area shape="rect" id="node6" href="$class_r_g_b.html#af504b7a7bf203b986782ef0f1f4a9ba0" title=" " alt="" coords="201,157,288,184"/>
+<area shape="rect" id="node7" href="$class_r_g_b.html#a0a94113a3a09c250bcc9ec46ba99b733" title=" " alt="" coords="202,208,287,235"/>
+<area shape="rect" id="node8" href="$svgfile_8cpp.html#afc3cb75662919a22a8ce01b8e8eaeb78" title=" " alt="" coords="200,259,289,285"/>
+<area shape="rect" id="node10" href="$class_svgfile.html#a889c5e531883cb5c678ffc89b66a151e" title=" " alt="" coords="181,309,308,336"/>
+<area shape="rect" id="node3" href="$svgfile_8cpp.html#aac4facfedc971ca1ada3bec9ab5b9028" title=" " alt="" coords="374,31,425,57"/>
+<area shape="rect" id="node9" href="$svgfile_8cpp.html#ad4050872a8c18ee3b03056f5538745e1" title=" " alt="" coords="356,259,443,285"/>
+</map>

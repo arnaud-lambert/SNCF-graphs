@@ -1,0 +1,9 @@
+<map id="Graphe::sauvegarder" name="Graphe::sauvegarder">
+<area shape="rect" id="node1" title="Sauvegarde." alt="" coords="5,80,147,107"/>
+<area shape="rect" id="node2" href="$class_graphe.html#a7f966a72de2ef406d446d9126e7e0ac5" title=" " alt="" coords="203,29,354,56"/>
+<area shape="rect" id="node5" href="$class_graphe.html#a4cf01b1644b897208779c974b27e73e1" title="Indice centralite vecteur propre." alt="" coords="203,80,354,107"/>
+<area shape="rect" id="node6" href="$class_graphe.html#a770687fa3588ff3f911b9e9730964147" title="Indice centralite Proximite." alt="" coords="195,131,363,157"/>
+<area shape="rect" id="node3" href="$class_sommet.html#af32ee68c415659627f34b5035e9f78a2" title=" " alt="" coords="411,80,565,107"/>
+<area shape="rect" id="node4" href="$_graphe_8cpp.html#ad81a07391f2dcfce8901a1bb3a31405e" title=" " alt="" coords="417,29,559,56"/>
+<area shape="rect" id="node7" href="$class_sommet.html#a487f2cd7bf98da3862bae069c4a16990" title=" " alt="" coords="435,131,541,157"/>
+</map>

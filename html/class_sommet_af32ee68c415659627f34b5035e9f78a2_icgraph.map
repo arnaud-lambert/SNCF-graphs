@@ -1,0 +1,12 @@
+<map id="Sommet::getAdjacents" name="Sommet::getAdjacents">
+<area shape="rect" id="node1" title=" " alt="" coords="668,114,823,140"/>
+<area shape="rect" id="node2" href="$class_graphe.html#a7f966a72de2ef406d446d9126e7e0ac5" title=" " alt="" coords="455,38,606,64"/>
+<area shape="rect" id="node7" href="$class_graphe.html#a776cea4c742ea265b4a2e5a9fb8207fb" title="recherche des composantes connexes (graphes non orientes)" alt="" coords="457,139,604,166"/>
+<area shape="rect" id="node9" href="$class_graphe.html#ab257f5b8e1695b5909bb4c67983c6ad0" title="fonction suppression d&#39;un sommet d&#39;un graphe à partir de son adresse" alt="" coords="441,190,620,216"/>
+<area shape="rect" id="node10" href="$class_graphe.html#a770687fa3588ff3f911b9e9730964147" title="Indice centralite Proximite." alt="" coords="447,88,615,115"/>
+<area shape="rect" id="node3" href="$class_graphe.html#a6d00d8cd4a682f20eabe22c3a80881cf" title="methode pour comparer les indices de centralite" alt="" coords="207,88,393,115"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#a1c0720a86667223a707820397a05d6da" title="Menu d&#39;options." alt="" coords="104,88,159,115"/>
+<area shape="rect" id="node6" href="$class_graphe.html#a40142152a7969018348d58fbb260d4ad" title="Sauvegarde." alt="" coords="229,38,371,64"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,88,56,115"/>
+<area shape="rect" id="node8" href="$class_graphe.html#aa66adad80337df41882514af0e52888b" title=" " alt="" coords="224,190,376,216"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="Graphe::comparaisonIndices" name="Graphe::comparaisonIndices">
+<area shape="rect" id="node1" title="methode pour comparer les indices de centralite" alt="" coords="5,107,192,133"/>
+<area shape="rect" id="node2" href="$class_graphe.html#a39646e80ae05d34d6575814416fe2f6f" title="calcul indice centralite degre" alt="" coords="245,5,403,32"/>
+<area shape="rect" id="node3" href="$class_graphe.html#a7f966a72de2ef406d446d9126e7e0ac5" title=" " alt="" coords="249,107,399,133"/>
+<area shape="rect" id="node6" href="$class_graphe.html#a10ded8373f0bee40b8da28425dd63786" title="suppresion d&#39;une arete avec demande indice à l&#39;utilisateur" alt="" coords="244,56,404,83"/>
+<area shape="rect" id="node8" href="$class_graphe.html#a4cf01b1644b897208779c974b27e73e1" title="Indice centralite vecteur propre." alt="" coords="249,157,399,184"/>
+<area shape="rect" id="node9" href="$class_graphe.html#a770687fa3588ff3f911b9e9730964147" title="Indice centralite Proximite." alt="" coords="240,208,408,235"/>
+<area shape="rect" id="node4" href="$class_sommet.html#af32ee68c415659627f34b5035e9f78a2" title=" " alt="" coords="456,157,611,184"/>
+<area shape="rect" id="node5" href="$_graphe_8cpp.html#ad81a07391f2dcfce8901a1bb3a31405e" title=" " alt="" coords="462,107,605,133"/>
+<area shape="rect" id="node7" href="$class_graphe.html#a3282ba7fa0974493011f380874919c9e" title="suppression d&#39;une arete par indice" alt="" coords="465,32,601,59"/>
+<area shape="rect" id="node10" href="$class_sommet.html#a487f2cd7bf98da3862bae069c4a16990" title=" " alt="" coords="480,208,587,235"/>
+</map>

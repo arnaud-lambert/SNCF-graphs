@@ -1,0 +1,7 @@
+<map id="Graphe::testConnexite" name="Graphe::testConnexite">
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,157,57"/>
+<area shape="rect" id="node2" href="$class_graphe.html#a776cea4c742ea265b4a2e5a9fb8207fb" title="recherche des composantes connexes (graphes non orientes)" alt="" coords="212,5,359,32"/>
+<area shape="rect" id="node4" href="$class_graphe.html#a10ded8373f0bee40b8da28425dd63786" title="suppresion d&#39;une arete avec demande indice à l&#39;utilisateur" alt="" coords="205,56,365,83"/>
+<area shape="rect" id="node3" href="$class_sommet.html#af32ee68c415659627f34b5035e9f78a2" title=" " alt="" coords="413,5,568,32"/>
+<area shape="rect" id="node5" href="$class_graphe.html#a3282ba7fa0974493011f380874919c9e" title="suppression d&#39;une arete par indice" alt="" coords="423,56,559,83"/>
+</map>

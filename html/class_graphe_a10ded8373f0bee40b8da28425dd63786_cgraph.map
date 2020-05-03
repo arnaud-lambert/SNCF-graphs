@@ -1,0 +1,4 @@
+<map id="Graphe::supprimerArete" name="Graphe::supprimerArete">
+<area shape="rect" id="node1" title="suppresion d&#39;une arete avec demande indice à l&#39;utilisateur" alt="" coords="5,5,165,32"/>
+<area shape="rect" id="node2" href="$class_graphe.html#a3282ba7fa0974493011f380874919c9e" title="suppression d&#39;une arete par indice" alt="" coords="213,5,349,32"/>
+</map>

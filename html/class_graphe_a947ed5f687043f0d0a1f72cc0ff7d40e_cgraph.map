@@ -1,0 +1,7 @@
+<map id="Graphe::comparaisonICIFlots" name="Graphe::comparaisonICIFlots">
+<area shape="rect" id="node1" title="On compare les indices de centralité intermédiaire avant et après la suppression d&#39;un ou plusieurs tr..." alt="" coords="5,31,196,57"/>
+<area shape="rect" id="node2" href="$class_graphe.html#a83f3fc02cbf7d6ae65f851075922fa80" title="On calcule l&#39;indice de centralite intermédiaire avec les flots." alt="" coords="244,5,423,32"/>
+<area shape="rect" id="node4" href="$class_graphe.html#a10ded8373f0bee40b8da28425dd63786" title="suppresion d&#39;une arete avec demande indice à l&#39;utilisateur" alt="" coords="253,56,413,83"/>
+<area shape="rect" id="node3" href="$class_graphe.html#a4e1ebe8165abaa4743ef24a26edd98fa" title="On cree une matrice d&#39;adjacence." alt="" coords="471,5,693,32"/>
+<area shape="rect" id="node5" href="$class_graphe.html#a3282ba7fa0974493011f380874919c9e" title="suppression d&#39;une arete par indice" alt="" coords="514,56,650,83"/>
+</map>

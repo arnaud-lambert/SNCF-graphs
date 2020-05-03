@@ -1,0 +1,14 @@
+<map id="Graphe::dessiner" name="Graphe::dessiner">
+<area shape="rect" id="node1" title="fonction dessin svg du graphe" alt="" coords="5,224,127,251"/>
+<area shape="rect" id="node2" href="$class_svgfile.html#a28fcc0f01b4e657906eaf92ab2355be1" title="rectangle avec saisie 4 sommets et couleur sans contour noir" alt="" coords="203,5,349,32"/>
+<area shape="rect" id="node3" href="$class_svgfile.html#a92ef6fea11c4d720213e5ccb22190705" title=" " alt="" coords="219,56,333,83"/>
+<area shape="rect" id="node5" href="$class_graphe.html#a06dea10c0ca6f874e5a780c74de13951" title="chargements des indics de centralite des sommets à partir d&#39;une sauvegarde" alt="" coords="185,107,367,149"/>
+<area shape="rect" id="node6" href="$class_graphe.html#a00ebaef7569adc670499a55fe8051a80" title="chargement indices intermediarite des aretes à partir d&#39;une sauvegarde" alt="" coords="175,173,377,200"/>
+<area shape="rect" id="node7" href="$class_r_g_b.html#a6f1cad203c15bbf0af931f66b84e01e3" title=" " alt="" coords="233,224,319,251"/>
+<area shape="rect" id="node8" href="$class_r_g_b.html#af504b7a7bf203b986782ef0f1f4a9ba0" title=" " alt="" coords="233,275,319,301"/>
+<area shape="rect" id="node9" href="$class_r_g_b.html#a0a94113a3a09c250bcc9ec46ba99b733" title=" " alt="" coords="233,325,319,352"/>
+<area shape="rect" id="node10" href="$svgfile_8cpp.html#afc3cb75662919a22a8ce01b8e8eaeb78" title=" " alt="" coords="231,376,321,403"/>
+<area shape="rect" id="node12" href="$class_svgfile.html#a889c5e531883cb5c678ffc89b66a151e" title=" " alt="" coords="213,427,339,453"/>
+<area shape="rect" id="node4" href="$svgfile_8cpp.html#aac4facfedc971ca1ada3bec9ab5b9028" title=" " alt="" coords="443,56,494,83"/>
+<area shape="rect" id="node11" href="$svgfile_8cpp.html#ad4050872a8c18ee3b03056f5538745e1" title=" " alt="" coords="425,376,512,403"/>
+</map>
