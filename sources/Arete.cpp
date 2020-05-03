@@ -16,10 +16,10 @@ Arete::~Arete()
     //dtor
 }
 
-void Arete::affichage()const
+/*void Arete::affichage()const
 {
     std::cout<<m_id<<" "<<m_extremites.first->getId()<<" "<<m_extremites.second->getId()<<std::endl;
-}
+}*/
 
 void Arete::setExtremites (Sommet*s1, Sommet*s2)
 {

@@ -13,12 +13,14 @@ Graphe::Graphe(std::string& nomFichier)
     std::cout<<" voulez-vous ouvrir ? ";
     std::string nom;
     std::ifstream ifs;
+    ///Vérification de l'existence du fichier
     do
     {
         SetConsoleTextAttribute(texteConsole, 10);
         std::cin>>nom;
         SetConsoleTextAttribute(texteConsole, 15);
         ifs.open("Graphes/" + nom + ".txt");
+        ///S'il n'existe pas, on le mentionne
         if(!ifs)
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -32,6 +34,7 @@ Graphe::Graphe(std::string& nomFichier)
         }
     }
     while(!ifs);
+    ///On informe de la lecture du fichier
     SetConsoleTextAttribute(texteConsole, 10);
     std::cout<<std::endl<<"Lecture";
     SetConsoleTextAttribute(texteConsole, 15);
@@ -44,9 +47,11 @@ Graphe::Graphe(std::string& nomFichier)
     ifs>>m_orientation;
     ///On recupere l'odre
     ifs>>m_ordre;
+    ///L'indice
     int indice;
+    ///Les coordonnées
     double x, y;
-    ///On cree un nombre de sommet egal a l'odre du graphe
+    ///On cree un nombre de sommet égal à l'odre du graphe
     for(int i=0; i<m_ordre; ++i)
     {
         ifs>>indice>>nom>>x>>y;
@@ -55,13 +60,16 @@ Graphe::Graphe(std::string& nomFichier)
     }
     ///On recupere la taille du graphe
     ifs>>m_taille;
+    ///Les extrémités des arêtes
     int extremite1, extremite2;
+    ///On cree un nombre d'arête égal à la taille du graphe
     for(int i=0; i<m_taille; ++i)
     {
         ifs>>indice>>extremite1>>extremite2;
         Arete* nouv = new Arete(indice, m_sommets[extremite1], m_sommets[extremite2]);
         m_aretes.push_back(nouv);
         m_sommets[extremite1]->ajouterAdjacent(m_sommets[extremite2],nouv);
+        ///Si le graphe est non orienté, les extrémités ont pour adjacent, leur autre extrémité
         if(!m_orientation)
             m_sommets[extremite2]->ajouterAdjacent(m_sommets[extremite1],nouv);
     }
@@ -97,7 +105,7 @@ Graphe::Graphe(const Graphe&source): m_sommets{source.m_sommets}, m_aretes{sourc
 
 }
 
-
+///On désalloue la mémoire
 Graphe::~Graphe()
 {
     for(auto &i: m_sommets)
@@ -119,6 +127,7 @@ Graphe::~Graphe()
         m_aretes[i]->affichage();
 }*/
 
+///Chargement du fichier de pondération
 void Graphe::ponderation()
 {
     int taille;
@@ -134,6 +143,7 @@ void Graphe::ponderation()
     std::cout<<" voulez-vous ouvrir ? ";
     std::string nomFichier;
     std::cin.ignore();
+    ///On vérifie si le nom du fichier existe, et s'il est compatible avec le graphe chargé précédemment
     do
     {
         nomFichier="";
@@ -141,6 +151,7 @@ void Graphe::ponderation()
         std::getline(std::cin, nomFichier);
         SetConsoleTextAttribute(texteConsole, 15);
         std::ifstream ifs{"Ponderations/" + nomFichier + ".txt"};
+        ///Si c'est le cas, on charge la pondération
         if(ifs)
         {
             ifs>>taille;
@@ -164,6 +175,7 @@ void Graphe::ponderation()
                     m_aretes[id]->setPoids(poids);
                 }
             }
+            ///Sinon, on informe que le fichier est incompatible et qu'il faut en ressaisir un
             else
             {
                 SetConsoleTextAttribute(texteConsole, 12);
@@ -176,6 +188,7 @@ void Graphe::ponderation()
                 std::cout<<" un nom : ";
             }
         }
+        ///Si on entre aucun fichier, alors on passe à la suite
         else if(nomFichier!="")
         {
             SetConsoleTextAttribute(texteConsole, 12);
@@ -189,6 +202,7 @@ void Graphe::ponderation()
         }
     }
     while(nomFichier!="" && !verif);
+    ///Si il n'y a pas de fichier, alors il n'y a pas de pondération
     if(nomFichier == "")
     {
         m_ponderation = false;
@@ -302,16 +316,22 @@ void Graphe::dessiner (std::string nom_fichier, bool indices)
 
 }
 
+///Indice centralite vecteur propre
 std::vector<std::pair<double, double>> Graphe::vecteurPropre()
 {
+    ///Vecteur qui stocke l'ensemble des indices non normalisés et normalisés
     std::vector<std::pair<double, double>> vecIndices;
+    ///Vecteur qui stocke la somme des indices des adjacents de tous les sommets
     std::vector<double> vecSommeIndices;
+    ///Variables utilisées pour l'algo
     double lambda1=0, lambda2, sommeIndices=0, sommeSommeIndicesCarre=0;
+    ///On initialise tous les indices à 1
     for(size_t i=0; i<m_sommets.size(); ++i)
         vecIndices.push_back({0, 1});
     do
     {
         lambda2=lambda1;
+        ///On calcule la somme des indices des voisins pour chaque sommet
         for(size_t i=0; i<m_sommets.size(); ++i)
         {
             for(size_t j=0; j<m_sommets[i]->getAdjacents().size(); ++j)
@@ -320,11 +340,14 @@ std::vector<std::pair<double, double>> Graphe::vecteurPropre()
             vecSommeIndices.push_back(sommeIndices);
             sommeIndices=0;
         }
+        ///On calcule la somme de tous les indices des sommets^2
         for(size_t i=0; i<vecSommeIndices.size(); ++i)
             sommeSommeIndicesCarre+=pow(vecSommeIndices[i], 2);
 
+        ///On fait la racine carré
         lambda1=sqrt(sommeSommeIndicesCarre);
         sommeSommeIndicesCarre=0;
+        ///On normalise les indices de tous les sommets
         for(size_t i=0; i<vecIndices.size(); ++i)
         {
             vecIndices[i].first=vecSommeIndices[i];
@@ -335,6 +358,7 @@ std::vector<std::pair<double, double>> Graphe::vecteurPropre()
         }
         vecSommeIndices.clear();
     }
+    ///Tant que lambda "varie trop"
     while(abs(lambda1-lambda2)>0.01);
 
     /*std::cout<<std::endl<<"Indices des sommets selon le vecteur propre"<<std::endl;
@@ -418,10 +442,27 @@ void Graphe::testConnexite (int nb)
 
     cc=this->rechercheCC();
     if(cc==1)
-        std::cout<<"Pour le moment, ce graphe est connexe"<<std::endl;
+    {
+        std::cout<<std::endl<<"Pour ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"le moment";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", ce graphe est ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"connexe"<<std::endl;
+        SetConsoleTextAttribute(texteConsole, 15);
+    }
     else
-        std::cout<<"Ce graphe est deja non connexe, il contient "<<cc<<"composantes connexes"<<std::endl;
-
+    {
+        std::cout<<"Ce graphe est ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<"deja non connexe";
+        SetConsoleTextAttribute(texteConsole, 15);
+        std::cout<<", il contient ";
+        SetConsoleTextAttribute(texteConsole, 14);
+        std::cout<<cc<<"composantes connexes"<<std::endl;
+        SetConsoleTextAttribute(texteConsole, 15);
+    }
 
     for(int i=0; i<nb; ++i)
         copie.supprimerArete();
@@ -566,50 +607,71 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std
     return {centraliteSommets,centraliteAretes};
 }
 
+///Indice centralite Proximite
 std::vector<std::pair<double, double>> Graphe::vecteurProximite()
 {
+    ///On initialise toutes les distances à "infini"
     std::vector<double> distance(m_ordre, RAND_MAX);
+    ///On copie le sommet courant
     Sommet* sommetCourant;
 
+    ///On stocke les prédecesseurs de chaque sommet
     std::map<Sommet*, std::pair<Sommet*, double>> predecesseur;
+    ///On stocke les indices non normalisés et normalisés
     std::vector<std::pair<double, double>> indiceSommets;
 
+    ///On trie les sommets par distance
     auto comparaison=[](const std::pair<Sommet*, double> s1, const std::pair<Sommet*, double> s2)
     {
         return s1.second > s2.second;
     };
 
+    ///Priority queue qui stocke les sommets et leur distance
     std::priority_queue<std::pair<Sommet*, double>, std::vector<std::pair<Sommet*, double>>, decltype(comparaison)> file(comparaison);
 
+    ///On parcours tous les sommets
     for(size_t i=0; i<m_sommets.size(); ++i)
     {
+        ///On initialise les indices à 0
         indiceSommets.push_back({0, 0});
+        ///On push les sommets 1 par 1
         file.push({m_sommets[i], 0});
+        ///On initialise la distance
         distance[m_sommets[i]->getId()]=0;
+        ///Tant que la file n'est pas vide
         while(!file.empty())
         {
+            ///On copie le premier de la file puis on le pop de la file
             sommetCourant=file.top().first;
             file.pop();
+            ///On parcours tous ses adjacents
             for(size_t j=0; j<sommetCourant->getAdjacents().size(); j++)
             {
+                ///Si la distance du sommet fils > à la distance du sommet parent + poids sommet fils-parent
                 if(distance[sommetCourant->getAdjacents()[j].first->getId()] > distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second->getPoids())
                 {
+                    ///Alors on affecte la nouvelle distance au sommet fils, on le push dans la file et il devient le sucesseur de son parent
                     distance[sommetCourant->getAdjacents()[j].first->getId()] = distance[sommetCourant->getId()] + sommetCourant->getAdjacents()[j].second->getPoids();
                     file.push({sommetCourant->getAdjacents()[j].first, distance[sommetCourant->getAdjacents()[j].first->getId()]});
                     predecesseur[sommetCourant->getAdjacents()[j].first]= {sommetCourant, distance[sommetCourant->getAdjacents()[j].first->getId()]};
                 }
             }
         }
+        ///On fait la somme des distances (les plus courtes) passant par chaque sommet
         for(size_t j=0; j<m_sommets.size(); j++)
             indiceSommets[i].first+=distance[j];
 
+        ///Si c'est différent de 0, on divise par la distance totale
         if(indiceSommets[i].first!=0)
             indiceSommets[i].first=1/indiceSommets[i].first;
 
         else
             indiceSommets[i].first=0;
 
+        ///On normalise tous les indices
         indiceSommets[i].second=indiceSommets[i].first*(m_ordre-1);
+
+        ///On réinitialise les variables
         predecesseur.clear();
         distance.clear();
         distance.resize(m_ordre, RAND_MAX);
@@ -619,20 +681,30 @@ std::vector<std::pair<double, double>> Graphe::vecteurProximite()
     return indiceSommets;
 }
 
+///Sauvegarde
 void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, std::vector<std::pair<double, double>> vecteurPropre, std::vector<std::pair<double, double>> vecteurProximite, std::pair<std::vector<std::pair<double,double>>,std::vector<std::pair<Arete*,std::pair<double,double>>>> intermediarite, std::string nomFichier)
 {
+    ///Variable qui vérifie si le fichier save existe déja
     bool verif=false;
+    ///C'est l'indice qui va apparaître à la fin du fichier save
     int occurence=0;
+    ///Nom du fichier sauvegarde
     std::string fichierSauvegarde;
+    ///Tant qu'on a pas trouvé de nom valide pour la sauvegarde
     while(!verif)
     {
+        ///Nom du fichier sauvegarde = nom du graphe + _save + nombre de fois ou le fichier sauvegarde existe déjà
         fichierSauvegarde=nomFichier + "_save" + std::to_string(occurence);
+        ///On test si le fichier save existe déjà
         std::ifstream ifs{"Saves/" + fichierSauvegarde + ".txt"};
+        ///Si ce n'est pas le cas, on a trouvé un bon nom fichier pour la save
         if(!ifs)
             verif=true;
         occurence++;
     }
+    ///On écrit dans le fichier
     std::ofstream ofs{"Saves/" + fichierSauvegarde + ".txt"};
+    ///Si ce n'est pas possible, on le mentionne
     if(!ofs)
     {
         SetConsoleTextAttribute(texteConsole, 12);
@@ -640,6 +712,8 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<", la sauvegarde ne peut avoir lieu"<<std::endl;
     }
+
+    ///On informe du code couleur et des indices présentés
     else
     {
         SetConsoleTextAttribute(texteConsole, 14);
@@ -667,6 +741,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" :"<<std::endl;
 
+        ///On écrit le résultat dans le fichier save
         for(size_t i=0; i<m_sommets.size(); i++)
         {
             ofs<<m_sommets[i]->getId()<<" "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<" "
@@ -674,6 +749,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
                <<vecteurProximite[i].first<<" "<<vecteurProximite[i].second<<" "
                <<intermediarite.first[i].first<<" "<<intermediarite.first[i].second<<std::endl;
 
+            ///On affiche le résultat de tous les indices pour chaque sommet
             std::cout<<std::endl<<"Sommet "<<m_sommets[i]->getId()<<" : "<<std::endl;
             SetConsoleTextAttribute(texteConsole, 3);
             std::cout<<"   "<<centralite_degres[i].first<<" "<<centralite_degres[i].second<<std::endl;
@@ -685,6 +761,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
             std::cout<<"   "<<intermediarite.first[i].first<<" "<<intermediarite.first[i].second<<std::endl;
             SetConsoleTextAttribute(texteConsole, 15);
         }
+        ///On affiche l'indice de centralité des arêtes
         std::cout << std::endl << "Indice de ";
         SetConsoleTextAttribute(texteConsole, 13);
         std::cout<<"centralite intermediaire";
@@ -695,6 +772,7 @@ void Graphe::sauvegarder(std::vector<std::pair<int, double>> centralite_degres, 
         SetConsoleTextAttribute(texteConsole, 15);
         std::cout<<" : "<< std::endl << std::endl;
         ofs << std::endl << "aretes" <<std::endl;
+        ///On sauvegarde l'indice de centralité des aretes dans le fichier
         for(auto &i : intermediarite.second)
         {
             ofs << i.first->getId() << " " << i.second.first << " " << i.second.second << std::endl;
@@ -1040,7 +1118,6 @@ std::map<std::pair<Sommet*,Sommet*>,std::vector<std::unordered_set<int>>> Graphe
 }
 
 
-
 void Graphe::kAretesConnexe ()
 {
     std::vector<int>nb;
@@ -1116,40 +1193,52 @@ void Graphe::kAretesConnexe ()
     std::cout<<" connexe"<<std::endl;
 }
 
-
+///On test la forte connexité d'un graphe orienté
 void Graphe::testForteConnexite(int nb)
 {
+    ///On fait une copie profonde
     Graphe copie=*this;
 
+    ///On supprime les aretes sélectionnées par l'utilisateur
     for(int i=0; i<nb; ++i)
         copie.supprimerArete();
 
+    ///Vecteur qui permet de marqué les sommets
     std::vector<bool> sommetCouleur(m_ordre, false);
+    ///Vecteur qui permet de donner l'ordre de post découverte des sommets
     std::vector<int> ordreSommet;
 
+    ///On fait un premier DFS
     for(size_t i=0; i<copie.m_sommets.size(); i++)
     {
         if(sommetCouleur[i]==false)
             copie.m_sommets[i]->dfs(sommetCouleur, ordreSommet);
     }
 
+    ///On renverse l'ordre de post découverte
     std::reverse(ordreSommet.begin(), ordreSommet.end());
     sommetCouleur.clear();
     sommetCouleur.resize(m_ordre, false);
 
+    ///On crée un vecteur qui va inverser le sens des arêtes
     std::vector<std::vector<int>> reverseAdjacents(m_ordre);
 
+    ///Pour tous les sommets, et tous les adjacents de ces sommets, on inverses l'orientation des arêtes
     for(size_t i=0; i<copie.m_sommets.size(); i++)
     {
         for(size_t j=0; j<copie.m_sommets[i]->getAdjacents().size(); j++)
             reverseAdjacents[copie.m_sommets[i]->getAdjacents()[j].first->getId()].push_back(copie.m_sommets[i]->getId());
     }
 
+    ///Vecteur qui stocke une composante fortement connexe
     std::vector<int> composanteFortementConnexe;
+    ///Vecteur qui stocke les différentes composantes fortement connexes
     std::vector<std::vector<int>> composantesFortementConnexes;
 
+    ///On parcours tous les sommets dans l'odre inverse de post découverte
     for(size_t i=0; i<ordreSommet.size(); i++)
     {
+        ///S'il n'a pas été marqué, on lance un DFS (orientation inversée), et on push chaque composante fortement connexe dans un vecteur
         if(sommetCouleur[ordreSommet[i]]==false)
         {
             copie.m_sommets[ordreSommet[i]]->dfsReverse(sommetCouleur, reverseAdjacents, composanteFortementConnexe, getSommets());
@@ -1158,11 +1247,13 @@ void Graphe::testForteConnexite(int nb)
         }
     }
 
+    ///On affiche le nb de composantes fortement connexes
     std::cout<<std::endl<<"Il y a ";
     SetConsoleTextAttribute(texteConsole, 14);
     std::cout<<(int)composantesFortementConnexes.size()<<" composante(s) fortement connexe(s)";
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" : "<<std::endl;
+    ///On affiche les sommets qui composent chaque composante fortement connexe
     for(size_t i=0; i<composantesFortementConnexes.size(); i++)
     {
         SetConsoleTextAttribute(texteConsole, 14);
@@ -1175,16 +1266,17 @@ void Graphe::testForteConnexite(int nb)
 }
 
 
-
+///On cree une matrice d'adjacence
 std::vector<std::vector<int>> Graphe::creationMatriceAdjacence()
 {
+    ///On cree une matrice
     std::vector<std::vector<int>> matriceAdjacence(m_ordre, std::vector<int>(m_ordre, 0));
+    ///On le poids de chaque arête dans la case qui lui est propre
     for(size_t i=0; i<m_aretes.size(); i++)
         matriceAdjacence[m_aretes[i]->getExtremites().first->getId()][m_aretes[i]->getExtremites().second->getId()]=m_aretes[i]->getPoids();
 
     return matriceAdjacence;
 }
-
 
 
 std::vector<std::vector<double>> Graphe::chargementIndicesSommets(std::string nomFichier)
@@ -1288,14 +1380,19 @@ std::vector<double> Graphe::chargementInterAretes (std::string nom_fichier)
     return tempo;
 }
 
+///On calcule l'indice de centralite intermédiaire avec les flots
 std::vector<double> Graphe::intermediariteFlots()
 {
+    ///Vecteur qui stock l'indice de centralite de chaque sommet
     std::vector<double> flotsMax(m_sommets.size(), 0);
+    ///On parcourt toutes les futures sources
     for(size_t i=0; i<m_sommets.size(); i++)
     {
+        ///On parcourt tous les futurs puits
         for(size_t j=0; j<m_sommets.size(); j++)
         {
-            if(m_sommets[i]!=m_sommets[j])
+            ///
+            if((m_orientation && m_sommets[i]!=m_sommets[j]) || (!m_orientation && m_sommets[i]->getId() < m_sommets[j]->getId()))
             {
                 Graphe b(*this);
                 b.m_sommets[j]->getAdjacents().clear();
@@ -1315,19 +1412,21 @@ std::vector<double> Graphe::intermediariteFlots()
                         double flotSommetn=0;
                         double flotMax=b.m_sommets[i]->fordFulkerson(matriceAdjacence, b.m_sommets[j]->getId(), m_sommets[n]->getId(), flotSommetn);
                         if(flotMax!=0)
-                            flotsMax[n]+=flotSommetn/flotMax;
+                            flotsMax[n]+=flotSommetn/(2*flotMax);
                     }
                 }
             }
         }
     }
+
     return flotsMax;
 }
 
-
+///On compare les indices de centralité intermédiaire avant et après la suppression d'un ou plusieurs troncon(s) (flot)
 void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<double>& flotApres, std::string saisie)
 {
     char option='0';
+    ///On demande à l'utilisateur s'il veut supprimer des troncons
     SetConsoleTextAttribute(texteConsole, 12);
     std::cout<<"Supprimer";
     SetConsoleTextAttribute(texteConsole, 15);
@@ -1345,6 +1444,7 @@ void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<doub
     SetConsoleTextAttribute(texteConsole, 15);
     std::cout<<" du flot ?     1 : OUI     2 : NON"<<std::endl<<std::endl;
 
+    ///On blinde la saisie
     do
     {
         SetConsoleTextAttribute(texteConsole, 3);
@@ -1358,6 +1458,7 @@ void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<doub
         else
             option=saisie.front();
 
+        ///On lui demande de ressaisir si sa saisie est invalide
         if(option!='1' && option!='2')
         {
             std::cout<<std::endl<<"Cette option est ";
@@ -1373,6 +1474,7 @@ void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<doub
     }
     while(option!='1' && option!='2');
 
+    ///S'il veut supprimer des arêtes, on lui demande combien
     if(option=='1')
     {
         std::cout<<std::endl<<"Combien d'";
@@ -1386,9 +1488,12 @@ void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<doub
         std::cout<<" ? ";
 
         int nb;
+
+        ///On blinde la saisie par rapport à la taille du graphe
         do
         {
             std::cin>>nb;
+            ///On lui informe que sa saisie est invalide
             if((nb<0)||(nb>m_taille))
             {
                 std::cout<<std::endl<<"Vous avez saisie un nombre ";
@@ -1408,11 +1513,14 @@ void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<doub
         }
         while((nb<0)||(nb>m_taille));
 
+        ///Copie profonde du graphe pour supprimer les arêtes
         Graphe copie(*this);
 
+        ///On supprime les arêtes choisis par l'utilisateur
         for(int i=0; i<nb; ++i)
             copie.supprimerArete();
 
+        ///On calcul l'indice avec les flots après suppression de troncon(s)
         flotApres=copie.intermediariteFlots();
 
         SetConsoleTextAttribute(texteConsole, 14);
@@ -1450,6 +1558,7 @@ void Graphe::comparaisonICIFlots(std::vector<double> flotAvant, std::vector<doub
         std::cout<<" avec le flot : "<<std::endl<<std::endl;
     }
 
+    ///On affiche la différence des indices de centralité avant et après la suppression de troncon(s)
     for(size_t i=0; i<m_sommets.size(); i++)
         std::cout<<"Sommet "<<i<<" : "<<flotAvant[i]-flotApres[i]<<std::endl;
 
