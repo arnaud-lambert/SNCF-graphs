@@ -1,7 +1,7 @@
 # SNCF-graphs
 
 Graph theory project on SNCF, the french railway company.
-The following graphs represent the theoretical importance of each stations and railway segments.
+The following graphs represent the theoretical importance of each station and railway segment.
 
 The scale used is the following:
 
