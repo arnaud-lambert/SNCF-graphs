@@ -23,5 +23,5 @@ The scale used is the following:
 
 ## Authors
 [Antoine Hazebrouck](https://github.com/Ahaz1701)   
-[Arnaud Lambert](https://github.com/arnaud-lambert/)   
+[Arnaud Lambert](https://github.com/arnaudlambertt/)   
 [Laure Audouy](https://github.com/laure-a)    
